@@ -130,6 +130,13 @@ public partial class EFDbContext : DbContext
                 .HasConstraintName("FK__Question__idQues__38996AB5");
         });
 
+        modelBuilder.Entity<QuestionsInTest>(enity =>
+        {
+            enity.HasKey(e => new  { e.IdTest, e.IdQuestion });
+        });
+
+
+
         modelBuilder.Entity<QuestionType>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Question__3213E83FFB7359C4");
@@ -166,7 +173,7 @@ public partial class EFDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__Test__idTestType__49C3F6B7");
 
-            entity.HasMany(d => d.IdQuestions).WithMany(p => p.IdTests)
+            /*entity.HasMany(d => d.IdQuestions).WithMany(p => p.IdTests)
                 .UsingEntity<Dictionary<string, object>>(
                     "QuestionsInTest",
                     r => r.HasOne<Question>().WithMany()
@@ -181,7 +188,7 @@ public partial class EFDbContext : DbContext
                         j.ToTable("QuestionsInTest");
                         j.IndexerProperty<int>("IdTest").HasColumnName("idTest");
                         j.IndexerProperty<int>("IdQuestion").HasColumnName("idQuestion");
-                    });
+                    });*/
         });
 
         modelBuilder.Entity<TestPurpose>(entity =>

@@ -27,7 +27,7 @@ namespace CRUD.implementations
             return context.Tests.ToList();
         }
 
-        public Test GetTestById(int id)
+        public Test GetTestById(string id)
         {
             return GetAllTests().FirstOrDefault(x => x.Id.Equals(id));
         }

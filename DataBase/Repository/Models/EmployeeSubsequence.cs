@@ -17,7 +17,8 @@ public partial class EmployeeSubsequence
     public int? IdSubsequence { get; set; }
 
     [Column("idTestResult")]
-    public int? IdTestResult { get; set; }
+    [StringLength(50)]
+    public string? IdTestResult { get; set; }
 
     [Column("number")]
     public byte? Number { get; set; }

@@ -1,30 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace DataBase.Repository.Models
+namespace DataBase.Repository.Models;
+
+[Table("QuestionsInTest")]
+public partial class QuestionsInTest
 {
-    [PrimaryKey(nameof(IdTest), nameof(IdQuestion))]
-    public class QuestionsInTest
-    {
-        //[Key]
-        [Column("idTest")]
-        [ForeignKey("Test")]
-        public int IdTest { get; set; }
-        //[Key]
-        [Column("idQuestion")]
-        [ForeignKey("Question")]
-        public int IdQuestion { get; set; }
+    [Key]
+    [Column("id")]
+    public int Id { get; set; }
 
-        //[InverseProperty("Tests")]
-        public virtual Test? Test { get; set; }
-        //[InverseProperty("Questions")]
-        public virtual Question? Question { get; set; }
-    }
+    [Column("idTest")]
+    [StringLength(50)]
+    public string? IdTest { get; set; }
+
+    [Column("idQuestion")]
+    [StringLength(50)]
+    public string? IdQuestion { get; set; }
+
+    [ForeignKey("IdQuestion")]
+    [InverseProperty("QuestionsInTests")]
+    public virtual Question? IdQuestionNavigation { get; set; }
+
+    [ForeignKey("IdTest")]
+    [InverseProperty("QuestionsInTests")]
+    public virtual Test? IdTestNavigation { get; set; }
 }

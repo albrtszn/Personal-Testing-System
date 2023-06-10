@@ -11,13 +11,15 @@ public partial class EmployeeAnswer
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    [StringLength(50)]
+    public string Id { get; set; } = null!;
 
     [Column("idAnswer")]
     public int? IdAnswer { get; set; }
 
     [Column("idTestResult")]
-    public int? IdTestResult { get; set; }
+    [StringLength(50)]
+    public string? IdTestResult { get; set; }
 
     [ForeignKey("IdAnswer")]
     [InverseProperty("EmployeeAnswers")]

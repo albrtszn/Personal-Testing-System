@@ -57,7 +57,7 @@ namespace Personal_Testing_System.Services
         public FirstPartService FirstPart { get { return firstPartService; } }
         public QuestionService Question { get { return questionService; } }
         public QuestionsInTestService QuestionsInTest { get { return questionsInTestService; } }
-        public QuestionTypeService QuestionTypeService { get { return questionTypeService; } }
+        public QuestionTypeService QuestionType { get { return questionTypeService; } }
         public SecondPartService SecondPart { get { return secondPartService; } }
         public SubdivisionService Subdivision { get { return subdivisionService; } }
         public SubsequenceService Subsequence { get { return subsequenceService; } }

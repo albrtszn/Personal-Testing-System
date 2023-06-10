@@ -20,7 +20,7 @@ namespace Personal_Testing_System.Services
             return testRepo.GetAllTests();
         }
 
-        public Test GetTestById(int id)
+        public Test GetTestById(string id)
         {
             return testRepo.GetTestById(id);
         }

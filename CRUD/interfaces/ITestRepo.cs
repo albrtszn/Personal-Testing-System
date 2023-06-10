@@ -10,7 +10,7 @@ namespace CRUD.interfaces
     public interface ITestRepo
     {
         List<Test> GetAllTests();
-        Test GetTestById(int id);
+        Test GetTestById(string id);
         void SaveTest(Test TestToSave);
         void DeleteTestById(int id);
     }

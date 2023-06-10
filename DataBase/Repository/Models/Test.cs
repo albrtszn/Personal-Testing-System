@@ -11,7 +11,8 @@ public partial class Test
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    [StringLength(50)]
+    public string Id { get; set; } = null!;
 
     [Column("name")]
     [StringLength(255)]
@@ -25,12 +26,11 @@ public partial class Test
     public virtual TestType? IdTestTypeNavigation { get; set; }
 
     [InverseProperty("IdTestNavigation")]
+    public virtual ICollection<QuestionsInTest> QuestionsInTests { get; set; } = new List<QuestionsInTest>();
+
+    [InverseProperty("IdTestNavigation")]
     public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
 
     [InverseProperty("IdTestNavigation")]
     public virtual ICollection<TestResult> TestResults { get; set; } = new List<TestResult>();
-
-    [ForeignKey("IdTest")]
-    [InverseProperty("IdTests")]
-    public virtual ICollection<Question> IdQuestions { get; set; } = new List<Question>();
 }

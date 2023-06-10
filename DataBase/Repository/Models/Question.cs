@@ -11,7 +11,8 @@ public partial class Question
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    [StringLength(50)]
+    public string Id { get; set; } = null!;
 
     [Column("text")]
     [StringLength(500)]
@@ -31,9 +32,8 @@ public partial class Question
     public virtual QuestionType? IdQuestionTypeNavigation { get; set; }
 
     [InverseProperty("IdQuestionNavigation")]
-    public virtual ICollection<Subsequence> Subsequences { get; set; } = new List<Subsequence>();
+    public virtual ICollection<QuestionsInTest> QuestionsInTests { get; set; } = new List<QuestionsInTest>();
 
-    [ForeignKey("IdQuestion")]
-    [InverseProperty("IdQuestions")]
-    public virtual ICollection<Test> IdTests { get; set; } = new List<Test>();
+    [InverseProperty("IdQuestionNavigation")]
+    public virtual ICollection<Subsequence> Subsequences { get; set; } = new List<Subsequence>();
 }

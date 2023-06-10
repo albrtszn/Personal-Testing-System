@@ -17,7 +17,8 @@ public partial class TestPurpose
     public int? IdEmployee { get; set; }
 
     [Column("idTest")]
-    public int? IdTest { get; set; }
+    [StringLength(50)]
+    public string? IdTest { get; set; }
 
     [Column("datatimePurpose", TypeName = "datetime")]
     public DateTime? DatatimePurpose { get; set; }

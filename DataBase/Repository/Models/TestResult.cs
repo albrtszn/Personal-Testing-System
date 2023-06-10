@@ -11,13 +11,15 @@ public partial class TestResult
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    [StringLength(50)]
+    public string Id { get; set; } = null!;
 
     [Column("idEmployee")]
     public int? IdEmployee { get; set; }
 
     [Column("idTest")]
-    public int? IdTest { get; set; }
+    [StringLength(50)]
+    public string? IdTest { get; set; }
 
     [Column("startDate")]
     public DateOnly? StartDate { get; set; }

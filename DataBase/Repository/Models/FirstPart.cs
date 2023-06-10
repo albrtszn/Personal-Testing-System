@@ -18,7 +18,8 @@ public partial class FirstPart
     public string? Text { get; set; }
 
     [Column("idQuestion")]
-    public int? IdQuestion { get; set; }
+    [StringLength(50)]
+    public string? IdQuestion { get; set; }
 
     [InverseProperty("IdFirstPartNavigation")]
     public virtual ICollection<EmployeeMatching> EmployeeMatchings { get; set; } = new List<EmployeeMatching>();

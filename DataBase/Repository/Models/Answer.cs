@@ -18,7 +18,8 @@ public partial class Answer
     public string? Text { get; set; }
 
     [Column("idQuestion")]
-    public int? IdQuestion { get; set; }
+    [StringLength(50)]
+    public string? IdQuestion { get; set; }
 
     [Column("correct")]
     public bool? Correct { get; set; }

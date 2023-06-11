@@ -18,13 +18,13 @@ namespace CRUD.implementations
         }
         public void DeleteQuestionInTestById(int id)
         {
-            context.QuestionsInTest.Remove(GetAllQuestionsInTests().FirstOrDefault(x => x.IdQuestion.Equals(id)));
+            //context.QuestionsInTest.Remove(GetAllQuestionsInTests().FirstOrDefault(x => x.IdQuestion.Equals(id)));
             context.SaveChanges();
         }
 
         public List<QuestionsInTest> GetAllQuestionsInTests()
         {
-            return context.QuestionsInTest.ToList();
+            return new List<QuestionsInTest>();//context.QuestionsInTest.ToList();
         }
 
         public QuestionsInTest GetQuestionInTestById(int id)
@@ -34,7 +34,7 @@ namespace CRUD.implementations
 
         public void SaveQustionInTest(QuestionsInTest QuestionsInTestToSave)
         {
-            context.QuestionsInTest.Add(QuestionsInTestToSave);
+            //context.QuestionsInTest.Add(QuestionsInTestToSave);
             context.SaveChanges();
         }
     }

@@ -2,7 +2,7 @@
 {
     public class FirstSecondPartDto
     {
-        public string FirstPartText { get; set; }
-        public string SecondPartText { get; set; }
+        public string? FirstPartText { get; set; }
+        public string? SecondPartText { get; set; }
     }
 }

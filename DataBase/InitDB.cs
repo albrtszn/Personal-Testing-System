@@ -34,6 +34,41 @@ namespace DataBase
 
                 db.SaveChanges(true);
             }
+
+            if (!db.TestTypes.Any())
+            {
+                db.TestTypes.Add(new TestType
+                {
+                    Name = "Оценка имеющихся компетенций"
+                });
+
+                db.SaveChanges(true);
+            }
+
+            if (!db.QuestionTypes.Any())
+            {
+                db.QuestionTypes.Add(new QuestionType
+                {
+                    Name = "Выбор одного варианта ответа"
+                });
+
+                db.QuestionTypes.Add(new QuestionType
+                {
+                    Name = "Выбор нескольких вариантов ответа"
+                });
+
+                db.QuestionTypes.Add(new QuestionType
+                {
+                    Name = "Установка соответствия"
+                });
+
+                db.QuestionTypes.Add(new QuestionType
+                {
+                    Name = "Расстановка в нужном порядке"
+                });
+
+                db.SaveChanges(true);
+            }
         }
     }
 }

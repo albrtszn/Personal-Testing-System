@@ -26,7 +26,7 @@ public partial class Test
     public virtual TestType? IdTestTypeNavigation { get; set; }
 
     [InverseProperty("IdTestNavigation")]
-    public virtual ICollection<QuestionsInTest> QuestionsInTests { get; set; } = new List<QuestionsInTest>();
+    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 
     [InverseProperty("IdTestNavigation")]
     public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();

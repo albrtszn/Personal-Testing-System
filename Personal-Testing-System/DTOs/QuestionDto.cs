@@ -10,5 +10,6 @@ namespace Personal_Testing_System.DTOs
         public string? Text { get; set; }
 
         public int? IdQuestionType { get; set; }
+        public string? IdTest { get; set; }
     }
 }

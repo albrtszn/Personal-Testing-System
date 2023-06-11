@@ -14,7 +14,8 @@ public partial class EmployeeMatching
     public int Id { get; set; }
 
     [Column("idFirstPart")]
-    public int? IdFirstPart { get; set; }
+    [StringLength(50)]
+    public string? IdFirstPart { get; set; }
 
     [Column("idSecondPart")]
     public int? IdSecondPart { get; set; }

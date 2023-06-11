@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataBase.Repository.Models;
 
 [Table("SecondPart")]
-[Index("IdFirstPart", Name = "UQ__SecondPa__7D5B4DC33D0AFD98", IsUnique = true)]
+[Index("IdFirstPart", Name = "UQ__SecondPa__7D5B4DC390A2633C", IsUnique = true)]
 public partial class SecondPart
 {
     [Key]
@@ -19,7 +19,8 @@ public partial class SecondPart
     public string? Text { get; set; }
 
     [Column("idFirstPart")]
-    public int? IdFirstPart { get; set; }
+    [StringLength(50)]
+    public string? IdFirstPart { get; set; }
 
     [InverseProperty("IdSecondPartNavigation")]
     public virtual ICollection<EmployeeMatching> EmployeeMatchings { get; set; } = new List<EmployeeMatching>();

@@ -11,7 +11,8 @@ public partial class FirstPart
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    [StringLength(50)]
+    public string Id { get; set; } = null!;
 
     [Column("text")]
     [StringLength(500)]

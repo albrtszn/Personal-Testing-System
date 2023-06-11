@@ -9,6 +9,6 @@ namespace Personal_Testing_System.DTOs
 
         public string? Text { get; set; }
 
-        public int? IdFirstPart { get; set; }
+        public string? IdFirstPart { get; set; }
     }
 }

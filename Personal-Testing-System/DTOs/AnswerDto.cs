@@ -9,7 +9,7 @@ namespace Personal_Testing_System.DTOs
 
         public string? Text { get; set; }
 
-        public int? IdQuestion { get; set; }
+        public string? IdQuestion { get; set; }
 
         public bool? Correct { get; set; }
     }

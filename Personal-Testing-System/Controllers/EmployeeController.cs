@@ -102,29 +102,50 @@ namespace Personal_Testing_System.Controllers
                 Test test = ms.Test.GetTestById(id);
                 List<Question> questions = ms.Question.GetAllQuestions()
                     .Where(x => x.IdTest.Equals(id)).ToList();
-                List<Answer> allAnswers = ms.Answer.GetAllAnswers();
-                List<Answer> answers = new List<Answer>();
-                List<Subsequence> subsequence = ms.Subsequence.GetAllSubsequences();
-                List<SubsequenceDto> allSubsequence = new List<SubsequenceDto>();
-                List<FirstPart> firstParts = ms.FirstPart.GetAllFirstParts();
-                List<SecondPart> socondParts = ms.SecondPart.GetAllSecondParts();
-                List<FirstSecondPartDto> firstSecondPartDto = new List<FirstSecondPartDto>();
+
                 //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
                 //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
 
+                CreateTestDto testDto = new CreateTestDto
+                {
+                    Name = test.Name,
+                    IdTestType = test.IdTestType,
+                    Questions = new List<CreateQuestionDto>()
+                };
+
                 foreach (var quest in questions)
                 {
-                    foreach (var answer in allAnswers) {
-                        if (answer.IdQuestion.Equals(quest.Id)) {
-                            answers.Add(answer);
-                        };
+                    CreateQuestionDto createQuestionDto = new CreateQuestionDto
+                    {
+                        Id = quest.Id,
+                        IdQuestionType = quest.IdQuestionType,
+                        Text = quest.Text,
+                        Answers = new List<object>(){}
+                    };
+
+                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count!=0)
+                    {
+                        createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
                     }
+                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                    }
+                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+
+                        List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+                        foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                        {
+                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.Id));
+                        }
+                        createQuestionDto.Answers.AddRange(secondPartDtos);
+                    }
+
+                    testDto.Questions.Add(createQuestionDto);  
                 }
-
-                return Ok(new CreateTestDto
-                {
-
-                });
+                return Ok(testDto);
             }
             return NotFound("Тест не найден");
         }

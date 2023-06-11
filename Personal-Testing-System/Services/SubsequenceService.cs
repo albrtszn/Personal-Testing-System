@@ -1,5 +1,6 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Personal_Testing_System.DTOs;
 
 namespace Personal_Testing_System.Services
 {
@@ -10,6 +11,29 @@ namespace Personal_Testing_System.Services
         {
             this.subsequenceRepo = _subsequenceRepo;
         }
+
+        private SubsequenceDto ConvertToSubsequenceDto(Subsequence subsequence)
+        {
+            return new SubsequenceDto
+            {
+                Id = subsequence.Id,
+                IdQuestion = subsequence.IdQuestion,
+                Text = subsequence.Text,
+                Number = subsequence.Number
+            };
+        }
+
+        private Subsequence ConvertToSubsequence(SubsequenceDto subsequenceDto)
+        {
+            return new Subsequence
+            {
+                Id = subsequenceDto.Id,
+                IdQuestion = subsequenceDto.IdQuestion,
+                Text = subsequenceDto.Text,
+                Number = subsequenceDto.Number
+            };
+        }
+
         public void DeleteSubsequenceById(int id)
         {
             subsequenceRepo.DeleteSubsequenceById(id);
@@ -18,6 +42,18 @@ namespace Personal_Testing_System.Services
         public List<Subsequence> GetAllSubsequences()
         {
             return subsequenceRepo.GetAllSubSequences();
+        }
+
+        public List<SubsequenceDto> GetAllSubsequenceDtos()
+        {
+            List<SubsequenceDto> subsequences =  new List<SubsequenceDto>();
+            GetAllSubsequences().ForEach(x=> subsequences.Add(ConvertToSubsequenceDto(x)));
+            return subsequences;
+        }
+
+        public List<SubsequenceDto> GetSubsequenceDtosByQuestionId(string id)
+        {
+            return GetAllSubsequenceDtos().Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
         public Subsequence GetSubsequenceById(int id)

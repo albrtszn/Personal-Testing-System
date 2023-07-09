@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Personal_Testing_System.DTOs
 {
-    public class EmployeeDto
+    public class AdminDto
     {
         public int? Id { get; set; }
         public string? FirstName { get; set; }
@@ -11,7 +11,6 @@ namespace Personal_Testing_System.DTOs
         public string? LastName { get; set; }
         public string? Login { get; set; }
         public string? Password { get; set; }
-        public string? DateOfBirth { get; set; }
         public int? IdSubdivision { get; set; }
     }
 }

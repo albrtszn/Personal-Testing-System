@@ -20,6 +20,7 @@ namespace Personal_Testing_System.Services
         private TestResultService testResultService;
         private TestService testService;
         private CompetenceService competenceService;
+        private AdminService adminService;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
@@ -28,7 +29,7 @@ namespace Personal_Testing_System.Services
                        QuestionTypeService _questionTypeServiceService, SecondPartService _secondPartService,
                        SubdivisionService _subdivisionPartService, SubsequenceService _subsequenceService,
                        TestPurposeService _testPurposeService, TestResultService _testResultService,
-                       TestService _testService, CompetenceService _competenceService)
+                       TestService _testService, CompetenceService _competenceService, AdminService _adminService)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -46,6 +47,7 @@ namespace Personal_Testing_System.Services
             testResultService = _testResultService;
             testService = _testService;
             competenceService = _competenceService;
+            adminService = _adminService;
         } 
         //public UserService Users { get { return ; } }
 
@@ -65,5 +67,6 @@ namespace Personal_Testing_System.Services
         public TestResultService TestResult { get { return testResultService; } }
         public TestService Test { get { return testService; } }
         public CompetenceService TestType { get { return competenceService; } }
+        public AdminService Admin { get { return adminService; } }
     }
 }

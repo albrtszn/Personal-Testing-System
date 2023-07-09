@@ -6,11 +6,13 @@ using Newtonsoft.Json;
 using Personal_Testing_System.DTOs;
 using DataBase.Repository.Models;
 using System.Text.Json;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Controllers
 {
     [ApiController]
-    [Route("user-api")]//[controller]")]
+    [Route("user-api")]
+    //[controller]")]
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> logger;
@@ -28,45 +30,58 @@ namespace Personal_Testing_System.Controllers
             return Ok("Personal-Testing-System " + DateTime.Now);
         }
 
+        [HttpGet("GetEmployees")]
+        public async Task<IActionResult> GetEmployees()
+        {
+            logger.LogInformation($"/user-api/GetEmployees ");
+            return Ok(ms.Employee.GetAllEmployeeDtos());
+        }
+
         [HttpGet("GetEmployee")]
-        public IActionResult GetEmployee(int id)
+        public async Task<IActionResult> GetEmployee(int id)
         {
             logger.LogInformation($"/user-api/GetEmployee :id={id}");
             if (ms.Employee.GetEmployeeById(id) != null)
             {
                 //return JsonConvert.SerializeObject(ms.Employee.GetEmployeeById(id), Formatting.Indented);
                 //return Results.Json(ms.Employee.GetEmployeeById(id), new(System.Text.Json.JsonSerializerDefaults.General));
-                return Ok(ms.Employee.GetEmployeeById(id));
+                return Ok(ms.Employee.GetEmployeeDtoById(id));
             }
             //return JsonConvert.SerializeObject(NotFound(), Formatting.Indented);
             //return Results.Json(NotFound(), new(System.Text.Json.JsonSerializerDefaults.General));
             return NotFound("Сотрудник не найден");
         }
+
         [HttpPost("AddEmployee")]
-        public async Task<IActionResult> AddEmployee([FromBody] Employee employee)
+        public async Task<IActionResult> AddEmployee([FromBody] EmployeeDto employee)
         {
             logger.LogInformation($"/user-api-AddEmployee :fn={employee.FirstName}, sn={employee.SecondName}, " +
                                   $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
             if (!string.IsNullOrEmpty(employee.FirstName) && !string.IsNullOrEmpty(employee.SecondName) &&
-                !string.IsNullOrEmpty(employee.LastName))
+                !string.IsNullOrEmpty(employee.LastName) && !string.IsNullOrEmpty(employee.Login) &&
+                !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue)
             {
-                //ms.Employee.SaveEmployee(employee);
-                //return JsonConvert.SerializeObject(Ok("пользователь добавлен"), Formatting.Indented);
+                ms.Employee.SaveEmployee(employee);
                 return Ok("Сотрудник добавлен");
             }
-            //return JsonConvert.SerializeObject(BadRequest("ошибка при добавлении пользователя"), Formatting.Indented);
             return BadRequest("Сотрудник не добавлен");
         }
 
         [HttpGet("GetSubdivisions")]
-        public IActionResult GetSubdivisions()
+        public async Task<IActionResult> GetSubdivisions()
         {
-            //return JsonConvert.SerializeObject(ms.Subdivision.GetAllSubdivisions(), Formatting.Indented);
             return Ok(ms.Subdivision.GetAllSubdivisions());
         }
 
+        [HttpPost("AddSubdivisions")]
+        public async Task<IActionResult> AddGetSubdivisions(Subdivision sub)
+        {
+            ms.Subdivision.SaveSubdivision(sub);
+            return Ok();
+        }
+
         [HttpPost("AddTestType")]
-        public IActionResult AddTestType(TestTypeDto testTypeDto)
+        public async Task<IActionResult> AddTestType(TestTypeDto testTypeDto)
         {
             logger.LogInformation($"/user-api/AddTestType testType: name={testTypeDto.Name}");
             ms.TestType.SaveCompetence(new Competence
@@ -78,7 +93,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetTestByEmployee")]
-        public IActionResult GetTestByEmployee(int id)
+        public async Task<IActionResult> GetTestByEmployee(int id)
         {
             if (ms.Employee.GetEmployeeById(id) != null)
             {
@@ -95,7 +110,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetTest")]
-        public IActionResult GetTest(string id)
+        public async Task<IActionResult> GetTest(string id)
         {
             if (!string.IsNullOrEmpty(id))
             {
@@ -151,7 +166,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("AddTest")]
-        public IActionResult AddTest([FromBody] CreateTestDto createTestDto)
+        public async Task<IActionResult> AddTest([FromBody] CreateTestDto createTestDto)
         {
             logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idType={createTestDto.IdCompetence}," +
                                   $"countOfQuestions={createTestDto.Questions.Count}");
@@ -230,6 +245,20 @@ namespace Personal_Testing_System.Controllers
             return Ok("Добавление теста успешно");
             //return JsonConvert.SerializeObject(Ok(), Formatting.Indented);
             //return BadRequest("Ошибка при добавлении теста");
+        }
+
+        [HttpGet("GetPurposes")]
+        public async Task<IActionResult> GetPurposes()
+        {
+            logger.LogInformation($"/user-api/GetPurposess ");
+            return Ok(ms.TestPurpose.GetAllTestPurposes());
+        }
+
+        [HttpPost("AddPurpose")]
+        public async Task<IActionResult> AddPurpose(TestPurpose purpose)
+        {
+            logger.LogInformation($"/user-api/AddPurpose ");
+            return Ok(ms.Employee.GetAllEmployeeDtos());
         }
     }
 }

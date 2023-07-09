@@ -29,6 +29,25 @@ namespace DataBase
                     FirstName = "Андрей",
                     SecondName = "Кравцов",
                     LastName = "Нежеленко",
+                    Login = "login",
+                    Password = "password",
+                    DateOfBirth = DateOnly.Parse("01.01.2000"),
+                    IdSubdivision = db.Subdivisions.ToList().Find(x => x.Name == "Отдел кадров").Id
+                });
+
+                db.SaveChanges(true);
+            }
+
+            if (!db.Admins.Any())
+            {
+                db.Admins.Add(new Admin
+                {
+                    FirstName = "Евгений",
+                    SecondName = "Жма",
+                    LastName = "Дворцов",
+                    Login = "admin",
+                    Password = "password",
+                    //DateOfBirth = DateOnly.Parse("01.01.2000"),
                     IdSubdivision = db.Subdivisions.ToList().Find(x => x.Name == "Отдел кадров").Id
                 });
 

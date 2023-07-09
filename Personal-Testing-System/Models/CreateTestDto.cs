@@ -1,4 +1,6 @@
-﻿namespace Personal_Testing_System.DTOs
+﻿using Personal_Testing_System.DTOs;
+
+namespace Personal_Testing_System.Models
 {
     public class CreateTestDto
     {

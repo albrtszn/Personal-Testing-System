@@ -20,19 +20,19 @@ public partial class EmployeeMatching
     [Column("idSecondPart")]
     public int? IdSecondPart { get; set; }
 
-    [Column("idTestResult")]
+    [Column("idResult")]
     [StringLength(50)]
-    public string? IdTestResult { get; set; }
+    public string? IdResult { get; set; }
 
     [ForeignKey("IdFirstPart")]
     [InverseProperty("EmployeeMatchings")]
     public virtual FirstPart? IdFirstPartNavigation { get; set; }
 
+    [ForeignKey("IdResult")]
+    [InverseProperty("EmployeeMatchings")]
+    public virtual Result? IdResultNavigation { get; set; }
+
     [ForeignKey("IdSecondPart")]
     [InverseProperty("EmployeeMatchings")]
     public virtual SecondPart? IdSecondPartNavigation { get; set; }
-
-    [ForeignKey("IdTestResult")]
-    [InverseProperty("EmployeeMatchings")]
-    public virtual TestResult? IdTestResultNavigation { get; set; }
 }

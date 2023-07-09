@@ -5,29 +5,29 @@ namespace Personal_Testing_System.Services
 {
     public class TestResultService
     {
-        private ITestResultRepo testResultRepo;
-        public TestResultService(ITestResultRepo _testResultRepo)
+        private IResultRepo resultRepo;
+        public TestResultService(IResultRepo _testResultRepo)
         {
-            this.testResultRepo = _testResultRepo;
+            this.resultRepo = _testResultRepo;
         }
         public void DeleteById(int id)
         {
-            testResultRepo.DeleteTestResultById(id);
+            resultRepo.DeleteResultById(id);
         }
 
-        public List<TestResult> GetAllTestResults()
+        public List<Result> GetAllResults()
         {
-            return testResultRepo.GetAllTestResults(); 
+            return resultRepo.GetAllResults(); 
         }
 
-        public TestResult GetTestResultById(int id)
+        public Result GetResultById(int id)
         {
-            return testResultRepo.GetTestResultById(id);
+            return resultRepo.GetResultById(id);
         }
 
-        public void SaveTestResult(TestResult TestResultToSave)
+        public void SaveResult(Result ResultToSave)
         {
-            testResultRepo.SaveTestResult(TestResultToSave);
+            resultRepo.SaveResult(ResultToSave);
         }
     }
 }

@@ -35,9 +35,9 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            if (!db.TestTypes.Any())
+            if (!db.Competences.Any())
             {
-                db.TestTypes.Add(new TestType
+                db.Competences.Add(new Competence
                 {
                     Name = "Оценка имеющихся компетенций"
                 });

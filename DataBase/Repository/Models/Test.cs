@@ -18,19 +18,22 @@ public partial class Test
     [StringLength(255)]
     public string? Name { get; set; }
 
-    [Column("idTestType")]
-    public int? IdTestType { get; set; }
+    [Column("weight", TypeName = "decimal(3, 2)")]
+    public decimal? Weight { get; set; }
 
-    [ForeignKey("IdTestType")]
+    [Column("idCompetence")]
+    public int? IdCompetence { get; set; }
+
+    [ForeignKey("IdCompetence")]
     [InverseProperty("Tests")]
-    public virtual TestType? IdTestTypeNavigation { get; set; }
+    public virtual Competence? IdCompetenceNavigation { get; set; }
 
     [InverseProperty("IdTestNavigation")]
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 
     [InverseProperty("IdTestNavigation")]
-    public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
+    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
 
     [InverseProperty("IdTestNavigation")]
-    public virtual ICollection<TestResult> TestResults { get; set; } = new List<TestResult>();
+    public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
 }

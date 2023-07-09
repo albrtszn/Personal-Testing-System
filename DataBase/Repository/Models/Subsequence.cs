@@ -11,7 +11,7 @@ public partial class Subsequence
 {
     [Key]
     [Column("id")]
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     [Column("text")]
     [StringLength(500)]

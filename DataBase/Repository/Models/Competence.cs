@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Subdivision")]
-public partial class Subdivision
+[Table("Competence")]
+public partial class Competence
 {
     [Key]
     [Column("id")]
@@ -17,9 +17,6 @@ public partial class Subdivision
     [StringLength(100)]
     public string? Name { get; set; }
 
-    [InverseProperty("IdSubdivisionNavigation")]
-    public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
-
-    [InverseProperty("IdSubdivisionNavigation")]
-    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+    [InverseProperty("IdCompetenceNavigation")]
+    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 }

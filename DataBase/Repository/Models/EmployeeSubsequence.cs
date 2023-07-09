@@ -16,18 +16,18 @@ public partial class EmployeeSubsequence
     [Column("idSubsequence")]
     public int? IdSubsequence { get; set; }
 
-    [Column("idTestResult")]
+    [Column("idResult")]
     [StringLength(50)]
-    public string? IdTestResult { get; set; }
+    public string? IdResult { get; set; }
 
     [Column("number")]
     public byte? Number { get; set; }
 
+    [ForeignKey("IdResult")]
+    [InverseProperty("EmployeeSubsequences")]
+    public virtual Result? IdResultNavigation { get; set; }
+
     [ForeignKey("IdSubsequence")]
     [InverseProperty("EmployeeSubsequences")]
     public virtual Subsequence? IdSubsequenceNavigation { get; set; }
-
-    [ForeignKey("IdTestResult")]
-    [InverseProperty("EmployeeSubsequences")]
-    public virtual TestResult? IdTestResultNavigation { get; set; }
 }

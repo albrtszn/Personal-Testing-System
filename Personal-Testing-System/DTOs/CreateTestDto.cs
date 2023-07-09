@@ -4,7 +4,7 @@
     {
         public int? Id { get; set; }
         public string? Name { get; set; }
-        public int? IdTestType { get; set; }
+        public int? IdCompetence { get; set; }
         public List<CreateQuestionDto> Questions { get; set; }
     }
 }

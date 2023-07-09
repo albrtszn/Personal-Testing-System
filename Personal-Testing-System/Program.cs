@@ -23,8 +23,8 @@ builder.Services.AddTransient<ISubdivisionRepo, SubdivisionRepo>();
 builder.Services.AddTransient<ISubsequenceRepo, SubsequenceRepo>();
 builder.Services.AddTransient<ITestPurposeRepo, TestPurposeRepo>();
 builder.Services.AddTransient<ITestRepo, TestRepo>();
-builder.Services.AddTransient<ITestResultRepo, TestResultRepo>();
-builder.Services.AddTransient<ITestTypeRepo, TestTypeRepo>();
+builder.Services.AddTransient<IResultRepo, ResultRepo>();
+builder.Services.AddTransient<ICompetenceRepo, CompetenceRepo>();
 
 builder.Services.AddScoped<EFDbContext>();
 builder.Services.AddScoped<AnswerService>();
@@ -42,7 +42,7 @@ builder.Services.AddScoped<SubsequenceService>();
 builder.Services.AddScoped<TestPurposeService>();
 builder.Services.AddScoped<TestResultService>();
 builder.Services.AddScoped<TestService>();
-builder.Services.AddScoped<TestTypeService>();
+builder.Services.AddScoped<CompetenceService>();
 builder.Services.AddScoped<MasterService>();
 
 /*builder.Services.AddControllers().AddNewtonsoftJson(jsonOptions =>

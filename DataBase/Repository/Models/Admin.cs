@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Employee")]
-public partial class Employee
+[Table("Admin")]
+public partial class Admin
 {
     [Key]
     [Column("id")]
@@ -30,19 +30,10 @@ public partial class Employee
     [StringLength(50)]
     public string? Password { get; set; }
 
-    [Column("dateOfBirth")]
-    public DateOnly? DateOfBirth { get; set; }
-
     [Column("idSubdivision")]
     public int? IdSubdivision { get; set; }
 
-    [InverseProperty("IdEmployeeNavigation")]
-    public virtual ICollection<EmployeeResult> EmployeeResults { get; set; } = new List<EmployeeResult>();
-
     [ForeignKey("IdSubdivision")]
-    [InverseProperty("Employees")]
+    [InverseProperty("Admins")]
     public virtual Subdivision? IdSubdivisionNavigation { get; set; }
-
-    [InverseProperty("IdEmployeeNavigation")]
-    public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
 }

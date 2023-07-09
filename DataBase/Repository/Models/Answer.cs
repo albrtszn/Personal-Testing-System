@@ -11,7 +11,7 @@ public partial class Answer
 {
     [Key]
     [Column("id")]
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     [Column("text")]
     [StringLength(500)]
@@ -23,6 +23,13 @@ public partial class Answer
 
     [Column("correct")]
     public bool? Correct { get; set; }
+
+    [Column("number")]
+    public byte? Number { get; set; }
+
+    [Column("imagePath")]
+    [StringLength(150)]
+    public string? ImagePath { get; set; }
 
     [InverseProperty("IdAnswerNavigation")]
     public virtual ICollection<EmployeeAnswer> EmployeeAnswers { get; set; } = new List<EmployeeAnswer>();

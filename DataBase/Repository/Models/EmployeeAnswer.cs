@@ -17,15 +17,15 @@ public partial class EmployeeAnswer
     [Column("idAnswer")]
     public int? IdAnswer { get; set; }
 
-    [Column("idTestResult")]
+    [Column("idResult")]
     [StringLength(50)]
-    public string? IdTestResult { get; set; }
+    public string? IdResult { get; set; }
 
     [ForeignKey("IdAnswer")]
     [InverseProperty("EmployeeAnswers")]
     public virtual Answer? IdAnswerNavigation { get; set; }
 
-    [ForeignKey("IdTestResult")]
+    [ForeignKey("IdResult")]
     [InverseProperty("EmployeeAnswers")]
-    public virtual TestResult? IdTestResultNavigation { get; set; }
+    public virtual Result? IdResultNavigation { get; set; }
 }

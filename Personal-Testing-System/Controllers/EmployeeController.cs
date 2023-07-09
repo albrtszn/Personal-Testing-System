@@ -69,7 +69,7 @@ namespace Personal_Testing_System.Controllers
         public IActionResult AddTestType(TestTypeDto testTypeDto)
         {
             logger.LogInformation($"/user-api/AddTestType testType: name={testTypeDto.Name}");
-            ms.TestType.SaveTestType(new TestType
+            ms.TestType.SaveCompetence(new Competence
             {
                 Name = testTypeDto.Name
             });
@@ -109,7 +109,7 @@ namespace Personal_Testing_System.Controllers
                 CreateTestDto testDto = new CreateTestDto
                 {
                     Name = test.Name,
-                    IdTestType = test.IdTestType,
+                    IdCompetence = test.IdCompetence,
                     Questions = new List<CreateQuestionDto>()
                 };
 
@@ -153,7 +153,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("AddTest")]
         public IActionResult AddTest([FromBody] CreateTestDto createTestDto)
         {
-            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idType={createTestDto.IdTestType}," +
+            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idType={createTestDto.IdCompetence}," +
                                   $"countOfQuestions={createTestDto.Questions.Count}");
 
             string idTest = Guid.NewGuid().ToString();
@@ -161,7 +161,7 @@ namespace Personal_Testing_System.Controllers
             {
                 Id = idTest,
                 Name = createTestDto.Name,
-                IdTestType = createTestDto.IdTestType
+                IdCompetence = createTestDto.IdCompetence
             });
 
             foreach (CreateQuestionDto quest in createTestDto.Questions)

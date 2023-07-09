@@ -26,7 +26,7 @@ namespace Personal_Testing_System.Services
         {
             return new Answer
             {
-                Id = answerDto.Id,
+                Id = (int)answerDto.Id,
                 IdQuestion = answerDto.IdQuestion,
                 Text = answerDto.Text,  
                 Correct = answerDto.Correct

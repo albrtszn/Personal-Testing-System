@@ -19,7 +19,7 @@ namespace Personal_Testing_System.Services
         private TestPurposeService testPurposeService;
         private TestResultService testResultService;
         private TestService testService;
-        private TestTypeService testTypeService;
+        private CompetenceService competenceService;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
@@ -28,7 +28,7 @@ namespace Personal_Testing_System.Services
                        QuestionTypeService _questionTypeServiceService, SecondPartService _secondPartService,
                        SubdivisionService _subdivisionPartService, SubsequenceService _subsequenceService,
                        TestPurposeService _testPurposeService, TestResultService _testResultService,
-                       TestService _testService, TestTypeService _testTypeService)
+                       TestService _testService, CompetenceService _competenceService)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -45,7 +45,7 @@ namespace Personal_Testing_System.Services
             testPurposeService = _testPurposeService;
             testResultService = _testResultService;
             testService = _testService;
-            testTypeService = _testTypeService;
+            competenceService = _competenceService;
         } 
         //public UserService Users { get { return ; } }
 
@@ -64,6 +64,6 @@ namespace Personal_Testing_System.Services
         public TestPurposeService TestPurpose { get { return testPurposeService; } }
         public TestResultService TestResult { get { return testResultService; } }
         public TestService Test { get { return testService; } }
-        public TestTypeService TestType { get { return testTypeService; } }
+        public CompetenceService TestType { get { return competenceService; } }
     }
 }

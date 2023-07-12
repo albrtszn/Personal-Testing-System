@@ -21,18 +21,6 @@ public partial class EmployeeResult
     [Column("idEmployee")]
     public int? IdEmployee { get; set; }
 
-    [Column("startDate")]
-    public DateOnly? StartDate { get; set; }
-
-    [Column("startTime")]
-    public TimeOnly? StartTime { get; set; }
-
-    [Column("duration")]
-    public byte? Duration { get; set; }
-
-    [Column("endTime")]
-    public TimeOnly? EndTime { get; set; }
-
     [ForeignKey("IdEmployee")]
     [InverseProperty("EmployeeResults")]
     public virtual Employee? IdEmployeeNavigation { get; set; }

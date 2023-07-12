@@ -30,66 +30,35 @@ namespace Personal_Testing_System.Controllers
             return Ok("Personal-Testing-System " + DateTime.Now);
         }
 
-        [HttpGet("GetEmployees")]
-        public async Task<IActionResult> GetEmployees()
+        [HttpGet("Login")]
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            logger.LogInformation($"/user-api/GetEmployees ");
-            return Ok(ms.Employee.GetAllEmployeeDtos());
-        }
-
-        [HttpGet("GetEmployee")]
-        public async Task<IActionResult> GetEmployee(int id)
-        {
-            logger.LogInformation($"/user-api/GetEmployee :id={id}");
-            if (ms.Employee.GetEmployeeById(id) != null)
+            if (!string.IsNullOrEmpty(loginModel.Login) || !string.IsNullOrEmpty(loginModel.Password))
             {
-                //return JsonConvert.SerializeObject(ms.Employee.GetEmployeeById(id), Formatting.Indented);
-                //return Results.Json(ms.Employee.GetEmployeeById(id), new(System.Text.Json.JsonSerializerDefaults.General));
-                return Ok(ms.Employee.GetEmployeeDtoById(id));
+                return BadRequest(new  { message = "Одно из полей пустое" });
             }
-            //return JsonConvert.SerializeObject(NotFound(), Formatting.Indented);
-            //return Results.Json(NotFound(), new(System.Text.Json.JsonSerializerDefaults.General));
-            return NotFound("Сотрудник не найден");
-        }
 
-        [HttpPost("AddEmployee")]
-        public async Task<IActionResult> AddEmployee([FromBody] EmployeeDto employee)
-        {
-            logger.LogInformation($"/user-api-AddEmployee :fn={employee.FirstName}, sn={employee.SecondName}, " +
-                                  $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
-            if (!string.IsNullOrEmpty(employee.FirstName) && !string.IsNullOrEmpty(employee.SecondName) &&
-                !string.IsNullOrEmpty(employee.LastName) && !string.IsNullOrEmpty(employee.Login) &&
-                !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue)
+            EmployeeDto? employeeDto = ms.Employee.GetAllEmployeeDtos()
+                                  .Find(x => x.Login.Equals(loginModel.Login));
+
+            if (employeeDto == null)
             {
-                ms.Employee.SaveEmployee(employee);
-                return Ok("Сотрудник добавлен");
+                return BadRequest(new { message = "Пользователь не найден" });
             }
-            return BadRequest("Сотрудник не добавлен");
-        }
-
-        [HttpGet("GetSubdivisions")]
-        public async Task<IActionResult> GetSubdivisions()
-        {
-            return Ok(ms.Subdivision.GetAllSubdivisions());
-        }
-
-        [HttpPost("AddSubdivisions")]
-        public async Task<IActionResult> AddGetSubdivisions(Subdivision sub)
-        {
-            ms.Subdivision.SaveSubdivision(sub);
-            return Ok();
-        }
-
-        [HttpPost("AddTestType")]
-        public async Task<IActionResult> AddTestType(TestTypeDto testTypeDto)
-        {
-            logger.LogInformation($"/user-api/AddTestType testType: name={testTypeDto.Name}");
-            ms.TestType.SaveCompetence(new Competence
+            else
             {
-                Name = testTypeDto.Name
-            });
-            //return JsonConvert.SerializeObject(Ok(), Formatting.Indented);
-            return Ok("Тип теста добавлен");
+                if (!loginModel.Password.Equals(loginModel.Password))
+                {
+                    return BadRequest(new { message = "Пароль не совпадает" });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        EmployeeId = employeeDto.Id
+                    });
+                }
+            }
         }
 
         [HttpGet("GetTestByEmployee")]
@@ -165,100 +134,12 @@ namespace Personal_Testing_System.Controllers
             return NotFound("Тест не найден");
         }
 
-        [HttpPost("AddTest")]
-        public async Task<IActionResult> AddTest([FromBody] CreateTestDto createTestDto)
-        {
-            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idType={createTestDto.IdCompetence}," +
-                                  $"countOfQuestions={createTestDto.Questions.Count}");
-
-            string idTest = Guid.NewGuid().ToString();
-            ms.Test.SaveTest(new Test 
-            {
-                Id = idTest,
-                Name = createTestDto.Name,
-                IdCompetence = createTestDto.IdCompetence
-            });
-
-            foreach (CreateQuestionDto quest in createTestDto.Questions)
-            {
-                logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
-                
-                string idQuestion = Guid.NewGuid().ToString();
-                ms.Question.SaveQuestion(new Question
-                {
-                    Id = idQuestion,
-                    Text = quest.Text,
-                    IdQuestionType = quest.IdQuestionType,
-                    IdTest = idTest
-                });
-
-                foreach (JsonElement answer in quest.Answers)
-                {
-                    //JsonConvert.DeserializeObject<AnswerDto>(answer.);
-                    //answer.Deserialize<AnswerDto>();
-                    //answerDto.Correct = answer.GetProperty("");
-                    //AnswerDto answerDto = JsonConvert.DeserializeObject<AnswerDto>(answer.ToString());
-
-                    AnswerDto answerDto = answer.Deserialize<AnswerDto>();
-                    SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
-                    FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();
-
-                    if (answerDto is AnswerDto && answerDto.Correct!=null)
-                    {
-                        logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
-                        ms.Answer.SaveAnswer(new Answer
-                        {
-                            Text = answerDto.Text,
-                            IdQuestion = idQuestion,
-                            Correct = answerDto.Correct
-                        });
-                    }
-                    if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number!=0)
-                    {
-                        logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                        ms.Subsequence.SaveSubsequence(new Subsequence
-                        {
-                            Text= subsequenceDto.Text,
-                            Number = subsequenceDto.Number,
-                            IdQuestion = idQuestion
-                        });
-                    }
-                    if (firstSecondPartDto is FirstSecondPartDto && 
-                        !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
-                    {
-                        logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
-                        string firstPartId = Guid.NewGuid().ToString();
-                        ms.FirstPart.SaveFirstPart(new FirstPart
-                        {
-                            Id = firstPartId,
-                            Text = firstSecondPartDto.FirstPartText,
-                            IdQuestion= idQuestion
-                        });
-                        ms.SecondPart.SaveSecondPart(new SecondPart
-                        {
-                            Text = firstSecondPartDto.SecondPartText,
-                            IdFirstPart = firstPartId
-                        });
-                    }
-                }
-            }
-            return Ok("Добавление теста успешно");
-            //return JsonConvert.SerializeObject(Ok(), Formatting.Indented);
-            //return BadRequest("Ошибка при добавлении теста");
-        }
-
-        [HttpGet("GetPurposes")]
-        public async Task<IActionResult> GetPurposes()
+        [HttpGet("GetPurposesByEmployeeId")]
+        public async Task<IActionResult> GetPurposesByEmployeeId(string employeeId)
         {
             logger.LogInformation($"/user-api/GetPurposess ");
             return Ok(ms.TestPurpose.GetAllTestPurposes());
         }
 
-        [HttpPost("AddPurpose")]
-        public async Task<IActionResult> AddPurpose(TestPurpose purpose)
-        {
-            logger.LogInformation($"/user-api/AddPurpose ");
-            return Ok(ms.Employee.GetAllEmployeeDtos());
-        }
     }
 }

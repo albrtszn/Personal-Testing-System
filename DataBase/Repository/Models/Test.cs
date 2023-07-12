@@ -18,8 +18,8 @@ public partial class Test
     [StringLength(255)]
     public string? Name { get; set; }
 
-    [Column("weight", TypeName = "decimal(3, 2)")]
-    public decimal? Weight { get; set; }
+    [Column("weight")]
+    public int? Weight { get; set; }
 
     [Column("idCompetence")]
     public int? IdCompetence { get; set; }

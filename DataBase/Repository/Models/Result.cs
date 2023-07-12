@@ -24,6 +24,18 @@ public partial class Result
     [Column("scoreTo")]
     public int? ScoreTo { get; set; }
 
+    [Column("startDate")]
+    public DateOnly? StartDate { get; set; }
+
+    [Column("startTime")]
+    public TimeOnly? StartTime { get; set; }
+
+    [Column("duration")]
+    public byte? Duration { get; set; }
+
+    [Column("endTime")]
+    public TimeOnly? EndTime { get; set; }
+
     [Column("description")]
     [StringLength(3000)]
     public string? Description { get; set; }

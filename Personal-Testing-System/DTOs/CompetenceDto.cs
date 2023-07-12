@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Personal_Testing_System.DTOs
 {
-    public class TestTypeDto
+    public class CompetenceDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         public string? Name { get; set; }
     }

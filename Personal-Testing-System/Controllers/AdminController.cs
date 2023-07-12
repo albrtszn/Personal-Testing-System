@@ -1,6 +1,7 @@
 ﻿using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
@@ -60,9 +61,9 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("AddSubdivisions")]
-        public async Task<IActionResult> AddGetSubdivisions(SubdivisionDto sub)
+        public async Task<IActionResult> AddGetSubdivisions(SubdivisionDto subdivisionDto)
         {
-            ms.Subdivision.SaveSubdivision(sub);
+            ms.Subdivision.SaveSubdivisionDto(subdivisionDto);
             return Ok();
         }
 
@@ -102,20 +103,17 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("AddCompetence")]
         public async Task<IActionResult> AddCompetence(CompetenceDto competenceDto)
         {
-            logger.LogInformation($"/admin-api/AddCompetence :fn={employee.FirstName}, sn={employee.SecondName}, " +
-                                  $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
-            if (!string.IsNullOrEmpty(employee.FirstName) && !string.IsNullOrEmpty(employee.SecondName) &&
-                !string.IsNullOrEmpty(employee.LastName) && !string.IsNullOrEmpty(employee.Login) &&
-                !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue)
+            logger.LogInformation($"/admin-api/AddCompetence :id={competenceDto.Id}, Name={competenceDto.Name}");
+            if (!competenceDto.Id.HasValue || string.IsNullOrEmpty(competenceDto.Name))
             {
-                ms.TestType.SaveCompetence(competenceDto);
-                return Ok("Сотрудник добавлен");
+                ms.TestType.SaveCompetenceDto(competenceDto);
+                return Ok(new { message = "Компетенция добавлена"});
             }
-            return BadRequest("Сотрудник не добавлен");
+            return BadRequest(new { message = "Ошиббка при добавлении компетенции" });
         }
 
         [HttpPost("AddTestType")]
-        public async Task<IActionResult> AddTestType(TestTypeDto testTypeDto)
+        public async Task<IActionResult> AddTestType(CompetenceDto testTypeDto)
         {
             logger.LogInformation($"/user-api/AddTestType testType: name={testTypeDto.Name}");
             ms.TestType.SaveCompetence(new Competence
@@ -138,16 +136,16 @@ namespace Personal_Testing_System.Controllers
                 //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
                 //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
 
-                CreateTestDto testDto = new CreateTestDto
+                TestModel testDto = new TestModel
                 {
                     Name = test.Name,
-                    IdCompetence = test.IdCompetence,
-                    Questions = new List<CreateQuestionDto>()
+                    Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                    Questions = new List<QuestionModel>()
                 };
 
                 foreach (var quest in questions)
                 {
-                    CreateQuestionDto createQuestionDto = new CreateQuestionDto
+                    QuestionModel createQuestionDto = new QuestionModel
                     {
                         Id = quest.Id,
                         IdQuestionType = quest.IdQuestionType,
@@ -183,9 +181,9 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("AddTest")]
-        public async Task<IActionResult> AddTest([FromBody] CreateTestDto createTestDto)
+        public async Task<IActionResult> AddTest([FromBody] TestModel createTestDto)
         {
-            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idType={createTestDto.IdCompetence}," +
+            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idCompetence={createTestDto.Competence.Id}," +
                                   $"countOfQuestions={createTestDto.Questions.Count}");
 
             string idTest = Guid.NewGuid().ToString();
@@ -193,10 +191,10 @@ namespace Personal_Testing_System.Controllers
             {
                 Id = idTest,
                 Name = createTestDto.Name,
-                IdCompetence = createTestDto.IdCompetence
+                IdCompetence = createTestDto.Competence.Id
             });
 
-            foreach (CreateQuestionDto quest in createTestDto.Questions)
+            foreach (QuestionModel quest in createTestDto.Questions)
             {
                 logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
 

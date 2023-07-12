@@ -1,6 +1,7 @@
 ﻿using CRUD.implementations;
 using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Personal_Testing_System.DTOs;
 
 namespace Personal_Testing_System.Services
 {
@@ -11,6 +12,25 @@ namespace Personal_Testing_System.Services
         {
             this.competenceRepo = _сompetenceRepo;
         }
+
+        private Competence ConvertToCompetence(CompetenceDto subDto)
+        {
+            return new Competence
+            {
+                Id = subDto.Id.Value,
+                Name = subDto.Name
+            };
+        }
+
+        private CompetenceDto ConvertToCompetenceDto(Competence sub)
+        {
+            return new CompetenceDto
+            {
+                Id = sub.Id,
+                Name = sub.Name
+            };
+        }
+
         public void DeleteCompetenceById(int id)
         {
             competenceRepo.DeleteCompetenceById(id);
@@ -21,14 +41,31 @@ namespace Personal_Testing_System.Services
             return competenceRepo.GetAllCompetences();
         }
 
+        public List<CompetenceDto> GetAllCompetenceDtos()
+        {
+            List<CompetenceDto> Competences = new List<CompetenceDto>();
+            competenceRepo.GetAllCompetences().ForEach(x => Competences.Add(ConvertToCompetenceDto(x)));
+            return Competences;
+        }
+
         public Competence GetCompetenceById(int id)
         {
             return competenceRepo.GetCompetenceById(id);
         }
 
+        public CompetenceDto GetCompetenceDtoById(int id)
+        {
+            return ConvertToCompetenceDto(competenceRepo.GetCompetenceById(id));
+        }
+
         public void SaveCompetence(Competence CompetenceToSave)
         {
             competenceRepo.SaveCompetence(CompetenceToSave);
+        }
+
+        public void SaveCompetenceDto(CompetenceDto CompetenceDtoToSave)
+        {
+            competenceRepo.SaveCompetence(ConvertToCompetence(CompetenceDtoToSave));
         }
     }
 }

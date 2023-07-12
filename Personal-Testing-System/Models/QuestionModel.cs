@@ -1,10 +1,10 @@
-﻿namespace Personal_Testing_System.DTOs
+﻿namespace Personal_Testing_System.Models
 {
-    public class CreateQuestionDto
+    public class QuestionModel
     {
         public string? Id { get; set; }
         public string? Text { get; set; }
         public int? IdQuestionType { get; set; }
-        public List<Object>? Answers { get; set; }
+        public List<object>? Answers { get; set; }
     }
 }

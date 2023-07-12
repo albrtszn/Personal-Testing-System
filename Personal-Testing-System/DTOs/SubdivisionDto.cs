@@ -5,7 +5,7 @@ namespace Personal_Testing_System.DTOs
 {
     public class SubdivisionDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         public string? Name { get; set; }
     }

@@ -7,6 +7,6 @@ namespace Personal_Testing_System.DTOs
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public int? IdTestType { get; set; }
+        public int? IdCompetence { get; set; }
     }
 }

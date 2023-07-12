@@ -33,7 +33,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("Login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            if (!string.IsNullOrEmpty(loginModel.Login) || !string.IsNullOrEmpty(loginModel.Password))
+            if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
                 return BadRequest(new  { message = "Одно из полей пустое" });
             }
@@ -62,7 +62,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetTestByEmployee")]
-        public async Task<IActionResult> GetTestByEmployee(int id)
+        public async Task<IActionResult> GetTestByEmployee(int id)// ???
         {
             if (ms.Employee.GetEmployeeById(id) != null)
             {
@@ -90,16 +90,16 @@ namespace Personal_Testing_System.Controllers
                 //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
                 //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
 
-                CreateTestDto testDto = new CreateTestDto
+                TestModel testDto = new TestModel
                 {
                     Name = test.Name,
-                    IdCompetence = test.IdCompetence,
-                    Questions = new List<CreateQuestionDto>()
+                    Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                    Questions = new List<QuestionModel>()
                 };
 
                 foreach (var quest in questions)
                 {
-                    CreateQuestionDto createQuestionDto = new CreateQuestionDto
+                    QuestionModel createQuestionDto = new QuestionModel
                     {
                         Id = quest.Id,
                         IdQuestionType = quest.IdQuestionType,
@@ -131,15 +131,51 @@ namespace Personal_Testing_System.Controllers
                 }
                 return Ok(testDto);
             }
-            return NotFound("Тест не найден");
+            return NotFound(new { message = "Тест не найден" });
         }
 
         [HttpGet("GetPurposesByEmployeeId")]
         public async Task<IActionResult> GetPurposesByEmployeeId(string employeeId)
         {
             logger.LogInformation($"/user-api/GetPurposess ");
-            return Ok(ms.TestPurpose.GetAllTestPurposes());
+            if (string.IsNullOrEmpty(employeeId))
+            {
+                return BadRequest(new { message = "Вы ввели пустое поле" });
+            }
+            List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
+                             .Where(x => x.IdEmployee.Equals(employeeId)).ToList();
+
+            if (purposes.Count == 0)
+            {
+                return BadRequest(new { message = "Нет назначенных тестов" });
+            }
+            else
+            {
+                List<PurposeModel> models = new List<PurposeModel>();
+                foreach (TestPurposeDto purpose in purposes)
+                {
+                    Test test = ms.Test.GetTestById(purpose.IdTest);// DTO!!!
+                    CompetenceDto competenceDto = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value);
+                    PurposeModel model = new PurposeModel
+                    {
+                        Id = purpose.Id,
+                        IdEmployee = employeeId,
+                        Test = new TestModel
+                        {
+                            Id = purpose.IdTest,
+                            Name = test.Name,
+                            Competence = competenceDto
+                        },
+                        DatatimePurpose = purpose.DatatimePurpose
+                    };
+
+                    models.Add(model);
+                }
+                return Ok(models);
+            }
+            return BadRequest(new { message = "Ошибка при запросе" });
         }
+
 
     }
 }

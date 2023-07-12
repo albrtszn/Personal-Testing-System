@@ -5,9 +5,9 @@ namespace Personal_Testing_System.DTOs
 {
     public class TestPurposeDto
     {
-        public int Id { get; set; }
-        public int? IdEmployee { get; set; }
-        public int? IdTest { get; set; }
-        public DateTime? DatatimePurpose { get; set; }
+        public int? Id { get; set; }
+        public string? IdEmployee { get; set; }
+        public string? IdTest { get; set; }
+        public string? DatatimePurpose { get; set; }
     }
 }

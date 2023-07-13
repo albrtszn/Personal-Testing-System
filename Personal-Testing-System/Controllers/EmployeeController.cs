@@ -7,6 +7,7 @@ using Personal_Testing_System.DTOs;
 using DataBase.Repository.Models;
 using System.Text.Json;
 using Personal_Testing_System.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -168,9 +169,106 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("PushTest")]
-        public async Task<IActionResult> PushTest(TestModel id)
+        public async Task<IActionResult> PushTest(TestResultModel testResultModel)
         {
-            return Ok(new { mewssage = "Тест выполнен" });
+            logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
+
+            if (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
+                !testResultModel.startDate.IsNullOrEmpty() && !testResultModel.startTime.IsNullOrEmpty() &&
+                testResultModel.Questions.Count != 0)
+            {
+                string resultId = Guid.NewGuid().ToString();
+                ms.Result.SaveResult(new Result
+                {
+                    Id = resultId,
+                    IdTest = testResultModel.TestId,
+                    StartDate = DateOnly.Parse(testResultModel.startDate),
+                    StartTime = TimeOnly.Parse(testResultModel.startTime),
+                    EndTime = TimeOnly.Parse(testResultModel.endTime),
+                    Duration = (byte)(TimeOnly.Parse(testResultModel.endTime).Minute - TimeOnly.Parse(testResultModel.startTime).Minute),
+                });
+
+                int score = 0;
+                foreach (QuestionResultModel question in testResultModel.Questions)
+                {
+                    int countOfAnswers = 0;
+                    int countOfCorrectAnswer = 0;
+
+                    foreach (JsonElement answer in question.Answers)
+                    {
+                        countOfAnswers++;
+
+                        AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
+                        SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
+                        FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
+
+                        if (answerModel != null)
+                        {
+                            logger.LogInformation($"answerModel -> text={answerModel.IdAnswer}");
+
+                            if (ms.Answer.GetAnswerById(answerModel.IdAnswer.Value).Correct.Value)
+                            {
+                                countOfCorrectAnswer++;
+                            }
+
+                            ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                            {
+                                IdResult = resultId,
+                                IdAnswer = answerModel.IdAnswer
+                            });
+                        }
+                        if (subsequenceModel.Id != 0 && subsequenceModel != null)
+                        {
+                            logger.LogInformation($"subsequenceModel -> id={subsequenceModel.Id}, number={subsequenceModel.Number}");
+
+                            if (ms.Subsequence.GetSubsequenceById(subsequenceModel.Id.Value).Number.Equals(subsequenceModel.Number.Value))
+                            {
+                                countOfCorrectAnswer++;
+                            }
+
+                            ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                            {
+                                IdSubsequence = subsequenceModel.Id.Value,
+                                IdResult = resultId,
+                                Number = subsequenceModel.Number.Value,
+                            });
+                        }
+                        if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue)
+                        {
+                            logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
+
+                            if (ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value).IdFirstPart.Equals(fsPartModel.FirstPartId))
+                            {
+                                countOfCorrectAnswer++;
+                            }
+
+                            ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                            {
+                                IdFirstPart = fsPartModel.FirstPartId,
+                                IdSecondPart = fsPartModel.SecondPartId,
+                                IdResult = resultId
+                            });
+                        }
+                    }
+                    if (countOfAnswers == countOfCorrectAnswer)
+                    {
+                        score++;
+                    }
+                }
+                ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
+                {
+                    IdResult = resultId,
+                    IdEmployee = testResultModel.EmployeeId,
+                    ScoreFrom = score, //???
+                    ScoreTo = score
+                });
+
+                return Ok(new { message = "Тест выполнен", score = score });
+            }
+            else
+            {
+                return BadRequest(new { message = "Ошибка при добавления теста" });
+            }
         }
     }
 }

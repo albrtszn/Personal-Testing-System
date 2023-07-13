@@ -18,12 +18,6 @@ public partial class Result
     [StringLength(50)]
     public string? IdTest { get; set; }
 
-    [Column("scoreFrom")]
-    public int? ScoreFrom { get; set; }
-
-    [Column("scoreTo")]
-    public int? ScoreTo { get; set; }
-
     [Column("startDate")]
     public DateOnly? StartDate { get; set; }
 

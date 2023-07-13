@@ -21,6 +21,12 @@ public partial class EmployeeResult
     [StringLength(50)]
     public string? IdEmployee { get; set; }
 
+    [Column("scoreFrom")]
+    public int? ScoreFrom { get; set; }
+
+    [Column("scoreTo")]
+    public int? ScoreTo { get; set; }
+
     [ForeignKey("IdEmployee")]
     [InverseProperty("EmployeeResults")]
     public virtual Employee? IdEmployeeNavigation { get; set; }

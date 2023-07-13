@@ -11,8 +11,7 @@ public partial class EmployeeAnswer
 {
     [Key]
     [Column("id")]
-    [StringLength(50)]
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
 
     [Column("idAnswer")]
     public int? IdAnswer { get; set; }

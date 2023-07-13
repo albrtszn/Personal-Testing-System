@@ -25,6 +25,7 @@ builder.Services.AddTransient<ITestRepo, TestRepo>();
 builder.Services.AddTransient<IResultRepo, ResultRepo>();
 builder.Services.AddTransient<ICompetenceRepo, CompetenceRepo>();
 builder.Services.AddTransient<IAdminRepo, AdminRepo>();
+builder.Services.AddTransient<IResultRepo, ResultRepo>();
 builder.Services.AddTransient<IEmployeeResultRepo, EmployeeResultRepo>();
 
 builder.Services.AddScoped<EFDbContext>();
@@ -35,16 +36,15 @@ builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<EmployeeSubsequenceService>();
 builder.Services.AddScoped<FirstPartService>();
 builder.Services.AddScoped<QuestionService>();
-builder.Services.AddScoped<QuestionsInTestService>();
 builder.Services.AddScoped<QuestionTypeService>();
 builder.Services.AddScoped<SecondPartService>();
 builder.Services.AddScoped<SubdivisionService>();
 builder.Services.AddScoped<SubsequenceService>();
 builder.Services.AddScoped<TestPurposeService>();
-builder.Services.AddScoped<TestResultService>();
 builder.Services.AddScoped<TestService>();
 builder.Services.AddScoped<CompetenceService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<ResultService>();
 builder.Services.AddScoped<EmployeeResultService>();
 builder.Services.AddScoped<MasterService>();
 

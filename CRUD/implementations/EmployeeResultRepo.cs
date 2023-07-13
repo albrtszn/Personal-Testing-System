@@ -16,7 +16,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeResultById(int id)
+        public void DeleteEmployeeResultById(string id)
         {
             context.EmployeeResults.Remove(GetAllEmployeeResults().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();

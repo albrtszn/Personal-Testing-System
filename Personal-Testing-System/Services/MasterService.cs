@@ -11,27 +11,25 @@ namespace Personal_Testing_System.Services
         private EmployeeSubsequenceService employeeSubsequenceService;
         private FirstPartService firstPartService;
         private QuestionService questionService;
-        private QuestionsInTestService questionsInTestService;
         private QuestionTypeService questionTypeService;
         private SecondPartService secondPartService;
         private SubdivisionService subdivisionService;
         private SubsequenceService subsequenceService;
         private TestPurposeService testPurposeService;
-        private TestResultService testResultService;
         private TestService testService;
         private CompetenceService competenceService;
         private AdminService adminService;
+        private ResultService resultService;
         private EmployeeResultService employeeResultService;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
                        EmployeeSubsequenceService _employeeSubsequenceService, FirstPartService _firstPartService,
-                       QuestionService _questionService, QuestionsInTestService _questionsInTestService,
-                       QuestionTypeService _questionTypeServiceService, SecondPartService _secondPartService,
+                       QuestionService _questionService, QuestionTypeService _questionTypeServiceService, SecondPartService _secondPartService,
                        SubdivisionService _subdivisionPartService, SubsequenceService _subsequenceService,
-                       TestPurposeService _testPurposeService, TestResultService _testResultService,
-                       TestService _testService, CompetenceService _competenceService, AdminService _adminService,
-                       EmployeeResultService _employeeResultService)
+                       TestPurposeService _testPurposeService, TestService _testService, 
+                       CompetenceService _competenceService, AdminService _adminService,
+                       ResultService _resultService ,EmployeeResultService _employeeResultService)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -40,16 +38,15 @@ namespace Personal_Testing_System.Services
             employeeSubsequenceService = _employeeSubsequenceService;
             firstPartService = _firstPartService;
             questionService = _questionService;
-            questionsInTestService = _questionsInTestService;
             questionTypeService = _questionTypeServiceService;
             secondPartService = _secondPartService;
             subdivisionService = _subdivisionPartService;
             subsequenceService = _subsequenceService;
             testPurposeService = _testPurposeService;
-            testResultService = _testResultService;
             testService = _testService;
             competenceService = _competenceService;
             adminService = _adminService;
+            resultService = _resultService;
             employeeResultService = _employeeResultService;
         } 
         //public UserService Users { get { return ; } }
@@ -61,16 +58,15 @@ namespace Personal_Testing_System.Services
         public EmployeeSubsequenceService EmployeeSubsequence { get { return employeeSubsequenceService; } }
         public FirstPartService FirstPart { get { return firstPartService; } }
         public QuestionService Question { get { return questionService; } }
-        public QuestionsInTestService QuestionsInTest { get { return questionsInTestService; } }
         public QuestionTypeService QuestionType { get { return questionTypeService; } }
         public SecondPartService SecondPart { get { return secondPartService; } }
         public SubdivisionService Subdivision { get { return subdivisionService; } }
         public SubsequenceService Subsequence { get { return subsequenceService; } }
         public TestPurposeService TestPurpose { get { return testPurposeService; } }
-        public TestResultService TestResult { get { return testResultService; } }
         public TestService Test { get { return testService; } }
         public CompetenceService TestType { get { return competenceService; } }
         public AdminService Admin { get { return adminService; } }
+        public ResultService Result { get { return resultService; } }
         public EmployeeResultService EmployeeResult { get { return employeeResultService; } }
     }
 }

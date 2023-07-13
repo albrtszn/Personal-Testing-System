@@ -5,8 +5,8 @@ namespace Personal_Testing_System.DTOs
 {
     public class EmployeeResultDto
     {
-        public string? Id { get; set; }
+        public int? Id { get; set; }
         public string? IdResult { get; set; }
-        public int? IdEmployee { get; set; }
+        public string? IdEmployee { get; set; }
     }
 }

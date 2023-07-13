@@ -16,7 +16,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeById(int id)
+        public void DeleteEmployeeById(string id)
         {
             context.Employees.Remove(GetAllEmployees().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();
@@ -27,7 +27,7 @@ namespace CRUD.implementations
             return context.Employees.ToList();
         }
 
-        public Employee GetEmployeeById(int id)
+        public Employee GetEmployeeById(string id)
         {
             return GetAllEmployees().FirstOrDefault(x => x.Id.Equals(id));
         }

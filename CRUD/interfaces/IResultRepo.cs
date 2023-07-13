@@ -10,8 +10,8 @@ namespace CRUD.interfaces
     public interface IResultRepo
     {
         List<Result> GetAllResults();
-        Result GetResultById(int id);
+        Result GetResultById(string id);
         void SaveResult(Result ResultToSave);
-        void DeleteResultById(int id);
+        void DeleteResultById(string id);
     }
 }

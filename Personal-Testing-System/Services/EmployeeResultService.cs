@@ -24,12 +24,12 @@ namespace Personal_Testing_System.Services
         {
             return new EmployeeResult
             {
-                Id = EmployeeResultDto.Id,
+                Id = EmployeeResultDto.Id.Value,
                 IdEmployee = EmployeeResultDto.IdEmployee,
                 IdResult = EmployeeResultDto.IdResult
             };
         }
-        public void DeleteEmployeeResultById(int id)
+        public void DeleteEmployeeResultById(string id)
         {
             EmployeeResultRepo.DeleteEmployeeResultById(id);
         }

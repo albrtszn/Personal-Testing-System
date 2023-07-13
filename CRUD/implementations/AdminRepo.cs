@@ -16,7 +16,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteAdminById(int id)
+        public void DeleteAdminById(string id)
         {
             context.Admins.Remove(GetAllAdmins().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();
@@ -27,7 +27,7 @@ namespace CRUD.implementations
             return context.Admins.ToList();
         }
 
-        public Admin GetAdminById(int id)
+        public Admin GetAdminById(string id)
         {
             return GetAllAdmins().FirstOrDefault(x => x.Id.Equals(id));
         }

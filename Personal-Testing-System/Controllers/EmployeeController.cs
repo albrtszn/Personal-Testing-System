@@ -27,15 +27,16 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("test")]
         public IActionResult test()
         {
-            return Ok("Personal-Testing-System " + DateTime.Now);
+            return Ok(new { message = "Personal-Testing-System " + DateTime.Now });
         }
 
-        [HttpGet("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
+            logger.LogInformation($"/user-api/Login : login={loginModel.Login}, Password={loginModel.Password} ");
             if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
-                return BadRequest(new  { message = "Одно из полей пустое" });
+                return BadRequest(new { message = "Одно из полей пустое" });
             }
 
             EmployeeDto? employeeDto = ms.Employee.GetAllEmployeeDtos()
@@ -47,97 +48,24 @@ namespace Personal_Testing_System.Controllers
             }
             else
             {
-                if (!loginModel.Password.Equals(loginModel.Password))
-                {
-                    return BadRequest(new { message = "Пароль не совпадает" });
-                }
-                else
+                if (loginModel.Password.Equals(employeeDto.Password))
                 {
                     return Ok(new
                     {
                         EmployeeId = employeeDto.Id
                     });
                 }
-            }
-        }
-
-        [HttpGet("GetTestByEmployee")]
-        public async Task<IActionResult> GetTestByEmployee(int id)// ???
-        {
-            if (ms.Employee.GetEmployeeById(id) != null)
-            {
-                //ms.Employee.SaveEmployee(employee);
-                string testId = ms.TestPurpose.GetAllTestPurposes().Find(x => x.IdEmployee == id).IdTest;
-                if (testId != null)
+                else
                 {
-                    //return JsonConvert.SerializeObject(ms.Test.GetTestById(testId), Formatting.Indented);
-                    return Ok(ms.Test.GetTestById(testId));
+                    return BadRequest(new { message = "Пароль не совпадает" });
                 }
             }
-            //return JsonConvert.SerializeObject(BadRequest("ошибка при поиске пользователя пользователя"), Formatting.Indented);
-            return NotFound("Тест не найден");
-        }
-
-        [HttpGet("GetTest")]
-        public async Task<IActionResult> GetTest(string id)
-        {
-            if (!string.IsNullOrEmpty(id))
-            {
-                Test test = ms.Test.GetTestById(id);
-                List<Question> questions = ms.Question.GetAllQuestions()
-                    .Where(x => x.IdTest.Equals(id)).ToList();
-
-                //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
-                //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
-
-                TestModel testDto = new TestModel
-                {
-                    Name = test.Name,
-                    Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
-                    Questions = new List<QuestionModel>()
-                };
-
-                foreach (var quest in questions)
-                {
-                    QuestionModel createQuestionDto = new QuestionModel
-                    {
-                        Id = quest.Id,
-                        IdQuestionType = quest.IdQuestionType,
-                        Text = quest.Text,
-                        Answers = new List<object>(){}
-                    };
-
-                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count!=0)
-                    {
-                        createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
-                    }
-                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
-                    {
-                        createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
-                    }
-                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
-                    {
-                        createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
-
-                        List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                        foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
-                        {
-                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.Id));
-                        }
-                        createQuestionDto.Answers.AddRange(secondPartDtos);
-                    }
-
-                    testDto.Questions.Add(createQuestionDto);  
-                }
-                return Ok(testDto);
-            }
-            return NotFound(new { message = "Тест не найден" });
         }
 
         [HttpGet("GetPurposesByEmployeeId")]
-        public async Task<IActionResult> GetPurposesByEmployeeId(string employeeId)
+        public async Task<IActionResult> GetPurposesByEmployeeId(string? employeeId)
         {
-            logger.LogInformation($"/user-api/GetPurposess ");
+            logger.LogInformation($"/user-api/GetPurposess emmployeeId={employeeId}");
             if (string.IsNullOrEmpty(employeeId))
             {
                 return BadRequest(new { message = "Вы ввели пустое поле" });
@@ -176,6 +104,73 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка при запросе" });
         }
 
+        [HttpGet("GetTest")]
+        public async Task<IActionResult> GetTest(string? id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                Test test = ms.Test.GetTestById(id);
+                if (test!=null) {
+                    List<Question> questions = ms.Question.GetAllQuestions()
+                        .Where(x => x.IdTest.Equals(id)).ToList();
 
+                    //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
+                    //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
+
+                    TestModel testDto = new TestModel
+                    {
+                        Id = test.Id,
+                        Name = test.Name,
+                        Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                        Questions = new List<QuestionModel>()
+                    };
+
+                    foreach (var quest in questions)
+                    {
+                        QuestionModel createQuestionDto = new QuestionModel
+                        {
+                            Id = quest.Id,
+                            IdQuestionType = quest.IdQuestionType,
+                            Text = quest.Text,
+                            Answers = new List<object>() { }
+                        };
+
+                        if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                        {
+                            createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                        }
+                        if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                        {
+                            createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                        }
+                        if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                        {
+                            createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+
+                            List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+                            foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                            {
+                                secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.Id));
+                            }
+                            createQuestionDto.Answers.AddRange(secondPartDtos);
+                        }
+
+                        testDto.Questions.Add(createQuestionDto);
+                    }
+                    return Ok(testDto);
+                }
+            }
+            else
+            {
+                return BadRequest(new { message = "Вы не ввели требуемое поле" });
+            }
+            return NotFound(new { message = "Тест не найден" });
+        }
+
+        [HttpPost("PushTest")]
+        public async Task<IActionResult> PushTest(TestModel id)
+        {
+            return Ok(new { mewssage = "Тест выполнен" });
+        }
     }
 }

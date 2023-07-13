@@ -30,7 +30,7 @@ namespace Personal_Testing_System.Services
         {
             return new Employee
             {
-                Id = employeeDto.Id.GetValueOrDefault(),
+                Id = employeeDto.Id,
                 FirstName = employeeDto.FirstName,
                 SecondName = employeeDto.SecondName,
                 LastName = employeeDto.LastName,
@@ -40,7 +40,7 @@ namespace Personal_Testing_System.Services
                 IdSubdivision = employeeDto.IdSubdivision
             };
         }
-        public void DeleteEmployeeById(int id)
+        public void DeleteEmployeeById(string id)
         {
             employeeRepo.DeleteEmployeeById(id);
         }
@@ -57,12 +57,12 @@ namespace Personal_Testing_System.Services
             return employeeDtos;
         }
 
-        public Employee GetEmployeeById(int id)
+        public Employee GetEmployeeById(string id)
         {
             return employeeRepo.GetEmployeeById(id);
         }
 
-        public EmployeeDto GetEmployeeDtoById(int id)
+        public EmployeeDto GetEmployeeDtoById(string id)
         {
             return ConvertToEmployeeDto(employeeRepo.GetEmployeeById(id));
         }

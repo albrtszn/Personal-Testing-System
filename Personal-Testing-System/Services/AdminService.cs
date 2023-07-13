@@ -28,7 +28,7 @@ namespace Personal_Testing_System.Services
         {
             return new Admin
             {
-                Id = AdminDto.Id.GetValueOrDefault(),
+                Id = AdminDto.Id,
                 FirstName = AdminDto.FirstName,
                 SecondName = AdminDto.SecondName,
                 LastName = AdminDto.LastName,
@@ -37,7 +37,7 @@ namespace Personal_Testing_System.Services
                 IdSubdivision = AdminDto.IdSubdivision
             };
         }
-        public void DeleteAdminById(int id)
+        public void DeleteAdminById(string id)
         {
             AdminRepo.DeleteAdminById(id);
         }
@@ -56,10 +56,10 @@ namespace Personal_Testing_System.Services
 
         public List<AdminDto> GetAdminDtosByQuestionId(int id)
         {
-            return GetAllAdminDtos().Where(x => x.Id==id).ToList();
+            return GetAllAdminDtos().Where(x => x.Id.Equals(id)).ToList();
         }
 
-        public Admin GetAdminById(int id)
+        public Admin GetAdminById(string id)
         {
             return AdminRepo.GetAdminById(id);
         }

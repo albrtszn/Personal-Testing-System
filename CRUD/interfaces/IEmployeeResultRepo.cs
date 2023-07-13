@@ -12,6 +12,6 @@ namespace CRUD.interfaces
         List<EmployeeResult> GetAllEmployeeResults();
         EmployeeResult GetEmployeeResultById(string id);
         void SaveEmployeeResult(EmployeeResult EmployeeResultToSave);
-        void DeleteEmployeeResultById(int id);
+        void DeleteEmployeeResultById(string id);
     }
 }

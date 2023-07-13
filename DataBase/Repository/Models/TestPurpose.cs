@@ -14,7 +14,8 @@ public partial class TestPurpose
     public int Id { get; set; }
 
     [Column("idEmployee")]
-    public int? IdEmployee { get; set; }
+    [StringLength(50)]
+    public string? IdEmployee { get; set; }
 
     [Column("idTest")]
     [StringLength(50)]

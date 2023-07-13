@@ -11,15 +11,15 @@ public partial class EmployeeResult
 {
     [Key]
     [Column("id")]
-    [StringLength(50)]
-    public string Id { get; set; } = null!;
+    public int Id { get; set; }
 
     [Column("idResult")]
     [StringLength(50)]
     public string? IdResult { get; set; }
 
     [Column("idEmployee")]
-    public int? IdEmployee { get; set; }
+    [StringLength(50)]
+    public string? IdEmployee { get; set; }
 
     [ForeignKey("IdEmployee")]
     [InverseProperty("EmployeeResults")]

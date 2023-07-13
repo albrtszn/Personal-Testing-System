@@ -23,7 +23,7 @@ namespace Personal_Testing_System.Controllers
             ms = _masterService;
         }
 
-        [HttpGet("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
             if (!string.IsNullOrEmpty(loginModel.Login) || !string.IsNullOrEmpty(loginModel.Password))
@@ -75,12 +75,12 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetEmployee")]
-        public async Task<IActionResult> GetEmployee(int? id)
+        public async Task<IActionResult> GetEmployee(string? id)
         {
             logger.LogInformation($"/admin-api/GetEmployee :id={id}");
-            if (id.HasValue || ms.Employee.GetEmployeeById(id.Value) != null)
+            if (!id.IsNullOrEmpty() || ms.Employee.GetEmployeeById(id) != null)
             {
-                return Ok(ms.Employee.GetEmployeeDtoById(id.Value));
+                return Ok(ms.Employee.GetEmployeeDtoById(id));
             }
             return NotFound("Сотрудник не найден");
         }

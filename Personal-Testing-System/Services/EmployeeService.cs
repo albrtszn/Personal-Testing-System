@@ -2,16 +2,20 @@
 using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Services
 {
     public class EmployeeService
     {
         private IEmployeeRepo employeeRepo;
-        public EmployeeService(IEmployeeRepo _employeeRepo)
+        private SubdivisionService subdivisionRepo;
+        public EmployeeService(IEmployeeRepo _employeeRepo, SubdivisionService _subdivisionRepo)
         {
             this.employeeRepo = _employeeRepo;
+            this.subdivisionRepo = _subdivisionRepo;
         }
+        //DTO
         private EmployeeDto ConvertToEmployeeDto(Employee employee)
         {
             return new EmployeeDto
@@ -40,6 +44,23 @@ namespace Personal_Testing_System.Services
                 IdSubdivision = employeeDto.IdSubdivision
             };
         }
+        //Model
+        private EmployeeModel ConvertToEmployeeModel(Employee employee)
+        {
+            SubdivisionDto subdivision = subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
+            return new EmployeeModel
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                SecondName = employee.SecondName,
+                LastName = employee.LastName,
+                Login = employee.Login,
+                Password = employee.Password,
+                DateOfBirth = employee.DateOfBirth.ToString(),
+                Subdivision = subdivision
+            };
+        }
+       
         public void DeleteEmployeeById(string id)
         {
             employeeRepo.DeleteEmployeeById(id);
@@ -57,6 +78,13 @@ namespace Personal_Testing_System.Services
             return employeeDtos;
         }
 
+        public List<EmployeeModel> GetAllEmployeeModels()
+        {
+            List<EmployeeModel> employeeModels = new List<EmployeeModel>();
+            GetAllEmployees().ForEach(x => employeeModels.Add(ConvertToEmployeeModel(x)));
+            return employeeModels;
+        }
+
         public Employee GetEmployeeById(string id)
         {
             return employeeRepo.GetEmployeeById(id);
@@ -67,13 +95,20 @@ namespace Personal_Testing_System.Services
             return ConvertToEmployeeDto(employeeRepo.GetEmployeeById(id));
         }
 
+        public EmployeeModel GetEmployeeModelById(string id)
+        {
+            return ConvertToEmployeeModel(employeeRepo.GetEmployeeById(id));
+        }
+
         public void SaveEmployee(Employee EmployeeToSave)
         {
+            EmployeeToSave.Id = Guid.NewGuid().ToString();
             employeeRepo.SaveEmployee(EmployeeToSave);
         }
 
         public void SaveEmployee(EmployeeDto EmployeeToSave)
         {
+            EmployeeToSave.Id = Guid.NewGuid().ToString();
             employeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
         }
     }

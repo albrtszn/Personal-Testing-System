@@ -22,7 +22,7 @@ public partial class Subsequence
     public string? IdQuestion { get; set; }
 
     [Column("number")]
-    public byte? Number { get; set; }
+    public int? Number { get; set; }
 
     [InverseProperty("IdSubsequenceNavigation")]
     public virtual ICollection<EmployeeSubsequence> EmployeeSubsequences { get; set; } = new List<EmployeeSubsequence>();

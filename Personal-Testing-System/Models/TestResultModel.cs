@@ -4,10 +4,10 @@
     {
         public string? TestId { get; set; }
         public string? EmployeeId { get; set; }
-        public string? startDate { get; set; }//DateOnly
-        public string? startTime { get; set; }//TimeOnly
-        public string? endTime { get; set; }//DateOnly
-        public string? description { get; set; }
+        public string? StartDate { get; set; }//DateOnly
+        public string? StartTime { get; set; }//TimeOnly
+        public string? EndTime { get; set; }//DateOnly
+        public string? Description { get; set; }
         public List<QuestionResultModel>? Questions { get; set; }
 
     }

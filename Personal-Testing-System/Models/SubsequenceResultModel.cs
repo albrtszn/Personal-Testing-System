@@ -2,7 +2,7 @@
 {
     public class SubsequenceResultModel
     {
-        public int? Id { get; set; }
-        public byte? Number { get; set; }
+        public int? SubsequenceId { get; set; }
+        public int? Number { get; set; }
     }
 }

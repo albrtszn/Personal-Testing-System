@@ -277,7 +277,7 @@ namespace DataBase
                         {
                             IdEmployee = employeeId,
                             IdTest = testId,
-                            DatatimePurpose = DateTime.Parse("13.07.20023"),
+                            DatatimePurpose = DateTime.Parse("13.07.2023"),
                         });
 
                         db.SaveChanges(true);

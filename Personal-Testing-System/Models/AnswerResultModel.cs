@@ -2,6 +2,6 @@
 {
     public class AnswerResultModel
     {
-        public int? IdAnswer { get; set; }
+        public int? AnswerId { get; set; }
     }
 }

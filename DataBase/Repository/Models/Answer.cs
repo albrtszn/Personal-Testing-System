@@ -25,7 +25,7 @@ public partial class Answer
     public bool? Correct { get; set; }
 
     [Column("number")]
-    public byte? Number { get; set; }
+    public int? Number { get; set; }
 
     [Column("imagePath")]
     [StringLength(150)]

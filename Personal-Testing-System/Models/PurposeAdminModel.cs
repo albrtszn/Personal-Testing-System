@@ -2,10 +2,10 @@
 
 namespace Personal_Testing_System.Models
 {
-    public class PurposeModel
+    public class PurposeAdminModel
     {
         public int? Id { get; set; }
-        public string? IdEmployee { get; set; }
+        public EmployeeModel? Employee { get; set; }
         public TestGetModel? Test { get; set; }
         public string? DatatimePurpose { get; set; }
     }

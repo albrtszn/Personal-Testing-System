@@ -83,18 +83,11 @@ namespace Personal_Testing_System.Controllers
                 List<PurposeModel> models = new List<PurposeModel>();
                 foreach (TestPurposeDto purpose in purposes)
                 {
-                    Test test = ms.Test.GetTestById(purpose.IdTest);// DTO!!!
-                    CompetenceDto competenceDto = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value);
                     PurposeModel model = new PurposeModel
                     {
                         Id = purpose.Id,
                         IdEmployee = employeeId,
-                        Test = new TestModel
-                        {
-                            Id = purpose.IdTest,
-                            Name = test.Name,
-                            Competence = competenceDto
-                        },
+                        Test = ms.Test.GetTestGetModelById(purpose.IdTest),
                         DatatimePurpose = purpose.DatatimePurpose
                     };
 
@@ -174,19 +167,19 @@ namespace Personal_Testing_System.Controllers
             logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
 
             if (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
-                !testResultModel.startDate.IsNullOrEmpty() && !testResultModel.startTime.IsNullOrEmpty() &&
-                testResultModel.Questions.Count != 0)
+                !testResultModel.StartDate.IsNullOrEmpty() && !testResultModel.StartTime.IsNullOrEmpty() &&
+                !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0)
             {
                 string resultId = Guid.NewGuid().ToString();
-                ms.Result.SaveResult(new Result
+                /*ms.Result.SaveResult(new Result
                 {
                     Id = resultId,
                     IdTest = testResultModel.TestId,
-                    StartDate = DateOnly.Parse(testResultModel.startDate),
-                    StartTime = TimeOnly.Parse(testResultModel.startTime),
-                    EndTime = TimeOnly.Parse(testResultModel.endTime),
-                    Duration = (byte)(TimeOnly.Parse(testResultModel.endTime).Minute - TimeOnly.Parse(testResultModel.startTime).Minute),
-                });
+                    StartDate = DateOnly.Parse(testResultModel.StartDate),
+                    StartTime = TimeOnly.Parse(testResultModel.StartTime),
+                    EndTime = TimeOnly.Parse(testResultModel.EndTime),
+                    Duration = (byte)(TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Minute),
+                });*/
 
                 int score = 0;
                 foreach (QuestionResultModel question in testResultModel.Questions)
@@ -202,38 +195,38 @@ namespace Personal_Testing_System.Controllers
                         SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
                         FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
 
-                        if (answerModel != null)
+                        if (answerModel != null && answerModel.AnswerId.HasValue)
                         {
-                            logger.LogInformation($"answerModel -> text={answerModel.IdAnswer}");
+                            logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
 
-                            if (ms.Answer.GetAnswerById(answerModel.IdAnswer.Value).Correct.Value)
+                            if (ms.Answer.GetAnswerById(answerModel.AnswerId.Value).Correct.Value)
                             {
                                 countOfCorrectAnswer++;
                             }
 
-                            ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                            /*ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
                             {
                                 IdResult = resultId,
-                                IdAnswer = answerModel.IdAnswer
-                            });
+                                IdAnswer = answerModel.AnswerId
+                            });*/
                         }
-                        if (subsequenceModel.Id != 0 && subsequenceModel != null)
+                        if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
                         {
-                            logger.LogInformation($"subsequenceModel -> id={subsequenceModel.Id}, number={subsequenceModel.Number}");
+                            logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
 
-                            if (ms.Subsequence.GetSubsequenceById(subsequenceModel.Id.Value).Number.Equals(subsequenceModel.Number.Value))
+                            if (ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value).Number == (subsequenceModel.Number.Value))
                             {
                                 countOfCorrectAnswer++;
                             }
 
-                            ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                            /*ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
                             {
                                 IdSubsequence = subsequenceModel.Id.Value,
                                 IdResult = resultId,
                                 Number = subsequenceModel.Number.Value,
-                            });
+                            });*/
                         }
-                        if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue)
+                        if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
                         {
                             logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
 
@@ -242,12 +235,12 @@ namespace Personal_Testing_System.Controllers
                                 countOfCorrectAnswer++;
                             }
 
-                            ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                            /*ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
                             {
                                 IdFirstPart = fsPartModel.FirstPartId,
                                 IdSecondPart = fsPartModel.SecondPartId,
                                 IdResult = resultId
-                            });
+                            });*/
                         }
                     }
                     if (countOfAnswers == countOfCorrectAnswer)
@@ -255,13 +248,13 @@ namespace Personal_Testing_System.Controllers
                         score++;
                     }
                 }
-                ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
+                /*ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
                 {
                     IdResult = resultId,
                     IdEmployee = testResultModel.EmployeeId,
                     ScoreFrom = score, //???
                     ScoreTo = score
-                });
+                });*/
 
                 return Ok(new { message = "Тест выполнен", score = score });
             }

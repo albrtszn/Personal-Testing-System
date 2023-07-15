@@ -2,15 +2,21 @@
 using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Services
 {
     public class TestPurposeService
     {
         private ITestPurposeRepo testPurposeRepo;
-        public TestPurposeService(ITestPurposeRepo _testPurposeRepo)
+        private EmployeeService employeeSercvice;
+        private TestService testSercvice;
+        public TestPurposeService(ITestPurposeRepo _testPurposeRepo, EmployeeService employeeSercvice,
+                                  TestService testSercvice)
         {
             this.testPurposeRepo = _testPurposeRepo;
+            this.employeeSercvice = employeeSercvice;
+            this.testSercvice = testSercvice;
         }
 
         private TestPurpose ConvertToTestPurpose(TestPurposeDto testPurposeDto)
@@ -35,6 +41,17 @@ namespace Personal_Testing_System.Services
             };
         }
 
+        private PurposeAdminModel ConvertToPurposeAdminModel(TestPurpose purpose)
+        {
+            return new PurposeAdminModel
+            {
+                Id = purpose.Id,
+                Employee = employeeSercvice.GetEmployeeModelById(purpose.IdEmployee),
+                Test = testSercvice.GetTestGetModelById(purpose.IdTest),
+                DatatimePurpose = purpose.DatatimePurpose.ToString()
+            };
+        }
+
         public void DeleteTestPurposeById(int id)
         {
             testPurposeRepo.DeleteTestPurposeById(id);
@@ -52,6 +69,13 @@ namespace Personal_Testing_System.Services
             return TestPurposes;
         }
 
+        public List<PurposeAdminModel> GetAllPurposeAdminModels()
+        {
+            List<PurposeAdminModel> list = new List<PurposeAdminModel>();
+            testPurposeRepo.GetAllTestPurposes().ForEach(x => list.Add(ConvertToPurposeAdminModel(x)));
+            return list;
+        }
+
         public TestPurpose GetTestPurposeById(int id)
         {
             return testPurposeRepo.GetTestPurposeById(id);
@@ -62,6 +86,10 @@ namespace Personal_Testing_System.Services
             return ConvertToTestPurposeDto(testPurposeRepo.GetTestPurposeById(id));
         }
 
+        public PurposeAdminModel GetTestPurposeAdminModelById(int id) 
+        { 
+            return ConvertToPurposeAdminModel(testPurposeRepo.GetTestPurposeById(id));
+        }
         public void SaveTestPurpose(TestPurpose TestPurposeToSave)
         {
             testPurposeRepo.SaveTestPurpose(TestPurposeToSave);
@@ -70,6 +98,25 @@ namespace Personal_Testing_System.Services
         public void SaveTestPurposeDto(TestPurposeDto TestPurposeDtoToSave)
         {
             testPurposeRepo.SaveTestPurpose(ConvertToTestPurpose(TestPurposeDtoToSave));
+        }
+
+        //logic
+
+        public void SavePurposeBySubdivisionId(string testId, int subdivisionId, DateTime time)
+        {
+            List<EmployeeDto> employees = employeeSercvice.GetAllEmployeeDtos();
+            foreach (EmployeeDto employee in employees)
+            {
+                if (employee.IdSubdivision == subdivisionId)
+                {
+                    testPurposeRepo.SaveTestPurpose(new TestPurpose
+                    {
+                        IdEmployee = employee.Id,
+                        IdTest = testId,
+                        DatatimePurpose = time
+                    });
+                }
+            }
         }
     }
 }

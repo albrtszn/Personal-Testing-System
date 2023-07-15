@@ -17,8 +17,6 @@ namespace Personal_Testing_System.Services
             {
                 Id = Result.Id,
                 IdTest = Result.IdTest,
-                ScoreFrom = Result.ScoreFrom,
-                ScoreTo = Result.ScoreTo,
                 StartDate = Result.StartDate.ToString(),
                 StartTime = Result.StartTime.ToString(),
                 Duration = Result.Duration,
@@ -32,8 +30,6 @@ namespace Personal_Testing_System.Services
             {
                 Id = ResultDto.Id,
                 IdTest = ResultDto.IdTest,
-                ScoreFrom = ResultDto.ScoreFrom,
-                ScoreTo = ResultDto.ScoreTo,
                 StartDate = DateOnly.Parse(ResultDto.StartDate),
                 StartTime = TimeOnly.Parse(ResultDto.StartTime),
                 Duration = ResultDto.Duration,

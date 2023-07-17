@@ -66,9 +66,9 @@ namespace Personal_Testing_System.Controllers
             if (!subdivisionDto.Name.IsNullOrEmpty())
             {
                 ms.Subdivision.SaveSubdivisionDto(subdivisionDto);
-                Ok(new { message = "Отдел добавлен"});
+                Ok(new { message = "Отдел добавлен" });
             }
-            return BadRequest(new { message = "Ошибка. Не все поля заполнены"});
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
         [HttpGet("GetEmployees")]
@@ -95,9 +95,9 @@ namespace Personal_Testing_System.Controllers
         {
             logger.LogInformation($"/admin-api/AddEmployee :fn={employee.FirstName}, sn={employee.SecondName}, " +
                                   $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
-            if (employee!=null && !string.IsNullOrEmpty(employee.FirstName) && !
+            if (employee != null && !string.IsNullOrEmpty(employee.FirstName) && !
                 string.IsNullOrEmpty(employee.SecondName) && !string.IsNullOrEmpty(employee.LastName) &&
-                !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) && 
+                !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) &&
                 employee.IdSubdivision.HasValue)
             {
                 ms.Employee.SaveEmployee(employee);
@@ -129,11 +129,11 @@ namespace Personal_Testing_System.Controllers
             if (competenceDto.Id.HasValue || !string.IsNullOrEmpty(competenceDto.Name))
             {
                 ms.TestType.SaveCompetenceDto(competenceDto);
-                return Ok(new { message = "Компетенция добавлена"});
+                return Ok(new { message = "Компетенция добавлена" });
             }
             return BadRequest(new { message = "Ошиббка при добавлении компетенции" });
         }
-       
+
         [HttpGet("GetTest")]
         public async Task<IActionResult> GetTest(string? id)
         {
@@ -195,7 +195,7 @@ namespace Personal_Testing_System.Controllers
 
             if (createTestDto != null && !createTestDto.Name.IsNullOrEmpty() &&
                 !createTestDto.Name.IsNullOrEmpty() && createTestDto.CompetenceId.HasValue &&
-                createTestDto.Questions.Count!=0) {
+                createTestDto.Questions.Count != 0) {
                 string idTest = Guid.NewGuid().ToString();
                 ms.Test.SaveTest(new Test
                 {
@@ -335,15 +335,110 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("AddPurposesByRange")]
-        public async Task<IActionResult> AddPurposesByRange()//!!!
+        public async Task<IActionResult> AddPurposesByRange(PurposeRangeModel? purpose)//!!!
         {
-            logger.LogInformation($"/admin-api/AddPurposesBySubdivision testId={testId}, idSubdivision={idSubdivision}");
-            if ()
+            logger.LogInformation($"/admin-api/AddPurposesByRange testId={purpose.IdTest}, datatime={purpose.DatatimePurpose}, idEmployeesCount={purpose.IdEmployees.Count}");
+            if (!purpose.IdTest.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty() &&
+                purpose.IdEmployees.Count != 0)
             {
-
+                foreach (string id in purpose.IdEmployees)
+                {
+                    ms.TestPurpose.SaveTestPurpose(new TestPurpose
+                    {
+                        IdTest = purpose.IdTest,
+                        IdEmployee = id,
+                        DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
+                    });
+                }
                 return Ok(new { message = "Тестs назначенs" });
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetResults")]
+        public async Task<IActionResult> GetResults()
+        {
+            return Ok(ms.EmployeeResult.GetAllEmployeeResultModels());
+        }
+
+        [HttpGet("GetResults")]
+        public async Task<IActionResult> GetResults(int? idSubdivision, string? FirstName,
+                                                    string? SecondName, string LastName,
+                                                    int? score, string? sortType)
+        {
+            List<EmployeeResultModel> list = ms.EmployeeResult.GetAllEmployeeResultModels();
+            if (idSubdivision.HasValue)
+            {
+                list = list.Where(x => x.Employee.Subdivision.Id == idSubdivision).ToList();
+            }
+            if (!FirstName.IsNullOrEmpty())
+            {
+                list = list.Where(x => x.Employee.FirstName.Contains(FirstName)).ToList();
+            }
+            if (!SecondName.IsNullOrEmpty())
+            {
+                list = list.Where(x => x.Employee.SecondName.Contains(SecondName)).ToList();
+            }
+            if (!LastName.IsNullOrEmpty())
+            {
+                list = list.Where(x => x.Employee.LastName.Contains(LastName)).ToList();
+            }
+            if (!sortType.IsNullOrEmpty())
+            {
+                if (sortType.Equals("fname↑"))//↑
+                {
+                    list = list.OrderBy(x => x.Employee.FirstName).ToList();
+                }
+                if (sortType.Equals("fname↓"))//↓
+                {
+                    list = list.OrderByDescending(x => x.Employee.FirstName).ToList();
+                }
+
+                if (sortType.Equals("sname↑"))//↑
+                {
+                    list = list.OrderBy(x => x.Employee.SecondName).ToList();
+                }
+                if (sortType.Equals("sname↓"))//↓
+                {
+                    list = list.OrderByDescending(x => x.Employee.SecondName).ToList();
+                }
+
+                if (sortType.Equals("lname↑"))//↑
+                {
+                    list = list.OrderBy(x => x.Employee.LastName).ToList();
+                }
+                if (sortType.Equals("lname↓"))//↓
+                {
+                    list = list.OrderByDescending(x => x.Employee.LastName).ToList();
+                }
+
+                if (sortType.Equals("score↑"))//↑
+                {
+                    list = list.OrderBy(x => x.Result.ScoreFrom).ToList();
+                }
+                if (sortType.Equals("score↓"))//↓
+                {
+                    list = list.OrderByDescending(x => x.Result.ScoreFrom).ToList();
+                }
+            }
+            return Ok(list);
+        }
+
+        [HttpPost("DeleteResults")]
+        public async Task<IActionResult> DeleteResults()
+        {
+            List<EmployeeResultDto> employeeResults = ms.EmployeeResult.GetAllEmployeeResultDtos();
+            foreach (EmployeeResultDto result in employeeResults)
+            {
+                ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
+                ms.Result.DeleteResultById(result.IdResult);
+                ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(result.IdResult);
+
+                ms.Result.DeleteResultById(result.IdResult);//EmployeeMatching
+                ms.Result.DeleteResultById(result.IdResult);//EmployeeSubsequence
+
+            }
+            return Ok(new { message = "Результаты удалены" });
         }
 
     }

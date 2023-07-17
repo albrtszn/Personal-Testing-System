@@ -256,7 +256,9 @@ namespace Personal_Testing_System.Controllers
                     ScoreTo = score
                 });*/
 
-                return Ok(new { message = "Тест выполнен", score = score });
+                //ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+
+                return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
             }
             else
             {

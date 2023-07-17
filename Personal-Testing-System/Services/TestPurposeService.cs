@@ -57,6 +57,12 @@ namespace Personal_Testing_System.Services
             testPurposeRepo.DeleteTestPurposeById(id);
         }
 
+        public void DeleteTestPurposeByEmployeeId(string testId, string employeeId)
+        {
+            List<TestPurposeDto> list = GetAllTestPurposeDtos();
+            DeleteTestPurposeById(list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)).Id.Value);
+        }
+
         public List<TestPurpose> GetAllTestPurposes()
         {
             return testPurposeRepo.GetAllTestPurposes();

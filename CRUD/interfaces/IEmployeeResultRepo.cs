@@ -10,8 +10,8 @@ namespace CRUD.interfaces
     public interface IEmployeeResultRepo
     {
         List<EmployeeResult> GetAllEmployeeResults();
-        EmployeeResult GetEmployeeResultById(string id);
+        EmployeeResult GetEmployeeResultById(int id);
         void SaveEmployeeResult(EmployeeResult EmployeeResultToSave);
-        void DeleteEmployeeResultById(string id);
+        void DeleteEmployeeResultById(int id);
     }
 }

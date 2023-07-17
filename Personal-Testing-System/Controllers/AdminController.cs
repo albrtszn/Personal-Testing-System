@@ -355,11 +355,11 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpGet("GetResults")]
+        /*[HttpGet("GetResults")]
         public async Task<IActionResult> GetResults()
         {
             return Ok(ms.EmployeeResult.GetAllEmployeeResultModels());
-        }
+        }*/
 
         [HttpGet("GetResults")]
         public async Task<IActionResult> GetResults(int? idSubdivision, string? FirstName,
@@ -433,10 +433,8 @@ namespace Personal_Testing_System.Controllers
                 ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
                 ms.Result.DeleteResultById(result.IdResult);
                 ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(result.IdResult);
-
-                ms.Result.DeleteResultById(result.IdResult);//EmployeeMatching
-                ms.Result.DeleteResultById(result.IdResult);//EmployeeSubsequence
-
+                ms.EmployeeMatching.DeleteEmployeeMatchingByResult(result.IdResult);
+                ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(result.IdResult);
             }
             return Ok(new { message = "Результаты удалены" });
         }

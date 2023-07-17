@@ -2,14 +2,14 @@
 
 namespace Personal_Testing_System.DTOs
 {
-    public class EmployeeSubseqeunceDto
+    public class EmployeeSubsequenceDto
     {
         public int Id { get; set; }
 
         public int? IdSubsequence { get; set; }
 
-        public int? IdTestResult { get; set; }
+        public string? IdResult { get; set; }
 
-        public byte? Number { get; set; }
+        public int? Number { get; set; }
     }
 }

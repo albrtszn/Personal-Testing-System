@@ -2,14 +2,14 @@
 
 namespace Personal_Testing_System.DTOs
 {
-    public class EmployeeMartchingDto
+    public class EmployeeMatchingDto
     {
         public int Id { get; set; }
 
-        public int? IdFirstPart { get; set; }
+        public string? IdFirstPart { get; set; }
 
         public int? IdSecondPart { get; set; }
 
-        public int? IdTestResult { get; set; }
+        public string? IdResult { get; set; }
     }
 }

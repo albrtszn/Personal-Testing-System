@@ -28,7 +28,7 @@ Output -> string:
 ```
 - GET /GetPurposesByEmployeeId?employeeId=d4359d8e-7bd9-4fae-b060-5633801f7a1a
 Input <- value(employeeId) in url.
-Output -> List<PurposeModel>:
+Output -> List of PurposeModels:
 ```
 [
     {
@@ -47,7 +47,7 @@ Output -> List<PurposeModel>:
 ]
 ```
 - GET /GetTest?id=21fb8618-5277-474d-a759-08403a7f65e0
-Input <- value(id of test) in url.
+- Input <- value(id of test) in url.
 Output -> TestModel:
 ```
 {

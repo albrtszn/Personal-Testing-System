@@ -10,7 +10,7 @@ namespace CRUD.interfaces
     public interface ISubsequenceRepo
     {
         List<Subsequence> GetAllSubSequences();
-        Subsequence GetSubSequenceById(int id);
+        Subsequence GetSubsequenceById(int id);
         void SaveSubsequence(Subsequence SubsequenceToSave);
         void DeleteSubsequenceById(int id);
     }

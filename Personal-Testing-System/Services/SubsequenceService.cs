@@ -58,7 +58,7 @@ namespace Personal_Testing_System.Services
 
         public Subsequence GetSubsequenceById(int id)
         {
-            return subsequenceRepo.GetSubSequenceById(id);
+            return subsequenceRepo.GetSubsequenceById(id);
         }
 
         public void SaveSubsequence(Subsequence SubsequenceToSave)

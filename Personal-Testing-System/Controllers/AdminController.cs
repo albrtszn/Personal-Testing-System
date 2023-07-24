@@ -24,9 +24,12 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+        public async Task<IActionResult> Login(LoginModel? loginModel)
         {
-            if (!string.IsNullOrEmpty(loginModel.Login) || !string.IsNullOrEmpty(loginModel.Password))
+            logger.LogInformation($"/admin-api/Login :login={loginModel.Login}, password={loginModel.Password}");
+
+            if (loginModel == null) return BadRequest(new { message = "Поля не заполнены" });
+            if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
                 return BadRequest(new { message = "Одно из полей пустое" });
             }
@@ -53,24 +56,71 @@ namespace Personal_Testing_System.Controllers
                 }
             }
         }
-
+        /*
+         *  Subdivision
+         */
         [HttpGet("GetSubdivisions")]
         public async Task<IActionResult> GetSubdivisions()
         {
+            logger.LogInformation($"/admin-api/GetSubdivisions");
+
             return Ok(ms.Subdivision.GetAllSubdivisionDtos());
         }
 
         [HttpPost("AddSubdivision")]
-        public async Task<IActionResult> AddSubdivision(SubdivisionDto subdivisionDto)
+        public async Task<IActionResult> AddSubdivision(SubdivisionModel? sub)
         {
-            if (!subdivisionDto.Name.IsNullOrEmpty())
+            logger.LogInformation($"/admin-api/AddSubdivision :name={sub.Name}");
+
+            if (sub != null && !string.IsNullOrEmpty(sub.Name))
             {
-                ms.Subdivision.SaveSubdivisionDto(subdivisionDto);
-                Ok(new { message = "Отдел добавлен" });
+                if (ms.Subdivision.GetAllSubdivisions().Find(x => x.Name.Equals(sub.Name)) != null)
+                {
+                    return BadRequest(new { message = "Ошибка. Такой отдел уже есть" });
+                }
+                else
+                {
+                    ms.Subdivision.SaveSubdivisionDto(sub);
+                    return Ok(new { message = "Отдел добавлен" });
+                }
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("UpdateSubdivision")]
+        public async Task<IActionResult> UpdateSubdivision(SubdivisionDto? sub)
+        {
+            logger.LogInformation($"/admin-api/UpdateSubdivision :id={sub.Id}, name={sub.Name}");
+
+            if (sub != null && !sub.Name.IsNullOrEmpty())
+            {
+                if (ms.Subdivision.GetSubdivisionById(sub.Id.Value) == null)
+                {
+                    return BadRequest(new { message = "Ошибка. Такого отдела нет" });
+                }
+                else
+                {
+                    ms.Subdivision.SaveSubdivisionDto(sub);
+                    return Ok(new { message = "Отдел обновлен" });
+                }
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("DeleteSubdivision")]
+        public async Task<IActionResult> DeleteSubdivision(int? id)
+        {
+            if (!id.HasValue) return BadRequest(new { message = "Поле не заполнено" });
+            if (ms.Subdivision.GetSubdivisionById(id.Value) != null)
+            {
+                ms.Subdivision.DeleteSubdivisionById(id.Value);
+                return Ok(new { message = "Отдел удален" });
+            }
+            return BadRequest(new { message = "Ошибка. Такого отдела не существует" });
+        }
+        /*
+         *  Employee
+         */
         [HttpGet("GetEmployees")]
         public async Task<IActionResult> GetEmployees()
         {
@@ -82,16 +132,17 @@ namespace Personal_Testing_System.Controllers
         public async Task<IActionResult> GetEmployee(string? id)
         {
             logger.LogInformation($"/admin-api/GetEmployee :id={id}");
-            EmployeeDto? dto = ms.Employee.GetEmployeeDtoById(id);
-            if (!id.IsNullOrEmpty() && dto != null)
+            if (id.IsNullOrEmpty()) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
+            EmployeeModel? model = ms.Employee.GetEmployeeModelById(id);
+            if (model != null)
             {
-                return Ok(dto);
+                return Ok(model);
             }
-            return NotFound("Сотрудник не найден");
+            return NotFound(new { message = "Сотрудник не найден" });
         }
 
         [HttpPost("AddEmployee")]
-        public async Task<IActionResult> AddEmployee([FromBody] EmployeeDto? employee)
+        public async Task<IActionResult> AddEmployee(AddEmployeeModel? employee)
         {
             logger.LogInformation($"/admin-api/AddEmployee :fn={employee.FirstName}, sn={employee.SecondName}, " +
                                   $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
@@ -101,11 +152,48 @@ namespace Personal_Testing_System.Controllers
                 employee.IdSubdivision.HasValue)
             {
                 ms.Employee.SaveEmployee(employee);
-                return Ok("Сотрудник добавлен");
+                return Ok(new { message = "Сотрудник добавлен" });
             }
-            return BadRequest("Ошибка. Не все поля заполнены");
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("UpdateEmployee")]
+        public async Task<IActionResult> UpdateEmployee(EmployeeDto? employee)
+        {
+            logger.LogInformation($"/admin-api/UpdateEmployee :id={employee.Id}, fn={employee.FirstName}, sn={employee.SecondName}, " +
+                                  $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
+            if (employee != null && !string.IsNullOrEmpty(employee.Id) && !string.IsNullOrEmpty(employee.FirstName) && ms.Employee.GetEmployeeById(employee.Id) != null &&
+                !string.IsNullOrEmpty(employee.SecondName) && !string.IsNullOrEmpty(employee.LastName) &&
+                !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) &&
+                employee.IdSubdivision.HasValue)
+            {
+                if (ms.Employee.GetEmployeeById(employee.Id) == null)
+                {
+                    return BadRequest(new { message = "Ошибка. Такого пользователя не существует" });
+                }
+                else
+                {
+                    ms.Employee.SaveEmployee(employee);
+                    return Ok(new { message = "Сотрудник обновлен" });
+                }
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены или такого сотрудника нет" });
+        }
+
+        [HttpPost("DeleteEmployee")]
+        public async Task<IActionResult> UpdateEmployee(string? employeeId)
+        {
+            if (employeeId.IsNullOrEmpty()) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
+            if (ms.Employee.GetEmployeeById(employeeId) != null)
+            {
+                ms.Employee.DeleteEmployeeById(employeeId);
+                return Ok(new { message = "Сотрудник удален" });
+            }
+            return BadRequest(new { message = "Ошибка. Пользователь не найден" });
+        }
+        /*
+         *  Competence
+         */
         [HttpGet("GetCompetences")]
         public async Task<IActionResult> GetCompetences()
         {
@@ -113,27 +201,61 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetCompetence")]
-        public async Task<IActionResult> GetCompetence(int? id)
+        public async Task<IActionResult> GetCompetence(int? competenceId)
         {
-            if (id.HasValue)
+            logger.LogInformation($"/admin-api/GetCompetence :Id={competenceId}");
+            if (!competenceId.HasValue) return BadRequest(new { messsgae = "Ошибка. Поле не заполнено" });
+            Competence? competence = ms.TestType.GetCompetenceById(competenceId.Value);
+            if (competence != null)
             {
-                return Ok(ms.TestType.GetCompetenceDtoById(id.Value));
+                return Ok(ms.TestType.GetCompetenceDtoById(competenceId.Value));
             }
-            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+            return NotFound(new { message = "Ошибка. Компетенция не найдена" });
         }
 
         [HttpPost("AddCompetence")]
-        public async Task<IActionResult> AddCompetence(CompetenceDto? competenceDto)
+        public async Task<IActionResult> AddCompetence(AddCompetenceModel? competenceDto)
         {
-            logger.LogInformation($"/admin-api/AddCompetence :id={competenceDto.Id}, Name={competenceDto.Name}");
-            if (competenceDto.Id.HasValue || !string.IsNullOrEmpty(competenceDto.Name))
+            logger.LogInformation($"/admin-api/AddCompetence :Name={competenceDto.Name}");
+            if (!string.IsNullOrEmpty(competenceDto.Name))
             {
-                ms.TestType.SaveCompetenceDto(competenceDto);
+                ms.TestType.SaveCompetence(competenceDto);
                 return Ok(new { message = "Компетенция добавлена" });
             }
-            return BadRequest(new { message = "Ошиббка при добавлении компетенции" });
+            return BadRequest(new { message = "Ошибка при добавлении компетенции" });
         }
 
+        [HttpPost("UpdateCompetence")]
+        public async Task<IActionResult> UpdateCompetence(CompetenceDto? competenceDto)
+        {
+            logger.LogInformation($"/admin-api/UpdateCompetence :Id={competenceDto.Id}, Name={competenceDto.Name}");
+
+            if (competenceDto == null && !competenceDto.Id.HasValue && !competenceDto.Name.IsNullOrEmpty())
+            {
+                return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+            }
+            if (ms.TestType.GetCompetenceById(competenceDto.Id.Value) != null)
+            {
+                ms.TestType.SaveCompetence(competenceDto);
+                return Ok(new { message = "Компетенция обновлена" });
+            }
+            return BadRequest(new { message = "ошибка. Такой компетенции не существует" });
+        }
+
+        [HttpPost("DeleteCompetence")]
+        public async Task<IActionResult> DeleteCompetence(int? competenceId)
+        {
+            if (!competenceId.HasValue) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
+            if (ms.TestType.GetCompetenceById(competenceId.Value) != null)
+            {
+                ms.TestType.DeleteCompetenceById(competenceId.Value);
+                return Ok(new { message = "Компетенция удалена" });
+            }
+            return BadRequest(new { message = "Ошибка. Компетенция не найдена" });
+        }
+        /*
+         *  Test
+         */
         [HttpGet("GetTest")]
         public async Task<IActionResult> GetTest(string? id)
         {
@@ -267,6 +389,88 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("UpdateTest")]
+        public async Task<IActionResult> UpdateTest(CreateTestModel? createTestDto)
+        {
+            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idCompetence={createTestDto.CompetenceId}," +
+                      $"countOfQuestions={createTestDto.Questions.Count}");
+
+            if (createTestDto != null && !createTestDto.Name.IsNullOrEmpty() && ms.Test.GetTestById(createTestDto.Id) != null &&
+                !createTestDto.Name.IsNullOrEmpty() && createTestDto.CompetenceId.HasValue &&
+                createTestDto.Questions.Count != 0)
+            {
+                string idTest = Guid.NewGuid().ToString();
+                ms.Test.SaveTest(new Test
+                {
+                    Id = idTest,
+                    Name = createTestDto.Name,
+                    IdCompetence = createTestDto.CompetenceId
+                });
+
+                foreach (QuestionModel quest in createTestDto.Questions)
+                {
+                    logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
+
+                    string idQuestion = Guid.NewGuid().ToString();
+                    ms.Question.SaveQuestion(new Question
+                    {
+                        Id = idQuestion,
+                        Text = quest.Text,
+                        IdQuestionType = quest.IdQuestionType,
+                        IdTest = idTest
+                    });
+
+                    foreach (JsonElement answer in quest.Answers)
+                    {
+                        AnswerDto answerDto = answer.Deserialize<AnswerDto>();
+                        SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
+                        FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();
+
+                        if (answerDto is AnswerDto && answerDto.Correct != null)
+                        {
+                            logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
+                            ms.Answer.SaveAnswer(new Answer
+                            {
+                                Text = answerDto.Text,
+                                IdQuestion = idQuestion,
+                                Correct = answerDto.Correct
+                            });
+                        }
+                        if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
+                        {
+                            logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
+                            ms.Subsequence.SaveSubsequence(new Subsequence
+                            {
+                                Text = subsequenceDto.Text,
+                                Number = subsequenceDto.Number,
+                                IdQuestion = idQuestion
+                            });
+                        }
+                        if (firstSecondPartDto is FirstSecondPartDto &&
+                            !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
+                        {
+                            logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
+                            string firstPartId = Guid.NewGuid().ToString();
+                            ms.FirstPart.SaveFirstPart(new FirstPart
+                            {
+                                Id = firstPartId,
+                                Text = firstSecondPartDto.FirstPartText,
+                                IdQuestion = idQuestion
+                            });
+                            ms.SecondPart.SaveSecondPart(new SecondPart
+                            {
+                                Text = firstSecondPartDto.SecondPartText,
+                                IdFirstPart = firstPartId
+                            });
+                        }
+                    }
+                }
+                return Ok(new { message = "Обновление теста успешно" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены или такого теста нет" });
+        }
+
+
         [HttpGet("GetPurposes")]
         public async Task<IActionResult> GetPurposes()
         {
@@ -363,7 +567,7 @@ namespace Personal_Testing_System.Controllers
 
         [HttpGet("GetResults")]
         public async Task<IActionResult> GetResults(int? idSubdivision, string? FirstName,
-                                                    string? SecondName, string LastName,
+                                                    string? SecondName, string? LastName,
                                                     int? score, string? sortType)
         {
             List<EmployeeResultModel> list = ms.EmployeeResult.GetAllEmployeeResultModels();
@@ -414,11 +618,11 @@ namespace Personal_Testing_System.Controllers
 
                 if (sortType.Equals("score↑"))//↑
                 {
-                    list = list.OrderBy(x => x.Result.ScoreFrom).ToList();
+                    list = list.OrderBy(x => x.ScoreFrom).ToList();
                 }
                 if (sortType.Equals("score↓"))//↓
                 {
-                    list = list.OrderByDescending(x => x.Result.ScoreFrom).ToList();
+                    list = list.OrderByDescending(x => x.ScoreFrom).ToList();
                 }
             }
             return Ok(list);

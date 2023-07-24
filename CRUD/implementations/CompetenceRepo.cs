@@ -34,7 +34,15 @@ namespace CRUD.implementations
 
         public void SaveCompetence(Competence CompetenceToSave)
         {
-            context.Competences.Add(CompetenceToSave);
+            if (CompetenceToSave.Id != 0 && GetCompetenceById(CompetenceToSave.Id) != null)
+            {
+                //context.Competences.Update(CompetenceToSave);
+                GetCompetenceById(CompetenceToSave.Id).Name = CompetenceToSave.Name;
+            }
+            else
+            {
+                context.Competences.Add(CompetenceToSave);
+            }
             context.SaveChanges();
         }
     }

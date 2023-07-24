@@ -10,7 +10,7 @@ namespace Personal_Testing_System.Services
         {
             this.questionRepo = _questionRepo;
         }
-        public void DeleteQuestionById(int id)
+        public void DeleteQuestionById(string id)
         {
             questionRepo.DeleteQuestionById(id);
         }
@@ -20,7 +20,7 @@ namespace Personal_Testing_System.Services
             return questionRepo.GetAllQuestions();
         }
 
-        public Question GetQuestionById(int id)
+        public Question GetQuestionById(string id)
         {
             return questionRepo.GetByQuestionId(id);
         }

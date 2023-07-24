@@ -2,6 +2,7 @@
 using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Services
 {
@@ -63,9 +64,14 @@ namespace Personal_Testing_System.Services
             competenceRepo.SaveCompetence(CompetenceToSave);
         }
 
-        public void SaveCompetenceDto(CompetenceDto CompetenceDtoToSave)
+        public void SaveCompetence(CompetenceDto CompetenceDtoToSave)
         {
             competenceRepo.SaveCompetence(ConvertToCompetence(CompetenceDtoToSave));
+        }
+
+        public void SaveCompetence(AddCompetenceModel CompetenceDtoToSave)
+        {
+            competenceRepo.SaveCompetence(new Competence { Name = CompetenceDtoToSave.Name });
         }
     }
 }

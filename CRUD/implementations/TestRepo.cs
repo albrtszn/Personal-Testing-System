@@ -34,7 +34,14 @@ namespace CRUD.implementations
 
         public void SaveTest(Test TestToSave)
         {
-            context.Tests.Add(TestToSave);
+            if (!string.IsNullOrEmpty(TestToSave.Id) && GetTestById(TestToSave.Id) != null)
+            {
+                context.Tests.Update(TestToSave);
+            }
+            else
+            {
+                context.Tests.Add(TestToSave);
+            }
             context.SaveChanges();
         }
     }

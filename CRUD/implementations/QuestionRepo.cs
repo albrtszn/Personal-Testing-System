@@ -1,6 +1,7 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteQuestionById(int id)
+        public void DeleteQuestionById(string id)
         {
             context.Questions.Remove(GetAllQuestions().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();
@@ -27,14 +28,21 @@ namespace CRUD.implementations
             return context.Questions.ToList();
         }
 
-        public Question GetByQuestionId(int id)
+        public Question GetByQuestionId(string id)
         {
             return GetAllQuestions().FirstOrDefault(x => x.Id.Equals(id));
         }
 
         public void SaveQuestion(Question QuestionToSave)
         {
-            context.Questions.Add(QuestionToSave);
+            if (QuestionToSave.Id.IsNullOrEmpty() && GetByQuestionId(QuestionToSave.Id) != null)
+            {
+                context.Questions.Update(QuestionToSave);
+            }
+            else
+            {
+                context.Questions.Add(QuestionToSave);
+            }
             context.SaveChanges();
         }
     }

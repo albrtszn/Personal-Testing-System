@@ -34,7 +34,23 @@ namespace CRUD.implementations
 
         public void SaveEmployee(Employee EmployeeToSave)
         {
-            context.Employees.Add(EmployeeToSave);
+            Employee? employee = GetEmployeeById(EmployeeToSave.Id);
+            if (employee != null)
+            {
+                //context.Employees.Update(EmployeeToSave);
+                employee.Id = EmployeeToSave.Id;
+                employee.FirstName = EmployeeToSave.FirstName;
+                employee.SecondName = EmployeeToSave.SecondName;
+                employee.LastName = EmployeeToSave.LastName;
+                employee.Login = EmployeeToSave.Login;
+                employee.Password = EmployeeToSave.Password;
+                employee.DateOfBirth = EmployeeToSave.DateOfBirth;
+                employee.IdSubdivision = EmployeeToSave.IdSubdivision;
+            }
+            else
+            {
+                context.Employees.Add(EmployeeToSave);
+            }
             context.SaveChanges();
         }
     }

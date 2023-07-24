@@ -3,6 +3,7 @@ using DataBase.Repository;
 using CRUD.interfaces;
 using Personal_Testing_System.DTOs;
 using CRUD.implementations;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Services
 {
@@ -67,6 +68,13 @@ namespace Personal_Testing_System.Services
         public void SaveSubdivisionDto(SubdivisionDto SubdivisionToSave)
         {
             subdivisionRepo.SaveSubdivision(ConvertToSubdivision(SubdivisionToSave));
+        }
+        public void SaveSubdivisionDto(SubdivisionModel SubdivisionToSave)
+        {
+            subdivisionRepo.SaveSubdivision(new Subdivision
+            {
+                Name = SubdivisionToSave.Name
+            });
         }
     }
 }

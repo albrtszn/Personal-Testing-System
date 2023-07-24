@@ -23,7 +23,7 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteFirstPartById(int id)
+        public void DeleteFirstPartById(string id)
         {
             firstPartRepo.DeleteFirstPartById(id);
         }
@@ -56,7 +56,7 @@ namespace Personal_Testing_System.Services
             return firstSecondPartDtoList;
         }
 
-        public FirstPart GetFirstPartById(int id)
+        public FirstPart GetFirstPartById(string id)
         {
             return firstPartRepo.GetFirstPartById(id);
         }

@@ -10,8 +10,8 @@ namespace CRUD.interfaces
     public interface IFirstPartRepo
     {
         List<FirstPart> GetAllFirstParts();
-        FirstPart GetFirstPartById(int id);
+        FirstPart GetFirstPartById(string id);
         void SaveFirstPArt(FirstPart FirstPartoSave);
-        void DeleteFirstPartById(int id);
+        void DeleteFirstPartById(string id);
     }
 }

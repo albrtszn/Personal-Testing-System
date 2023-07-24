@@ -29,14 +29,21 @@ namespace CRUD.implementations
             return context.Subsequences.ToList();
         }
 
-        public Subsequence GetSubSequenceById(int id)
+        public Subsequence GetSubsequenceById(int id)
         {
             return GetAllSubSequences().FirstOrDefault(x => x.Id.Equals(id));
         }
 
         public void SaveSubsequence(Subsequence SubsequenceToSave)
         {
-            context.Subsequences.Add(SubsequenceToSave);
+            if (SubsequenceToSave.Id != 0 && GetSubsequenceById(SubsequenceToSave.Id) != null)
+            {
+                context.Subsequences.Update(SubsequenceToSave);
+            }
+            else
+            {
+                context.Subsequences.Add(SubsequenceToSave);
+            }
             context.SaveChanges();
         }
     }

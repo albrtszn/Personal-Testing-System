@@ -25,7 +25,7 @@ public partial class Result
     public TimeOnly? StartTime { get; set; }
 
     [Column("duration")]
-    public byte? Duration { get; set; }
+    public int? Duration { get; set; }
 
     [Column("endTime")]
     public TimeOnly? EndTime { get; set; }

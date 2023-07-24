@@ -31,6 +31,8 @@ namespace Personal_Testing_System.Services
             return new EmployeeResult
             {
                 Id = EmployeeResultDto.Id.Value,
+                ScoreFrom = EmployeeResultDto.ScoreFrom.Value,
+                ScoreTo = EmployeeResultDto.ScoreTo.Value,
                 IdEmployee = EmployeeResultDto.IdEmployee,
                 IdResult = EmployeeResultDto.IdResult
             };
@@ -40,6 +42,8 @@ namespace Personal_Testing_System.Services
             return new EmployeeResultModel
             {
                 Id = EmployeeResult.Id,
+                ScoreFrom = EmployeeResult.ScoreFrom,
+                ScoreTo = EmployeeResult.ScoreTo,
                 Employee = employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
                 Result = resultService.GetResultDtoById(EmployeeResult.IdResult)
             };

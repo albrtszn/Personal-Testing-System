@@ -34,7 +34,14 @@ namespace CRUD.implementations
 
         public void SaveAnswer(Answer AnswerToSave)
         {
-            context.Answers.Add(AnswerToSave);
+            if (AnswerToSave.Id != 0 && GetAnswerById(AnswerToSave.Id) != null)
+            {
+                context.Answers.Update(AnswerToSave);
+            }
+            else
+            {
+                context.Answers.Add(AnswerToSave);
+            }
             context.SaveChanges();
         }
     }

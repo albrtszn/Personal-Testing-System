@@ -34,7 +34,15 @@ namespace CRUD.implementations
 
         public void SaveSubdivision(Subdivision SubdivisionToSave)
         {
-            context.Subdivisions.Add(SubdivisionToSave);
+            if (SubdivisionToSave.Id != 0 && GetSubdivisionById(SubdivisionToSave.Id) != null)
+            {
+                //context.Subdivisions.Update(SubdivisionToSave);
+                GetSubdivisionById(SubdivisionToSave.Id).Name = SubdivisionToSave.Name;
+            }
+            else
+            {
+                context.Subdivisions.Add(SubdivisionToSave);
+            }
             context.SaveChanges();
         }
     }

@@ -171,15 +171,15 @@ namespace Personal_Testing_System.Controllers
                 !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0)
             {
                 string resultId = Guid.NewGuid().ToString();
-                /*ms.Result.SaveResult(new Result
+                ms.Result.SaveResult(new Result
                 {
                     Id = resultId,
                     IdTest = testResultModel.TestId,
                     StartDate = DateOnly.Parse(testResultModel.StartDate),
                     StartTime = TimeOnly.Parse(testResultModel.StartTime),
                     EndTime = TimeOnly.Parse(testResultModel.EndTime),
-                    Duration = (byte)(TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Minute),
-                });*/
+                    Duration = (TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Second),
+                });
 
                 int score = 0;
                 foreach (QuestionResultModel question in testResultModel.Questions)
@@ -204,11 +204,11 @@ namespace Personal_Testing_System.Controllers
                                 countOfCorrectAnswer++;
                             }
 
-                            /*ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                            ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
                             {
                                 IdResult = resultId,
                                 IdAnswer = answerModel.AnswerId
-                            });*/
+                            });
                         }
                         if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
                         {
@@ -219,12 +219,12 @@ namespace Personal_Testing_System.Controllers
                                 countOfCorrectAnswer++;
                             }
 
-                            /*ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                            ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
                             {
-                                IdSubsequence = subsequenceModel.Id.Value,
+                                IdSubsequence = subsequenceModel.SubsequenceId.Value,
                                 IdResult = resultId,
                                 Number = subsequenceModel.Number.Value,
-                            });*/
+                            });
                         }
                         if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
                         {
@@ -235,12 +235,12 @@ namespace Personal_Testing_System.Controllers
                                 countOfCorrectAnswer++;
                             }
 
-                            /*ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                            ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
                             {
                                 IdFirstPart = fsPartModel.FirstPartId,
                                 IdSecondPart = fsPartModel.SecondPartId,
                                 IdResult = resultId
-                            });*/
+                            });
                         }
                     }
                     if (countOfAnswers == countOfCorrectAnswer)
@@ -248,15 +248,16 @@ namespace Personal_Testing_System.Controllers
                         score++;
                     }
                 }
-                /*ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
+                ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
                 {
                     IdResult = resultId,
                     IdEmployee = testResultModel.EmployeeId,
+
                     ScoreFrom = score, //???
                     ScoreTo = score
-                });*/
+                });
 
-                //ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+                ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
 
                 return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
             }

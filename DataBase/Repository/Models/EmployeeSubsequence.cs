@@ -21,7 +21,7 @@ public partial class EmployeeSubsequence
     public string? IdResult { get; set; }
 
     [Column("number")]
-    public byte? Number { get; set; }
+    public int? Number { get; set; }
 
     [ForeignKey("IdResult")]
     [InverseProperty("EmployeeSubsequences")]

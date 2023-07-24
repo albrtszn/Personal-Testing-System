@@ -16,7 +16,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteFirstPartById(int id)
+        public void DeleteFirstPartById(string id)
         {
             context.FirstParts.Remove(GetAllFirstParts().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();
@@ -27,14 +27,21 @@ namespace CRUD.implementations
             return context.FirstParts.ToList();
         }
 
-        public FirstPart GetFirstPartById(int id)
+        public FirstPart GetFirstPartById(string id)
         {
             return GetAllFirstParts().FirstOrDefault(x => x.Id.Equals(id));
         }
 
         public void SaveFirstPArt(FirstPart FirstPartoSave)
         {
-            context.FirstParts.Add(FirstPartoSave);
+            if (!string.IsNullOrEmpty(FirstPartoSave.Id) && GetFirstPartById(FirstPartoSave.Id) != null)
+            {
+                context.FirstParts.Update(FirstPartoSave);
+            }
+            else
+            {
+                context.FirstParts.Add(FirstPartoSave);
+            }
             context.SaveChanges();
         }
     }

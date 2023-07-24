@@ -60,7 +60,22 @@ namespace Personal_Testing_System.Services
                 Subdivision = subdivision
             };
         }
-       
+
+        private Employee ConvertToEmployee(AddEmployeeModel employeeDto)
+        {
+            return new Employee
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = employeeDto.FirstName,
+                SecondName = employeeDto.SecondName,
+                LastName = employeeDto.LastName,
+                Login = employeeDto.Login,
+                Password = employeeDto.Password,
+                DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
+                IdSubdivision = employeeDto.IdSubdivision
+            };
+        }
+
         public void DeleteEmployeeById(string id)
         {
             employeeRepo.DeleteEmployeeById(id);
@@ -108,7 +123,11 @@ namespace Personal_Testing_System.Services
 
         public void SaveEmployee(EmployeeDto EmployeeToSave)
         {
-            EmployeeToSave.Id = Guid.NewGuid().ToString();
+            employeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
+        }
+
+        public void SaveEmployee(AddEmployeeModel EmployeeToSave)
+        {
             employeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
         }
     }

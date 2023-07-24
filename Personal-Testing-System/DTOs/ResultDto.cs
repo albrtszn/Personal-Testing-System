@@ -7,11 +7,9 @@ namespace Personal_Testing_System.DTOs
     {
         public string? Id { get; set; } 
         public string? IdTest { get; set; }
-        public int? ScoreFrom { get; set; }
-        public int? ScoreTo { get; set; }
         public string? StartDate { get; set; }//DateOnly
         public string? StartTime { get; set; }//TimeOmly
-        public byte? Duration { get; set; }//byte???
+        public int? Duration { get; set; }//byte???
         public string? EndTime { get; set; }//TimeOnly
         public string? Description { get; set; }
     }

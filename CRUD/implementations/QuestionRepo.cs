@@ -28,16 +28,21 @@ namespace CRUD.implementations
             return context.Questions.ToList();
         }
 
-        public Question GetByQuestionId(string id)
+        public Question GetQuestionById(string id)
         {
             return GetAllQuestions().FirstOrDefault(x => x.Id.Equals(id));
         }
 
         public void SaveQuestion(Question QuestionToSave)
         {
-            if (QuestionToSave.Id.IsNullOrEmpty() && GetByQuestionId(QuestionToSave.Id) != null)
+            Question? quest = GetQuestionById(QuestionToSave.Id);
+            if (quest != null && !QuestionToSave.Id.IsNullOrEmpty())
             {
-                context.Questions.Update(QuestionToSave);
+                //context.Questions.Update(QuestionToSave);
+                quest.Text = QuestionToSave.Text;
+                quest.IdQuestionType = QuestionToSave.IdQuestionType;
+                quest.IdTest = QuestionToSave.IdTest;
+                quest.ImagePath = QuestionToSave.ImagePath;
             }
             else
             {

@@ -10,7 +10,7 @@ namespace CRUD.interfaces
     public interface IQuestionRepo
     {
         List<Question> GetAllQuestions();
-        Question GetByQuestionId(string id);
+        Question GetQuestionById(string id);
         void SaveQuestion(Question QuestionToSave);
         void DeleteQuestionById(string id);
     }

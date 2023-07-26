@@ -2,6 +2,7 @@ using CRUD.implementations;
 using CRUD.interfaces;
 using DataBase;
 using DataBase.Repository;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using Personal_Testing_System.Services;
@@ -85,6 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

@@ -22,7 +22,7 @@ namespace Personal_Testing_System.Services
 
         public Question GetQuestionById(string id)
         {
-            return questionRepo.GetByQuestionId(id);
+            return questionRepo.GetQuestionById(id);
         }
 
         public void SaveQuestion(Question QuestionToSave)

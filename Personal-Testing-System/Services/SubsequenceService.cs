@@ -16,7 +16,7 @@ namespace Personal_Testing_System.Services
         {
             return new SubsequenceDto
             {
-                Id = subsequence.Id,
+                IdSubsequence = subsequence.Id,
                 IdQuestion = subsequence.IdQuestion,
                 Text = subsequence.Text,
                 Number = subsequence.Number
@@ -27,7 +27,7 @@ namespace Personal_Testing_System.Services
         {
             return new Subsequence
             {
-                Id = subsequenceDto.Id,
+                Id = subsequenceDto.IdSubsequence,
                 IdQuestion = subsequenceDto.IdQuestion,
                 Text = subsequenceDto.Text,
                 Number = subsequenceDto.Number

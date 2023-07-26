@@ -1,4 +1,5 @@
-﻿using Personal_Testing_System.Services;
+﻿using DataBase.Repository.Models;
+using Personal_Testing_System.Services;
 
 namespace Personal_Testing_System.Services
 {
@@ -68,5 +69,24 @@ namespace Personal_Testing_System.Services
         public AdminService Admin { get { return adminService; } }
         public ResultService Result { get { return resultService; } }
         public EmployeeResultService EmployeeResult { get { return employeeResultService; } }
+        /*
+         *  Logic
+         */
+        public void DeleteTestById(string id)
+        {
+            foreach (Question quest in Question.GetAllQuestions().Where(x=>x.IdTest.Equals(id)).ToList())
+            {
+                Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
+                                      .ForEach(x => Answer.DeleteAnswerById(x.Id));
+                Subsequence.GetAllSubsequences().Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
+                      .ForEach(x => Subsequence.DeleteSubsequenceById(x.Id));
+                List<FirstPart> list = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
+                list.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
+                list.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+
+                Question.DeleteQuestionById(quest.Id);
+            }
+            Test.DeleteTestById(id);
+        }
     }
 }

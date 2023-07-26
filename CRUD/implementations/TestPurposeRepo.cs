@@ -34,7 +34,17 @@ namespace CRUD.implementations
 
         public void SaveTestPurpose(TestPurpose TestPurposeToSave)
         {
-            context.TestPurposes.Add(TestPurposeToSave);
+            TestPurpose? purpose = GetTestPurposeById(TestPurposeToSave.Id);
+            if (purpose != null)
+            {
+                purpose.IdEmployee = TestPurposeToSave.IdEmployee;
+                purpose.IdTest = TestPurposeToSave.IdTest;
+                purpose.DatatimePurpose = TestPurposeToSave.DatatimePurpose;
+            }
+            else
+            {
+                context.TestPurposes.Add(TestPurposeToSave);
+            }
             context.SaveChanges();
         }
     }

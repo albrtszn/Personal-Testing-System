@@ -104,7 +104,7 @@ namespace Personal_Testing_System.Controllers
             if (!string.IsNullOrEmpty(id))
             {
                 Test test = ms.Test.GetTestById(id);
-                if (test!=null) {
+                if (test != null) {
                     List<Question> questions = ms.Question.GetAllQuestions()
                         .Where(x => x.IdTest.Equals(id)).ToList();
 
@@ -144,7 +144,7 @@ namespace Personal_Testing_System.Controllers
                             List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
                             foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
                             {
-                                secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.Id));
+                                secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                             }
                             createQuestionDto.Answers.AddRange(secondPartDtos);
                         }
@@ -170,6 +170,8 @@ namespace Personal_Testing_System.Controllers
                 !testResultModel.StartDate.IsNullOrEmpty() && !testResultModel.StartTime.IsNullOrEmpty() &&
                 !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0)
             {
+                if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
+                    return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
                 string resultId = Guid.NewGuid().ToString();
                 ms.Result.SaveResult(new Result
                 {
@@ -178,7 +180,7 @@ namespace Personal_Testing_System.Controllers
                     StartDate = DateOnly.Parse(testResultModel.StartDate),
                     StartTime = TimeOnly.Parse(testResultModel.StartTime),
                     EndTime = TimeOnly.Parse(testResultModel.EndTime),
-                    Duration = (TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Second),
+                    Duration = (TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Minute),
                 });
 
                 int score = 0;
@@ -252,9 +254,8 @@ namespace Personal_Testing_System.Controllers
                 {
                     IdResult = resultId,
                     IdEmployee = testResultModel.EmployeeId,
-
                     ScoreFrom = score, //???
-                    ScoreTo = score
+                    ScoreTo = testResultModel.Questions.Count
                 });
 
                 ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
@@ -263,8 +264,21 @@ namespace Personal_Testing_System.Controllers
             }
             else
             {
-                return BadRequest(new { message = "Ошибка при добавления теста" });
+                return BadRequest(new { message = "Ошибка при отправке теста" });
             }
+        }
+
+        [HttpGet("GetTestResultsByEmployee")]
+        public async Task<IActionResult> GetTestResultsByEmployee(string? employeeId)
+        {
+            return Ok(ms.EmployeeResult.GetAllEmployeeResultModels().Where(x=>x.Employee.Id.Equals(employeeId)));
+        }
+
+        [HttpGet("GetTestResultByEmployee")]
+        public async Task<IActionResult> GetTestResultByEmployee(int? ResultId)
+        {
+            //return NotFound(new { message = "Тест не найден" });
+            return Ok(ms.EmployeeResult.GetEmployeeResultById(ResultId.Value));
         }
     }
 }

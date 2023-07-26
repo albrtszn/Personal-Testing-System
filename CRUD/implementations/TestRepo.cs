@@ -16,7 +16,7 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteTestById(int id)
+        public void DeleteTestById(string id)
         {
             context.Tests.Remove(GetAllTests().FirstOrDefault(x => x.Id.Equals(id)));
             context.SaveChanges();
@@ -34,9 +34,13 @@ namespace CRUD.implementations
 
         public void SaveTest(Test TestToSave)
         {
-            if (!string.IsNullOrEmpty(TestToSave.Id) && GetTestById(TestToSave.Id) != null)
+            Test? test = GetTestById(TestToSave.Id);
+            if (test!=null && !string.IsNullOrEmpty(TestToSave.Id) )
             {
-                context.Tests.Update(TestToSave);
+                //context.Tests.Update(TestToSave);
+                test.Name = TestToSave.Name;
+                test.IdCompetence = TestToSave.IdCompetence;
+                test.Weight = TestToSave.Weight;
             }
             else
             {

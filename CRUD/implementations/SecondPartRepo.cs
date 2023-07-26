@@ -34,9 +34,12 @@ namespace CRUD.implementations
 
         public void SaveSecondPart(SecondPart SecondPartToSave)
         {
-            if (SecondPartToSave.Id != 0 && GetSecondPartById(SecondPartToSave.Id) != null)
+            SecondPart? sp = GetSecondPartById(SecondPartToSave.Id);
+            if (sp != null && SecondPartToSave.Id != 0)
             {
-                context.SecondParts.Update(SecondPartToSave);
+                //context.SecondParts.Update(SecondPartToSave);
+                sp.Text = SecondPartToSave.Text;
+                sp.IdFirstPart = SecondPartToSave.IdFirstPart;
             }
             else
             {

@@ -36,9 +36,13 @@ namespace CRUD.implementations
 
         public void SaveSubsequence(Subsequence SubsequenceToSave)
         {
-            if (SubsequenceToSave.Id != 0 && GetSubsequenceById(SubsequenceToSave.Id) != null)
+            Subsequence? sub = GetSubsequenceById(SubsequenceToSave.Id);
+            if (sub != null && SubsequenceToSave.Id != 0)
             {
-                context.Subsequences.Update(SubsequenceToSave);
+                //context.Subsequences.Update(SubsequenceToSave);
+                sub.Text = SubsequenceToSave.Text;
+                sub.IdQuestion = SubsequenceToSave.IdQuestion;
+                sub.Number = SubsequenceToSave.Number;
             }
             else
             {

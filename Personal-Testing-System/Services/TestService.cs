@@ -27,7 +27,7 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteTestById(int id)
+        public void DeleteTestById(string id)
         {
             testRepo.DeleteTestById(id);
         }

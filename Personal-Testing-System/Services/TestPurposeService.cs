@@ -63,6 +63,12 @@ namespace Personal_Testing_System.Services
             DeleteTestPurposeById(list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)).Id.Value);
         }
 
+        public TestPurpose GetTestPurposeByEmployeeTestId(string testId, string employeeId)
+        {
+            List<TestPurpose> list = GetAllTestPurposes();
+            return (list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)));
+        }
+
         public List<TestPurpose> GetAllTestPurposes()
         {
             return testPurposeRepo.GetAllTestPurposes();
@@ -101,9 +107,19 @@ namespace Personal_Testing_System.Services
             testPurposeRepo.SaveTestPurpose(TestPurposeToSave);
         }
 
-        public void SaveTestPurposeDto(TestPurposeDto TestPurposeDtoToSave)
+        public void SaveTestPurpose(TestPurposeDto TestPurposeDtoToSave)
         {
             testPurposeRepo.SaveTestPurpose(ConvertToTestPurpose(TestPurposeDtoToSave));
+        }
+
+        public void SaveTestPurpose(AddTestPurposeModel purpose)
+        {
+            testPurposeRepo.SaveTestPurpose(new TestPurpose
+            {
+                IdEmployee = purpose.IdEmployee,
+                IdTest = purpose.IdTest,
+                DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
+            });
         }
 
         //logic

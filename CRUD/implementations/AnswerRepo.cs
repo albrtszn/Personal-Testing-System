@@ -34,9 +34,14 @@ namespace CRUD.implementations
 
         public void SaveAnswer(Answer AnswerToSave)
         {
-            if (AnswerToSave.Id != 0 && GetAnswerById(AnswerToSave.Id) != null)
+            Answer? answer = GetAnswerById(AnswerToSave.Id);
+            if (answer != null && AnswerToSave.Id != 0)
             {
-                context.Answers.Update(AnswerToSave);
+                //context.Answers.Update(AnswerToSave);
+                answer.Text = AnswerToSave.Text;
+                answer.IdQuestion = AnswerToSave.IdQuestion;
+                answer.Correct = AnswerToSave.Correct;
+                answer.ImagePath = AnswerToSave.ImagePath;
             }
             else
             {

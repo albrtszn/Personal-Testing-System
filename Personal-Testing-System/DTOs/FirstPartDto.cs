@@ -5,7 +5,7 @@ namespace Personal_Testing_System.DTOs
 {
     public class FirstPartDto
     {
-        public string Id { get; set; }
+        public string IdFirstPart { get; set; }
         public string? Text { get; set; }
         public string? IdQuestion { get; set; }
     }

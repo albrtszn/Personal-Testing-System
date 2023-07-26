@@ -16,9 +16,10 @@ namespace Personal_Testing_System.Services
         {
             return new AnswerDto
             {
-                Id = answer.Id,
+                IdAnswer = answer.Id,
                 IdQuestion = answer.IdQuestion,
                 Text = answer.Text,
+                ImagePath = answer.ImagePath,
                 Correct = answer.Correct
             };
         }
@@ -26,9 +27,10 @@ namespace Personal_Testing_System.Services
         {
             return new Answer
             {
-                Id = (int)answerDto.Id,
+                Id = (int)answerDto.IdAnswer,
                 IdQuestion = answerDto.IdQuestion,
                 Text = answerDto.Text,  
+                ImagePath= answerDto.ImagePath,
                 Correct = answerDto.Correct
             };
         }

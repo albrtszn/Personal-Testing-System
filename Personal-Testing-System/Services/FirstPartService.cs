@@ -17,7 +17,7 @@ namespace Personal_Testing_System.Services
         {
             return new FirstPartDto
             {
-                Id = firstPart.Id,
+                IdFirstPart = firstPart.Id,
                 Text = firstPart.Text,
                 IdQuestion = firstPart.IdQuestion
             };

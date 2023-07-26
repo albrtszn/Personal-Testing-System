@@ -34,9 +34,12 @@ namespace CRUD.implementations
 
         public void SaveFirstPArt(FirstPart FirstPartoSave)
         {
-            if (!string.IsNullOrEmpty(FirstPartoSave.Id) && GetFirstPartById(FirstPartoSave.Id) != null)
+            FirstPart? fp = GetFirstPartById(FirstPartoSave.Id);
+            if (fp != null && !string.IsNullOrEmpty(FirstPartoSave.Id))
             {
-                context.FirstParts.Update(FirstPartoSave);
+                //context.FirstParts.Update(FirstPartoSave);
+                fp.Text = FirstPartoSave.Text;
+                fp.IdQuestion = FirstPartoSave.IdQuestion;
             }
             else
             {

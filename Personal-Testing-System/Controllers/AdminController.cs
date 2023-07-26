@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
@@ -16,11 +18,19 @@ namespace Personal_Testing_System.Controllers
     public class AdminController : ControllerBase
     {
         private readonly ILogger<AdminController> logger;
+        private readonly IWebHostEnvironment environment;
         private MasterService ms;
-        public AdminController(ILogger<AdminController> _logger, MasterService _masterService)
+        public AdminController(ILogger<AdminController> _logger, MasterService _masterService, 
+                               IWebHostEnvironment _environment)
         {
             logger = _logger;
             ms = _masterService;
+            environment = _environment;
+            //CreateDirectory !!!
+            if (!Directory.Exists(environment.WebRootPath))
+            {
+                Directory.CreateDirectory(environment.WebRootPath);
+            }
         }
 
         [HttpPost("Login")]
@@ -245,6 +255,8 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteCompetence")]
         public async Task<IActionResult> DeleteCompetence(int? competenceId)
         {
+            logger.LogInformation($"/admin-api/DeleteCompetence :competenceId={competenceId}");
+
             if (!competenceId.HasValue) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
             if (ms.TestType.GetCompetenceById(competenceId.Value) != null)
             {
@@ -256,17 +268,27 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Test
          */
+        [HttpGet("GetTests")]
+        public async Task<IActionResult> GetTests()
+        {
+            logger.LogInformation($"/admin-api/GetTests ");
+            return Ok(ms.Test.GetAllTestGetModels());
+        }
+
         [HttpGet("GetTest")]
         public async Task<IActionResult> GetTest(string? id)
         {
+            logger.LogInformation($"/admin-api/GetTest :id={id}");
             if (!string.IsNullOrEmpty(id))
             {
-                Test test = ms.Test.GetTestById(id);
+                Test? test = ms.Test.GetTestById(id);
+                if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
                 List<Question> questions = ms.Question.GetAllQuestions()
                     .Where(x => x.IdTest.Equals(id)).ToList();
 
                 TestModel testDto = new TestModel
                 {
+                    Id = test.Id,
                     Name = test.Name,
                     Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
                     Questions = new List<QuestionModel>()
@@ -279,6 +301,7 @@ namespace Personal_Testing_System.Controllers
                         Id = quest.Id,
                         IdQuestionType = quest.IdQuestionType,
                         Text = quest.Text,
+                        ImagePath = quest.ImagePath,
                         Answers = new List<object>() { }
                     };
 
@@ -297,7 +320,7 @@ namespace Personal_Testing_System.Controllers
                         List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
                         foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
                         {
-                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.Id));
+                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                         }
                         createQuestionDto.Answers.AddRange(secondPartDtos);
                     }
@@ -306,54 +329,119 @@ namespace Personal_Testing_System.Controllers
                 }
                 return Ok(testDto);
             }
-            return NotFound("Тест не найден");
+            return BadRequest(new { message = "Ошибка. Поле не заполнено" });
         }
 
         [HttpPost("AddTest")]
-        public async Task<IActionResult> AddTest(CreateTestModel? createTestDto)
+        public async Task<IActionResult> AddTest([FromForm] PostTestModel? postModel)
         {
-            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idCompetence={createTestDto.CompetenceId}," +
-                                  $"countOfQuestions={createTestDto.Questions.Count}");
+            AddTestModel? test = JsonConvert.DeserializeObject<AddTestModel>(postModel.Test);
 
-            if (createTestDto != null && !createTestDto.Name.IsNullOrEmpty() &&
-                !createTestDto.Name.IsNullOrEmpty() && createTestDto.CompetenceId.HasValue &&
-                createTestDto.Questions.Count != 0) {
+            if (test != null && !test.Name.IsNullOrEmpty() &&
+                test.CompetenceId.HasValue && test.Questions.Count != 0) 
+            {
+                logger.LogInformation($"/user-api/AddTest test: name={test.Name}, idCompetence={test.CompetenceId}," +
+                      $"countOfQuestions={test.Questions.Count}");
+
                 string idTest = Guid.NewGuid().ToString();
                 ms.Test.SaveTest(new Test
                 {
                     Id = idTest,
-                    Name = createTestDto.Name,
-                    IdCompetence = createTestDto.CompetenceId
+                    Name = test.Name,
+                    IdCompetence = test.CompetenceId
                 });
 
-                foreach (QuestionModel quest in createTestDto.Questions)
+                foreach (QuestionModel quest in test.Questions)
                 {
                     logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
 
                     string idQuestion = Guid.NewGuid().ToString();
-                    ms.Question.SaveQuestion(new Question
-                    {
-                        Id = idQuestion,
-                        Text = quest.Text,
-                        IdQuestionType = quest.IdQuestionType,
-                        IdTest = idTest
-                    });
 
-                    foreach (JsonElement answer in quest.Answers)
+                    if (!quest.ImagePath.IsNullOrEmpty())
                     {
-                        AnswerDto answerDto = answer.Deserialize<AnswerDto>();
+                        IFormFile file = postModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
+                        string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                        string ext = Path.GetExtension(saveImage);
+                        if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                        {
+                            using (var upload = new FileStream(saveImage, FileMode.Create))
+                            {
+                                await file.CopyToAsync(upload);
+                            }
+                            /*using (FileStream fs = System.IO.File.Create(environment.WebRootPath + file.FileName))
+                            {
+                                file.CopyTo(fs);
+                                fs.Flush();
+                            };*/
+                            ms.Question.SaveQuestion(new Question
+                            {
+                                Id = idQuestion,
+                                Text = quest.Text,
+                                IdQuestionType = quest.IdQuestionType,
+                                ImagePath = file.FileName,
+                                IdTest = idTest
+                            });
+                        }
+                    }
+                    else
+                    {
+
+                        ms.Question.SaveQuestion(new Question
+                        {
+                            Id = idQuestion,
+                            Text = quest.Text,
+                            IdQuestionType = quest.IdQuestionType,
+                            IdTest = idTest
+                        });
+                    }
+                    foreach (JObject answer in quest.Answers)
+                    {
+                        /*AnswerDto answerDto = answer.Deserialize<AnswerDto>();
                         SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
-                        FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();
+                        FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();*/
+
+                        AnswerDto answerDto = answer.ToObject<AnswerDto>();
+                        SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
+                        FirstSecondPartDto firstSecondPartDto = answer.ToObject<FirstSecondPartDto>();
 
                         if (answerDto is AnswerDto && answerDto.Correct != null)
                         {
                             logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
-                            ms.Answer.SaveAnswer(new Answer
+
+                            if (!answerDto.ImagePath.IsNullOrEmpty())
                             {
-                                Text = answerDto.Text,
-                                IdQuestion = idQuestion,
-                                Correct = answerDto.Correct
-                            });
+                                IFormFile file = postModel.Files.GetFile(answerDto.ImagePath);
+                                string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                string ext = Path.GetExtension(saveImage);
+                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                {
+                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                    {
+                                        await file.CopyToAsync(upload);
+                                    }
+                                    /*using (FileStream fs = new FileStream(environment.WebRootPath + file.FileName, FileMode.Create))
+                                    {
+                                        file.CopyTo(fs);
+                                        fs.Flush();
+                                    };*/
+                                    ms.Answer.SaveAnswer(new Answer
+                                    {
+                                        Text = answerDto.Text,
+                                        IdQuestion = idQuestion,
+                                        Correct = answerDto.Correct,
+                                        ImagePath = file.FileName
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                ms.Answer.SaveAnswer(new Answer
+                                {
+                                    Text = answerDto.Text,
+                                    IdQuestion = idQuestion,
+                                    Correct = answerDto.Correct
+                                });
+                            }
                         }
                         if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                         {
@@ -395,44 +483,49 @@ namespace Personal_Testing_System.Controllers
             logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idCompetence={createTestDto.CompetenceId}," +
                       $"countOfQuestions={createTestDto.Questions.Count}");
 
-            if (createTestDto != null && !createTestDto.Name.IsNullOrEmpty() && ms.Test.GetTestById(createTestDto.Id) != null &&
+            if (createTestDto != null && !createTestDto.Id.IsNullOrEmpty() && !createTestDto.Name.IsNullOrEmpty() && ms.Test.GetTestById(createTestDto.Id) != null &&
                 !createTestDto.Name.IsNullOrEmpty() && createTestDto.CompetenceId.HasValue &&
                 createTestDto.Questions.Count != 0)
             {
-                string idTest = Guid.NewGuid().ToString();
+                if(ms.Test.GetTestById(createTestDto.Id) == null) 
+                    return BadRequest(new { message = "Ошибка. Такого теста не существует" });
+
                 ms.Test.SaveTest(new Test
                 {
-                    Id = idTest,
+                    Id = createTestDto.Id,
                     Name = createTestDto.Name,
-                    IdCompetence = createTestDto.CompetenceId
+                    IdCompetence = createTestDto.CompetenceId,
+                    Weight = createTestDto.Questions.Count
                 });
 
                 foreach (QuestionModel quest in createTestDto.Questions)
                 {
                     logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
 
-                    string idQuestion = Guid.NewGuid().ToString();
                     ms.Question.SaveQuestion(new Question
                     {
-                        Id = idQuestion,
+                        Id = quest.Id,
                         Text = quest.Text,
                         IdQuestionType = quest.IdQuestionType,
-                        IdTest = idTest
+                        IdTest = createTestDto.Id,
                     });
 
                     foreach (JsonElement answer in quest.Answers)
                     {
-                        AnswerDto answerDto = answer.Deserialize<AnswerDto>();
-                        SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
-                        FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();
+                        //AnswerDto? answerDto = JsonConvert.DeserializeObject<AnswerDto>(answer.ToString());
+                        AnswerDto? answerDto = answer.Deserialize<AnswerDto>();
+                        SubsequenceDto? subsequenceDto = answer.Deserialize<SubsequenceDto>();
+                        FirstPartDto? firstPartDto = answer.Deserialize<FirstPartDto>();
+                        SecondPartDto? secondPartDto = answer.Deserialize<SecondPartDto>();
 
                         if (answerDto is AnswerDto && answerDto.Correct != null)
                         {
                             logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
                             ms.Answer.SaveAnswer(new Answer
                             {
+                                Id = answerDto.IdAnswer.Value,
                                 Text = answerDto.Text,
-                                IdQuestion = idQuestion,
+                                IdQuestion = answerDto.IdQuestion,
                                 Correct = answerDto.Correct
                             });
                         }
@@ -441,36 +534,55 @@ namespace Personal_Testing_System.Controllers
                             logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
                             ms.Subsequence.SaveSubsequence(new Subsequence
                             {
+                                Id = subsequenceDto.IdSubsequence,
                                 Text = subsequenceDto.Text,
                                 Number = subsequenceDto.Number,
-                                IdQuestion = idQuestion
+                                IdQuestion = subsequenceDto.IdQuestion
                             });
                         }
-                        if (firstSecondPartDto is FirstSecondPartDto &&
-                            !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
+                        if (firstPartDto is FirstPartDto && !string.IsNullOrEmpty(firstPartDto.IdFirstPart) && 
+                            !string.IsNullOrEmpty(firstPartDto.Text))
                         {
-                            logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
-                            string firstPartId = Guid.NewGuid().ToString();
+                            logger.LogInformation($"firstPartDto -> Id={firstPartDto.IdFirstPart}, Text={firstPartDto.Text}");
                             ms.FirstPart.SaveFirstPart(new FirstPart
                             {
-                                Id = firstPartId,
-                                Text = firstSecondPartDto.FirstPartText,
-                                IdQuestion = idQuestion
+                                Id = firstPartDto.IdFirstPart,
+                                Text = firstPartDto.Text,
+                                IdQuestion = firstPartDto.IdQuestion
                             });
+                        }
+                        if (secondPartDto is SecondPartDto && secondPartDto.IdSecondPart.HasValue &&
+                            !secondPartDto.Text.IsNullOrEmpty() && secondPartDto.IdFirstPart.IsNullOrEmpty())
+                        {
+                            logger.LogInformation($"secondPatDto -> Id={secondPartDto.IdFirstPart}, text={firstPartDto.Text}, IdFirstPart={secondPartDto.IdFirstPart}");
                             ms.SecondPart.SaveSecondPart(new SecondPart
                             {
-                                Text = firstSecondPartDto.SecondPartText,
-                                IdFirstPart = firstPartId
+                                Id = secondPartDto.IdSecondPart.Value,
+                                Text = secondPartDto.Text,
+                                IdFirstPart = secondPartDto.IdFirstPart
                             });
                         }
                     }
                 }
                 return Ok(new { message = "Обновление теста успешно" });
             }
-            return BadRequest(new { message = "Ошибка. Не все поля заполнены или такого теста нет" });
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены " });
         }
 
-
+        [HttpPost("DeleteTest")]
+        public async Task<IActionResult> DeleteTest(string? id)
+        {
+            if (id.IsNullOrEmpty()) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
+            if (ms.Test.GetTestById(id) != null)
+            {
+                ms.DeleteTestById(id);
+                return Ok(new { message = "Тест удален успешно" });
+            }
+            return NotFound(new { message = "Ошибка. Тест не найден" });
+        }
+        /*
+         *  Purpose
+         */
         [HttpGet("GetPurposes")]
         public async Task<IActionResult> GetPurposes()
         {
@@ -484,7 +596,7 @@ namespace Personal_Testing_System.Controllers
             logger.LogInformation($"/admin-api/GetPurposessByEmployeeId id={employeeId}");
             if (string.IsNullOrEmpty(employeeId))
             {
-                return BadRequest(new { message = "Вы ввели пустое поле" });
+                return BadRequest(new { message = "Ошибка. Поле не заполнено" });
             }
             List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
                              .Where(x => x.IdEmployee.Equals(employeeId)).ToList();
@@ -510,30 +622,30 @@ namespace Personal_Testing_System.Controllers
                 }
                 return Ok(models);
             }
-            return BadRequest(new { message = "Ошибка при запросе" });
+            return BadRequest(new { message = "Ошибка." });
         }
 
         [HttpPost("AddPurpose")]
-        public async Task<IActionResult> AddPurpose(TestPurposeDto? purpose)
+        public async Task<IActionResult> AddPurpose(AddTestPurposeModel? purpose)
         {
             logger.LogInformation($"/admin-api/AddPurpose employeeId={purpose.IdEmployee}, testId={purpose.IdTest}, datatime={purpose.DatatimePurpose}");
             if (purpose != null && !purpose.IdTest.IsNullOrEmpty() &&
                 !purpose.IdEmployee.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty())
             {
-                ms.TestPurpose.SaveTestPurposeDto(purpose);
+                ms.TestPurpose.SaveTestPurpose(purpose);
                 return Ok(new { message = "Тест назначен" });
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
         [HttpPost("AddPurposesBySubdivision")]
-        public async Task<IActionResult> AddPurposesBySubdivision(string? testId, int? idSubdivision, DateTime? time)
+        public async Task<IActionResult> AddPurposesBySubdivision(string? testId, int? idSubdivision, string? time)
         {
             logger.LogInformation($"/admin-api/AddPurposesBySubdivision testId={testId}, idSubdivision={idSubdivision}");
-            if (!testId.IsNullOrEmpty() && idSubdivision.HasValue && time.HasValue)
+            if (!testId.IsNullOrEmpty() && idSubdivision.HasValue && !time.IsNullOrEmpty())
             {
-                ms.TestPurpose.SavePurposeBySubdivisionId(testId, idSubdivision.Value, time.Value);
-                return Ok(new { message = "Тестs назначенs" });
+                ms.TestPurpose.SavePurposeBySubdivisionId(testId, idSubdivision.Value, DateTime.Parse(time));
+                return Ok(new { message = "Тесты назначены" });
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
@@ -559,6 +671,34 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("UpdatePurpose")]
+        public async Task<IActionResult> UpdatePurpose(TestPurposeDto? purpose)
+        {
+            if (purpose == null || !purpose.Id.HasValue || purpose.IdTest.IsNullOrEmpty() || purpose.DatatimePurpose.IsNullOrEmpty())
+                return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+            if (ms.TestPurpose.GetTestPurposeById(purpose.Id.Value) != null)
+            {
+                ms.TestPurpose.SaveTestPurpose(purpose);
+                return Ok(new { message = "Назначение обновлено" });
+            }
+            return NotFound(new { message = "Ошибка. Такого назначения не существует" });
+        }
+
+        [HttpPost("DeletePurpose")]
+        public async Task<IActionResult> DeletePurpose(int? purposeId)
+        {
+            if (!purposeId.HasValue) return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
+            if (ms.TestPurpose.GetTestPurposeById(purposeId.Value) != null)
+            {
+                ms.TestPurpose.DeleteTestPurposeById(purposeId.Value);
+                return Ok(new { message = "Назначение удалено" });
+            }
+            return NotFound(new { message = "Ошибка. Такого назначения не существует" });
+        }
+
+        /*
+         *  Result
+         */
         /*[HttpGet("GetResults")]
         public async Task<IActionResult> GetResults()
         {
@@ -634,14 +774,25 @@ namespace Personal_Testing_System.Controllers
             List<EmployeeResultDto> employeeResults = ms.EmployeeResult.GetAllEmployeeResultDtos();
             foreach (EmployeeResultDto result in employeeResults)
             {
-                ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
-                ms.Result.DeleteResultById(result.IdResult);
                 ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(result.IdResult);
                 ms.EmployeeMatching.DeleteEmployeeMatchingByResult(result.IdResult);
                 ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(result.IdResult);
+                ms.Result.DeleteResultById(result.IdResult);
+                ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
             }
             return Ok(new { message = "Результаты удалены" });
         }
 
+        [HttpPost("DeleteResult")]
+        public async Task<IActionResult> DeleteResult(int resultId)
+        {
+            EmployeeResult employeeResults = ms.EmployeeResult.GetEmployeeResultById(resultId);
+            ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(employeeResults.IdResult);
+            ms.EmployeeMatching.DeleteEmployeeMatchingByResult(employeeResults.IdResult);
+            ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(employeeResults.IdResult);
+            ms.Result.DeleteResultById(employeeResults.IdResult);
+            ms.EmployeeResult.DeleteEmployeeResultById(resultId);
+            return Ok(new { message = "Результаты удалены" });
+        }
     }
 }

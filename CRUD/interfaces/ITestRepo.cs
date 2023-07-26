@@ -12,6 +12,6 @@ namespace CRUD.interfaces
         List<Test> GetAllTests();
         Test GetTestById(string id);
         void SaveTest(Test TestToSave);
-        void DeleteTestById(int id);
+        void DeleteTestById(string id);
     }
 }

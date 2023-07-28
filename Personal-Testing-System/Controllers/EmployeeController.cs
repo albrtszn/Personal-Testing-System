@@ -28,7 +28,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("test")]
         public IActionResult test()
         {
-            return Ok(new { message = "Personal-Testing-System " + DateTime.Now });
+            return Ok(new { message = "Personal-Testing-System " + DateTime.Now + Request.Host });
         }
 
         [HttpPost("Login")]

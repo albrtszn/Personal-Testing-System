@@ -1,13 +1,23 @@
 ﻿using DataBase.Repository.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PdfSharpCore;
+using PdfSharpCore.Pdf;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
-using System.Text.Json;
+using System;
+using System.Buffers.Text;
+using System.IO;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
+using System.Text.Unicode;
+using TheArtOfDev.HtmlRenderer.PdfSharp;
+using static System.Net.WebRequestMethods;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -20,19 +30,91 @@ namespace Personal_Testing_System.Controllers
         private readonly ILogger<AdminController> logger;
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
-        public AdminController(ILogger<AdminController> _logger, MasterService _masterService, 
-                               IWebHostEnvironment _environment)
+        public AdminController(ILogger<AdminController> _logger, MasterService _masterService,
+                               IWebHostEnvironment _environmentironment)
         {
             logger = _logger;
             ms = _masterService;
-            environment = _environment;
+            environment = _environmentironment;
             //CreateDirectory !!!
-            if (!Directory.Exists(environment.WebRootPath))
+            if (!Directory.Exists(environment.WebRootPath+"/images"))
             {
-                Directory.CreateDirectory(environment.WebRootPath);
+                Directory.CreateDirectory(environment.WebRootPath + "/images");
             }
         }
+        /*
+         *  TestPDF
+         */
 
+        [HttpGet("GETPDF")]
+        public async Task<IActionResult> GETPDF()
+        {
+            if (!System.IO.File.Exists(Path.Combine(environment.WebRootPath) + "\\images\\logo.jpg"))
+            {
+                return BadRequest("файл не найден");
+            }
+
+            var doc = new PdfDocument();
+            string html = "";
+            string url = "htpps://" + Request.Host.Value + "/images/logo.jpg";
+            html += $"1<img src='{url}'/>";
+            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath);
+            string base64 = Convert.ToBase64String(array);
+            html += $"2<img src='data:image/png;base64,{base64}'/>";
+            PdfGenerator.AddPdfPages(doc,html,PdfSharpCore.PageSize.A4);
+            byte[] res = null;
+            using (MemoryStream s = new MemoryStream())
+            {
+                doc.Save(s);
+                res = s.ToArray();
+            }
+            return File(res, "application/pdf", "ADMIN_GETPDF.pdf");
+            //environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath
+
+
+
+
+
+            /*PdfDocument pdf = renderer.RenderHtmlAsPdf($"<img src='{"https://img1.goodfon.ru/original/320x240/4/f3/les-gory-minimalizm.jpg"}' />"+
+                                                       $"<img src='{"https://" + Request.Host.Value + "/images/trashcan.jpg\""}' />");
+            var Renderer = new IronPdf.ChromePdfRenderer();
+            var pngBinaryData = System.IO.File.ReadAllBytes(Path.Combine(environmentironment.WebRootPath) + "\\images\\trashcan.jpg");
+            var ImgDataURI = @"data:image/png;base64," + Convert.ToBase64String(pngBinaryData);
+            var ImgHtml = $"<img src='{ImgDataURI}'>";
+            using var pdfdoc = Renderer.RenderHtmlAsPdf(ImgHtml);
+
+            //using var PDF = IronPdf.ChromePdfRenderer.StaticRenderUrlAsPdf(new Uri("https://en.wikipedia.org"));
+            return File(pdfdoc.BinaryData, "application/pdf", "TESTPDF.Pdf");*/
+
+            /*string someUrl = "https://" + Request.Host.Value + "/images/trashcan.jpg";
+            byte[] imageBytes1 = null;
+            using (var webClient = new WebClient())
+            {
+                imageBytes1 = webClient.DownloadData(someUrl);
+            }
+            string htmlContent = "";
+            htmlContent += "<style>\r\n img.logo \r\n{ \r\nwidth:110px;\r\nheight:110px;\r\ncontent: url('data:image/jpeg;base64," + Convert.ToBase64String(imageBytes) + "')\r\n} \r\n</style>\r\n";
+            string data = @"data:image/jpg;base64," + Convert.ToBase64String(imageBytes1);
+            htmlContent += $"<img  src='{data}' />";
+            htmlContent += "<img class='logo' src='data:image/jpeg;base64," + Convert.ToBase64String(imageBytes1) + "'/>";
+            string imageUrl = "https://" + Request.Host.Value + "/images/trashcan.jpg";
+            string imageUrl1 = "https://img1.goodfon.ru/original/320x240/4/f3/les-gory-minimalizm.jpg";
+            htmlContent += "<img src='"+ imageUrl +"'/>";
+            htmlContent += "<img src=\""+ imageUrl1 +"\"/>";
+            //htmlContent +=
+            PdfDocument doc = new PdfDocument();
+            PdfGenerator.AddPdfPages(doc, htmlContent, PageSize.A4);
+            byte[] res = null;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                doc.Save(ms);
+                res = ms.ToArray();
+            }
+            return File(res, "application/pdf", "TEST.pdf");*/
+        }
+        /*
+        * 
+        */
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginModel? loginModel)
         {
@@ -332,8 +414,128 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Поле не заполнено" });
         }
 
+        [HttpGet("GetPdfTest")]
+        public async Task<IActionResult> GetPdfTest(string? id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                Test? test = ms.Test.GetTestById(id);
+                if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+                string html = "<div><h1 style=\"text-align: left;\">Название Теста: " + test.Name +"</h1>\r\n " +
+                              "<h2 style=\"text-align: left;\">Компетенция: "+ ms.TestType.GetCompetenceById(test.IdCompetence.Value).Name +"</h2>\r\n<hr>";
+                List<Question> questions = ms.Question.GetAllQuestions()
+                    .Where(x => x.IdTest.Equals(id)).ToList();
+
+                //!var Renderer = new IronPdf.ChromePdfRenderer();
+                var doc = new PdfDocument();
+
+                foreach (var quest in questions)
+                {
+                    if (!quest.ImagePath.IsNullOrEmpty())
+                    {
+                        /*byte[] imageBytes = System.IO.File.ReadAllBytes(Path.Combine(environment.WebRootPath)+ "\\images\\" + quest.ImagePath);
+                        var ImgDataURI = @"data:image/png;base64," + Convert.ToBase64String(imageBytes);
+                        var ImgHtml = $"<img src='{ImgDataURI}'>";*/
+
+                        //html += "<style>\r\n  img.logo { \r\n   width:auto;\r\n   height:200px;\r\n   content: url(\"data:image/png;charset=utf-8;base64, " + Convert.ToBase64String(imageBytes) +"\");\r\n    }\r\n</style>";
+                        //html += "<p>Вопрос:" + quest.Text + "<img class=\"logo\" ></img></p>\r\n" +
+                        //      "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+
+                        /*string data = "data:image/png;charset=utf-8;base64," + Convert.ToBase64String(imageBytes)+ "\"";
+                        string imageUrl = "https://"+Request.Host.Value+"/images/" + quest.ImagePath;
+                        html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";*/
+                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/"+quest.ImagePath).PhysicalPath))
+                        {
+                            /*string filePath = environment.WebRootPath + "/images/" + quest.ImagePath;
+                            byte[] imgArray = System.IO.File.ReadAllBytes(filePath);
+                            string base64 = Convert.ToBase64String(imgArray);
+                            string imageUrl = "data:image/jpg;base64, " + base64 + "";
+                            //html += "<img style='width:auto; height:100px;' src=\"" + imageUrl + "\" />";*/
+                            //html += "<style>\r\n  img.logo { \r\n   width:auto;\r\n   height:200px;\r\n   content: url(\"data:image/png;charset=utf-8;base64, " + base64 +"\");\r\n    }\r\n</style>";
+                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                            string base64 = Convert.ToBase64String(array);
+                            html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                            html += $"<img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/>";
+                        }
+                    }
+                    else
+                    {
+                        html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                    }
+
+                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        foreach (AnswerDto answer in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                        {
+                            if (!answer.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] imageBytes = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                    //html += "<style>\r\n    img.logo { \r\n        width:auto;\r\n        height:50px;\r\n        content: url('data:image/jpeg;base64," + Convert.ToBase64String(imageBytes) + "')\r\n    }\r\n</style>";
+                                    //string path = "https://" + Request.Host+"/"+answer.ImagePath;
+                                    /*html += " img.logo { width:110px;height:110px;content: url('data:image/jpeg;base64," + Convert.ToBase64String(imageBytes) + "')} ";
+                                    html += "<p>&#10065 " + "<img class=\"logo\"></img>" +
+                                            answer.Text + "</p>";*/
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    html += $"<img src='data:image/png;base64,{base64}'/> <p>&#10065{answer.Text}</p>";
+                                }
+                            }
+                            else
+                            {
+                                html += "<p>&#10065 " + answer.Text + "</p>";
+                            }
+                        }
+                    }
+                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        foreach (SubsequenceDto sub in ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                        {
+                            html += "<p>&#10065 " +sub.Text + "</p>";
+                        }
+                    }
+                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        List<FirstSecondPartDto> list = ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                        string[,] array = new string[2,list.Count];
+                        int position = 0;
+                        foreach(FirstSecondPartDto dto in list)
+                        {
+                            array[0,position] = dto.FirstPartText;
+                            array[1,position] = dto.SecondPartText;
+                            position++;
+                        }
+                        Random rnd = new Random();
+                        //array = array.OrderBy(x => rnd.Next()).ToArray();
+                        
+                        for (int i = 0; i < array.GetLength(0);i++)
+                        {
+                            html += "<p style=\"white-space: pre;\">" + array[0,i] +"                          " + array[1,i] +"</p>";
+                        }
+                    }
+                }
+                html += "<hr>\r\n    <p>Дата прохождения теста:_________________________________________</p>\r\n    <p>ФИО:_________________________________________</p>\r\n    <p>Подпись:___________________</p>";
+                html += "</div>";
+                //var doc = new PdfDocument();
+                PdfGenerator.AddPdfPages(doc,html,PageSize.A4);
+
+                byte[] res = null;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    doc.Save(ms);
+                    res = ms.ToArray();
+                }
+                //!using var pdfdoc = Renderer.RenderHtmlAsPdf(html);
+
+                return File(res, "application/pdf", test.Name + ".pdf");
+                //!return File(pdfdoc.BinaryData, "application/pdf", "TESTPDF.Pdf");
+            }
+                return NotFound(new { message = "Ошибка. Тест не найден" });
+            }
+
         [HttpPost("AddTest")]
-        public async Task<IActionResult> AddTest([FromForm] PostTestModel? postModel)
+        public async Task<IActionResult> AddTest([FromForm] AddPostTestModel? postModel)
         {
             AddTestModel? test = JsonConvert.DeserializeObject<AddTestModel>(postModel.Test);
 
@@ -360,7 +562,7 @@ namespace Personal_Testing_System.Controllers
                     if (!quest.ImagePath.IsNullOrEmpty())
                     {
                         IFormFile file = postModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
-                        string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                        string saveImage = Path.Combine(environment.WebRootPath+"/images/", file.FileName);
                         string ext = Path.GetExtension(saveImage);
                         if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                         {
@@ -368,12 +570,12 @@ namespace Personal_Testing_System.Controllers
                             {
                                 await file.CopyToAsync(upload);
                             }
-                            /*using (FileStream fs = System.IO.File.Create(environment.WebRootPath + file.FileName))
+                            /*using (FileStream fs = System.IO.File.Create(environmentironment.WebRootPath + file.FileName))
                             {
                                 file.CopyTo(fs);
                                 fs.Flush();
                             };*/
-                            ms.Question.SaveQuestion(new Question
+                ms.Question.SaveQuestion(new Question
                             {
                                 Id = idQuestion,
                                 Text = quest.Text,
@@ -411,7 +613,7 @@ namespace Personal_Testing_System.Controllers
                             if (!answerDto.ImagePath.IsNullOrEmpty())
                             {
                                 IFormFile file = postModel.Files.GetFile(answerDto.ImagePath);
-                                string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
                                 string ext = Path.GetExtension(saveImage);
                                 if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                 {
@@ -419,7 +621,7 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         await file.CopyToAsync(upload);
                                     }
-                                    /*using (FileStream fs = new FileStream(environment.WebRootPath + file.FileName, FileMode.Create))
+                                    /*using (FileStream fs = new FileStream(environmentironment.WebRootPath + file.FileName, FileMode.Create))
                                     {
                                         file.CopyTo(fs);
                                         fs.Flush();
@@ -478,56 +680,104 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("UpdateTest")]
-        public async Task<IActionResult> UpdateTest(CreateTestModel? createTestDto)
+        public async Task<IActionResult> UpdateTest([FromForm] UpdatePostTestModel? updatePostModel)
         {
-            logger.LogInformation($"/user-api/AddTest test: name={createTestDto.Name}, idCompetence={createTestDto.CompetenceId}," +
-                      $"countOfQuestions={createTestDto.Questions.Count}");
+            UpdateTestModel? test = JsonConvert.DeserializeObject<UpdateTestModel>(updatePostModel.Test);
 
-            if (createTestDto != null && !createTestDto.Id.IsNullOrEmpty() && !createTestDto.Name.IsNullOrEmpty() && ms.Test.GetTestById(createTestDto.Id) != null &&
-                !createTestDto.Name.IsNullOrEmpty() && createTestDto.CompetenceId.HasValue &&
-                createTestDto.Questions.Count != 0)
+
+            if (test != null && !test.Id.IsNullOrEmpty() && !test.Name.IsNullOrEmpty() && ms.Test.GetTestById(test.Id) != null &&
+                !test.Name.IsNullOrEmpty() && test.CompetenceId.HasValue &&
+                test.Questions.Count != 0)
             {
-                if(ms.Test.GetTestById(createTestDto.Id) == null) 
+                logger.LogInformation($"/user-api/AddTest test: name={test.Name}, idCompetence={test.CompetenceId}," +
+                                      $"countOfQuestions={test.Questions.Count}");
+
+                if (ms.Test.GetTestById(test.Id) == null) 
                     return BadRequest(new { message = "Ошибка. Такого теста не существует" });
 
                 ms.Test.SaveTest(new Test
                 {
-                    Id = createTestDto.Id,
-                    Name = createTestDto.Name,
-                    IdCompetence = createTestDto.CompetenceId,
-                    Weight = createTestDto.Questions.Count
+                    Id = test.Id,
+                    Name = test.Name,
+                    IdCompetence = test.CompetenceId,
+                    Weight = test.Questions.Count
                 });
 
-                foreach (QuestionModel quest in createTestDto.Questions)
+                foreach (QuestionModel quest in test.Questions)
                 {
                     logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
 
-                    ms.Question.SaveQuestion(new Question
+                    if (!quest.ImagePath.IsNullOrEmpty())
                     {
-                        Id = quest.Id,
-                        Text = quest.Text,
-                        IdQuestionType = quest.IdQuestionType,
-                        IdTest = createTestDto.Id,
-                    });
-
-                    foreach (JsonElement answer in quest.Answers)
+                        IFormFile file = updatePostModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
+                        string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                        string ext = Path.GetExtension(saveImage);
+                        if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                        {
+                            using (var upload = new FileStream(saveImage, FileMode.Create))
+                            {
+                                await file.CopyToAsync(upload);
+                            }
+                            ms.Question.SaveQuestion(new Question
+                            {
+                                Id = quest.Id,
+                                Text = quest.Text,
+                                IdQuestionType = quest.IdQuestionType,
+                                ImagePath = file.FileName,
+                                IdTest = test.Id
+                            });
+                        }
+                    }
+                    else
                     {
-                        //AnswerDto? answerDto = JsonConvert.DeserializeObject<AnswerDto>(answer.ToString());
-                        AnswerDto? answerDto = answer.Deserialize<AnswerDto>();
-                        SubsequenceDto? subsequenceDto = answer.Deserialize<SubsequenceDto>();
-                        FirstPartDto? firstPartDto = answer.Deserialize<FirstPartDto>();
-                        SecondPartDto? secondPartDto = answer.Deserialize<SecondPartDto>();
+                        ms.Question.SaveQuestion(new Question
+                        {
+                            Id = quest.Id,
+                            Text = quest.Text,
+                            IdQuestionType = quest.IdQuestionType,
+                            IdTest = test.Id
+                        });
+                    }
+                    foreach (JObject answer in quest.Answers)
+                    {
+                        AnswerDto answerDto = answer.ToObject<AnswerDto>();
+                        SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
+                        FirstPartDto firstPartDto = answer.ToObject<FirstPartDto>();
+                        SecondPartDto secondPartDto = answer.ToObject<SecondPartDto>();
 
                         if (answerDto is AnswerDto && answerDto.Correct != null)
                         {
                             logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
-                            ms.Answer.SaveAnswer(new Answer
+
+                            if (!answerDto.ImagePath.IsNullOrEmpty())
                             {
-                                Id = answerDto.IdAnswer.Value,
-                                Text = answerDto.Text,
-                                IdQuestion = answerDto.IdQuestion,
-                                Correct = answerDto.Correct
-                            });
+                                IFormFile file = updatePostModel.Files.GetFile(answerDto.ImagePath);
+                                string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                string ext = Path.GetExtension(saveImage);
+                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                {
+                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                    {
+                                        await file.CopyToAsync(upload);
+                                    }
+                                    ms.Answer.SaveAnswer(new Answer
+                                    {
+                                        Text = answerDto.Text,
+                                        IdQuestion = quest.Id,
+                                        Correct = answerDto.Correct,
+                                        ImagePath = file.FileName
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                ms.Answer.SaveAnswer(new Answer
+                                {
+                                    Text = answerDto.Text,
+                                    IdQuestion = quest.Id,
+                                    Correct = answerDto.Correct
+                                });
+                            }
                         }
                         if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                         {

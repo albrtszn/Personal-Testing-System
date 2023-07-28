@@ -2,7 +2,7 @@
 
 namespace Personal_Testing_System.Models
 {
-    public class CreateTestModel
+    public class UpdateTestModel
     {
         public string? Id { get; set; }
         public string? Name { get; set; }

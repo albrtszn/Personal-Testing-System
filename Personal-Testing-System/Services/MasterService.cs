@@ -1,4 +1,5 @@
 ﻿using DataBase.Repository.Models;
+using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Services;
 
 namespace Personal_Testing_System.Services
@@ -72,6 +73,10 @@ namespace Personal_Testing_System.Services
         /*
          *  Logic
          */
+
+        /*
+         *  Test
+         */
         public void DeleteTestById(string id)
         {
             foreach (Question quest in Question.GetAllQuestions().Where(x=>x.IdTest.Equals(id)).ToList())
@@ -87,6 +92,20 @@ namespace Personal_Testing_System.Services
                 Question.DeleteQuestionById(quest.Id);
             }
             Test.DeleteTestById(id);
+        }
+        /*
+         *  First & Second Parts
+         */
+        public List<FirstSecondPartDto> GetFirstSecondPartDtoByQuestion(string id)
+        {
+            List<FirstSecondPartDto> firstSecondPartDtoList = new List<FirstSecondPartDto>();
+            FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(id)).ToList()
+                .ForEach(x => firstSecondPartDtoList.Add(new FirstSecondPartDto
+                {
+                    FirstPartText = x.Text,
+                    SecondPartText = SecondPart.GetSecondPartDtoByFirstPartId(x.Id).Text
+                }));
+            return firstSecondPartDtoList;
         }
     }
 }

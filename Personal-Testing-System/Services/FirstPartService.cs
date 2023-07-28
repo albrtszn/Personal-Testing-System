@@ -45,17 +45,6 @@ namespace Personal_Testing_System.Services
             return GetFirstPartDtos().Where(x => x.IdQuestion == id).ToList();
         }
 
-        public List<FirstSecondPartDto> GetFirstSecondPartDto(string id)
-        {
-            List<FirstSecondPartDto> firstSecondPartDtoList = new List<FirstSecondPartDto>();
-            GetAllFirstParts().Where(x => x.IdQuestion.Equals(id)).ToList()
-                .ForEach(x => firstSecondPartDtoList.Add(new FirstSecondPartDto
-                {
-
-                }));
-            return firstSecondPartDtoList;
-        }
-
         public FirstPart GetFirstPartById(string id)
         {
             return firstPartRepo.GetFirstPartById(id);

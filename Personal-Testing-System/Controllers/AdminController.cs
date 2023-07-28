@@ -479,20 +479,17 @@ namespace Personal_Testing_System.Controllers
                                             answer.Text + "</p>";*/
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += $"<img src='data:image/png;base64,{base64}'/> <p>&#10065{answer.Text}</p>";
+                                    html += $"<img src='data:image/png;base64,{base64}'/>";
                                 }
                             }
-                            else
-                            {
-                                html += "<p>&#10065 " + answer.Text + "</p>";
-                            }
+                            html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{quest.Text}</span>";
                         }
                     }
                     if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
                     {
                         foreach (SubsequenceDto sub in ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
                         {
-                            html += "<p>&#10065 " +sub.Text + "</p>";
+                            html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{sub.Text}</span>";
                         }
                     }
                     if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
@@ -532,7 +529,96 @@ namespace Personal_Testing_System.Controllers
                 //!return File(pdfdoc.BinaryData, "application/pdf", "TESTPDF.Pdf");
             }
                 return NotFound(new { message = "Ошибка. Тест не найден" });
+        }
+
+        [HttpGet("GetPdfCorerectTest")]
+        public async Task<IActionResult> GetPdfCorerectTest(string? id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                Test? test = ms.Test.GetTestById(id);
+                if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+                string html = "";
+                html += "<div><h1 style=\"text-align: left;\">Название Теста: " + test.Name + "</h1>\r\n " +
+                              "<h2 style=\"text-align: left;\">Компетенция: " + ms.TestType.GetCompetenceById(test.IdCompetence.Value).Name + "</h2>\r\n<hr>";
+                List<Question> questions = ms.Question.GetAllQuestions()
+                    .Where(x => x.IdTest.Equals(id)).ToList();
+
+                var doc = new PdfDocument();
+
+                foreach (var quest in questions)
+                {
+                    if (!quest.ImagePath.IsNullOrEmpty())
+                    {
+                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                        {
+                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                            string base64 = Convert.ToBase64String(array);
+                            html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                            html += $"<img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/>";
+                        }
+                    }
+                    else
+                    {
+                        html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                    }
+                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        foreach (AnswerDto answer in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                        {
+                            if (!answer.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/"+answer.ImagePath).PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    html += $"<img src='data:image/png;base64,{base64}'/>";
+                                }
+                            }
+                            if (answer.Correct.Value)
+                            {
+                                html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\">X</span>{quest.Text}</span>";
+                            }
+                            else
+                            {
+                                html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{quest.Text}</span>";
+                            }
+                        }
+                    }
+                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        foreach (SubsequenceDto sub in ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                        {
+                            html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\">{sub.Number}</span>{sub.Text}</span>";
+                            //html += "<p> "+sub.Number + " " + sub.Text + "</p>";
+                        }
+                    }
+                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        List<FirstSecondPartDto> list = ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                        string[,] array = new string[2, list.Count];
+                        int position = 0;
+                        foreach (FirstSecondPartDto dto in list)
+                        {
+                            html += "<p>" + dto.FirstPartText +" - "+ dto.SecondPartText + "</p>";
+                        }
+                    }
+                }
+                html += "<hr>\r\n    <p>Дата прохождения теста:_________________________________________</p>\r\n    <p>ФИО:_________________________________________</p>\r\n    <p>Подпись:___________________</p>";
+                html += "</div>";
+                //var doc = new PdfDocument();
+                PdfGenerator.AddPdfPages(doc, html, PageSize.A4);
+
+                byte[] res = null;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    doc.Save(ms);
+                    res = ms.ToArray();
+                }
+                return File(res, "application/pdf", test.Name + ".pdf");
             }
+            return NotFound(new { message = "Ошибка. Тест не найден" });
+        }
 
         [HttpPost("AddTest")]
         public async Task<IActionResult> AddTest([FromForm] AddPostTestModel? postModel)

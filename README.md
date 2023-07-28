@@ -12,7 +12,7 @@ Testing system for personal(workers/candidates). Conducting a test to determine 
 ## Документация API
 ### /user-api
 ---
-- POST /Login
+1. POST /Login
 Input <- LoginModel:
 ```
 {
@@ -26,9 +26,9 @@ Output -> string:
     "EmployeeId":"xxxxxxxxxxxxxx..."
 }
 ```
-- GET /GetPurposesByEmployeeId?employeeId=d4359d8e-7bd9-4fae-b060-5633801f7a1a
-Input <- value(employeeId) in url.
-Output -> List of PurposeModels:
+1. GET /GetPurposesByEmployeeId?employeeId=d4359d8e-7bd9-4fae-b060-5633801f7a1a
+- Input <- value(employeeId) in url.
+- Output -> List of PurposeModels:
 ```
 [
     {
@@ -46,9 +46,9 @@ Output -> List of PurposeModels:
     }
 ]
 ```
-- GET /GetTest?id=21fb8618-5277-474d-a759-08403a7f65e0
+1. GET /GetTest?id=21fb8618-5277-474d-a759-08403a7f65e0
 - Input <- value(id of test) in url.
-Output -> TestModel:
+- Output -> TestModel:
 ```
 {
     "Id": "57e6acdc-1c76-4bf8-b815-cc136deff9ac",
@@ -173,8 +173,8 @@ Output -> TestModel:
     ]
 }
 ```
-- POST /PushTest
-Input <- TestResultModel.
+1. POST /PushTest
+- Input <- TestResultModel.
 ```
 {
     "TestId" : "57e6acdc-1c76-4bf8-b815-cc136deff9ac",
@@ -244,9 +244,269 @@ Input <- TestResultModel.
     ]
 }
 ```
-Output -> string(score):
+- Output -> string(score):
 ```
 {
     "message": "Тест выполнен. Оценка: 3"
 }
+```
+### admin-api/
+---
+1. POST https://localhost:7273/admin-api/Login
+- Input <- :
+```
+{
+    "Login": "admin",
+    "Password": "password"
+}
+```
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetSubdivisions
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/AddSubdivision
+- Input <- :
+```
+{
+    "Name" : "Финансовый отдел"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/UpdateSubdivision
+- Input <- :
+```
+{
+    "Id" : 7,
+    "Name" : "Финансовый отдел."
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeleteSubdivision?id=7
+- Input <- id in url:
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetEmployees
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/user-api/GetEmployee?id=2
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/user-api/AddEmployee
+- Input <- :
+```
+{
+    "FirstName": "Водила",
+    "SecondName": "Водила",
+    "LastName": "Водила",
+    "Login": "vodila",
+    "Password": "password",
+    "DateOfBirth": "24.07.1985",
+    "IdSubdivision": "1"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/UpdateEmployee
+- Input <- :
+```
+{
+    "Id": "2722684a-d6c7-4ebc-9f46-dc66ed43d5af",
+    "FirstName": "Водила1",
+    "SecondName": "Водила1",
+    "LastName": "Водила1",
+    "Login": "vodila",
+    "Password": "password",
+    "DateOfBirth": "24.07.1985",
+    "IdSubdivision": "7"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeleteEmployee?employeeId=e272d93f-1308-4d63-9fe4-0d0addfec917
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetCompetences
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetCompetence?competenceId=1
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/AddCompetence
+- Input <- :
+```
+{
+    "Name" : "Проверка квалификации"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/UpdateCompetence
+- Input <- :
+```
+{
+    "Id" : 3,
+    "Name" : "Проверка квалификации."
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeleteCompetence?competenceId=2
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetTests
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetTest?id
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/user-api/AddTest
+- Input <- FormData contains files ans AddTestPostModel(json):
+```
+files    /D:/Wallpapers/16220688790371.jpg
+Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/UpdateTest
+- Input <- FormData contains files ans UpdateTestPostModel(json):
+```
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeleteTest?id=5f7511c8-0cae-4864-8ca1-51b3135f10a7
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetPdfTest?id=1554092c-a4b6-4979-a86d-d800f676b718
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetPdfCorerectTest?id=6957a83a-82af-4f79-b31e-0d2deefaad2d
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetPurposes
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetPurposesByEmployeeId?employeeId=8b69bcf7-a600-41d3-999d-ec3d76c72ec1
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/AddPurpose
+- Input <- AddPurposeModel:
+```
+{
+    "IdEmployee" : "8b69bcf7-a600-41d3-999d-ec3d76c72ec1",
+    "IdTest" : "b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e",
+    "DataTimePurpose" : "30.07.2023 14:00:00"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/AddPurposesBySubdivision?testId=b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e&idSubdivision=1&time=26.07.2023 17:00:00
+- Input <- query params in url.
+```
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/UpdatePurpose
+- Input <- :
+```
+{
+    "Id" : 4,
+    "IdEmployee" : "8b69bcf7-a600-41d3-999d-ec3d76c72ec1",
+    "IdTest" : "b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e",
+    "DataTimePurpose" : "26.07.2023 10:00:00"
+}
+```
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeletePurpose?purposeId=4
+- Input <- id in url.
+- Output -> :
+```
+
+```
+1. POST https://localhost:7273/admin-api/DeleteResults
+- Output -> :
+```
+
+```
+1. GET https://localhost:7273/admin-api/GetResults
+- Input <- :
+```
+{
+    "idSubdivision": "",
+    "FirstName": "",
+    "SecondName": "",
+    "LastName": "",
+    "score": "",
+    "sortType": ""
+}
+```
+- Output -> :
+```
+
 ```

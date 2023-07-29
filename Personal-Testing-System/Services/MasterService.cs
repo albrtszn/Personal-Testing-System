@@ -1,6 +1,9 @@
 ﻿using DataBase.Repository.Models;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Extensions.Hosting;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Services;
+using System;
 
 namespace Personal_Testing_System.Services
 {
@@ -77,18 +80,31 @@ namespace Personal_Testing_System.Services
         /*
          *  Test
          */
-        public void DeleteTestById(string id)
+        public void DeleteTestById(string id,IWebHostEnvironment env)
         {
             foreach (Question quest in Question.GetAllQuestions().Where(x=>x.IdTest.Equals(id)).ToList())
             {
-                Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
-                                      .ForEach(x => Answer.DeleteAnswerById(x.Id));
+                List<Answer> answerList = Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
+                foreach (Answer answer in answerList)
+                {
+                    string answerFilePath = env.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath;
+                    if (!string.IsNullOrEmpty(answer.ImagePath) && System.IO.File.Exists(answerFilePath))
+                    {
+                        System.IO.File.Delete(answerFilePath);
+                    }
+                }
+                answerList.ForEach(x => Answer.DeleteAnswerById(x.Id));
+
                 Subsequence.GetAllSubsequences().Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
                       .ForEach(x => Subsequence.DeleteSubsequenceById(x.Id));
                 List<FirstPart> list = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
                 list.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
                 list.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
-
+                string path = env.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath;
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
                 Question.DeleteQuestionById(quest.Id);
             }
             Test.DeleteTestById(id);
@@ -106,6 +122,13 @@ namespace Personal_Testing_System.Services
                     SecondPartText = SecondPart.GetSecondPartDtoByFirstPartId(x.Id).Text
                 }));
             return firstSecondPartDtoList;
+        }
+
+        public void DeleteFirstAndSecondPartsByQuestion(string idQuestion)
+        {
+            List <FirstPart> listFP = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
+            listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
+            listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Personal_Testing_System.DTOs;
 
 namespace Personal_Testing_System.Services
@@ -37,6 +38,13 @@ namespace Personal_Testing_System.Services
         public void DeleteSubsequenceById(int id)
         {
             subsequenceRepo.DeleteSubsequenceById(id);
+        }
+
+        public void DeleteSubsequencesByQuestion(string idQuestion)
+        {
+            GetAllSubsequences().Where(x => x.IdQuestion.Equals(idQuestion))
+                                .ToList()
+                                .ForEach(x => DeleteSubsequenceById(x.Id));
         }
 
         public List<Subsequence> GetAllSubsequences()

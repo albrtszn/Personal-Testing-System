@@ -477,9 +477,9 @@ namespace Personal_Testing_System.Controllers
                                     /*html += " img.logo { width:110px;height:110px;content: url('data:image/jpeg;base64," + Convert.ToBase64String(imageBytes) + "')} ";
                                     html += "<p>&#10065 " + "<img class=\"logo\"></img>" +
                                             answer.Text + "</p>";*/
-                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath);
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += $"<img src='data:image/png;base64,{base64}'/>";
+                                    html += $"<img style=\"width:auto; height:150px;\" src='data:image/png;base64,{base64}'/>";
                                 }
                             }
                             html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{quest.Text}</span>";
@@ -572,7 +572,7 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/"+answer.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += $"<img src='data:image/png;base64,{base64}'/>";
+                                    html += $"<img style=\"width:auto; height:150px;\" src='data:image/png;base64,{base64}'/>";
                                 }
                             }
                             if (answer.Correct.Value)
@@ -636,7 +636,8 @@ namespace Personal_Testing_System.Controllers
                 {
                     Id = idTest,
                     Name = test.Name,
-                    IdCompetence = test.CompetenceId
+                    IdCompetence = test.CompetenceId,
+                    Weight = test.Questions.Count
                 });
 
                 foreach (QuestionModel quest in test.Questions)
@@ -645,35 +646,48 @@ namespace Personal_Testing_System.Controllers
 
                     string idQuestion = Guid.NewGuid().ToString();
 
-                    if (!quest.ImagePath.IsNullOrEmpty())
+                    if (!quest.ImagePath.IsNullOrEmpty() && postModel.Files!=null && postModel.Files.Count != 0)
                     {
                         IFormFile file = postModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
-                        string saveImage = Path.Combine(environment.WebRootPath+"/images/", file.FileName);
+                        string saveImage = Path.Combine(environment.WebRootPath+"\\images\\", file.FileName);
                         string ext = Path.GetExtension(saveImage);
                         if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                         {
-                            using (var upload = new FileStream(saveImage, FileMode.Create))
+                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
                             {
-                                await file.CopyToAsync(upload);
+                                string imagePath = Guid.NewGuid().ToString() + ext;
+                                using (var upload = new FileStream(saveImage, FileMode.Create))
+                                {
+                                    await file.CopyToAsync(upload);
+                                }
+                                ms.Question.SaveQuestion(new Question
+                                {
+                                    Id = idQuestion,
+                                    Text = quest.Text,
+                                    IdQuestionType = quest.IdQuestionType,
+                                    ImagePath = imagePath,
+                                    IdTest = idTest
+                                });
                             }
-                            /*using (FileStream fs = System.IO.File.Create(environmentironment.WebRootPath + file.FileName))
+                            else
                             {
-                                file.CopyTo(fs);
-                                fs.Flush();
-                            };*/
-                ms.Question.SaveQuestion(new Question
-                            {
-                                Id = idQuestion,
-                                Text = quest.Text,
-                                IdQuestionType = quest.IdQuestionType,
-                                ImagePath = file.FileName,
-                                IdTest = idTest
-                            });
+                                /*using (var upload = new FileStream(saveImage, FileMode.Create))
+                                {
+                                    await file.CopyToAsync(upload);
+                                }*/
+                                ms.Question.SaveQuestion(new Question
+                                {
+                                    Id = idQuestion,
+                                    Text = quest.Text,
+                                    IdQuestionType = quest.IdQuestionType,
+                                    ImagePath = quest.ImagePath,
+                                    IdTest = idTest
+                                });
+                            }
                         }
                     }
                     else
                     {
-
                         ms.Question.SaveQuestion(new Question
                         {
                             Id = idQuestion,
@@ -696,22 +710,20 @@ namespace Personal_Testing_System.Controllers
                         {
                             logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
 
-                            if (!answerDto.ImagePath.IsNullOrEmpty())
+                            if (!answerDto.ImagePath.IsNullOrEmpty() && postModel.Files != null && postModel.Files.Count != 0)
                             {
-                                IFormFile file = postModel.Files.GetFile(answerDto.ImagePath);
-                                string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
+
+                                IFormFile file = postModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
+                                string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", file.FileName);
                                 string ext = Path.GetExtension(saveImage);
                                 if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                 {
+
                                     using (var upload = new FileStream(saveImage, FileMode.Create))
                                     {
                                         await file.CopyToAsync(upload);
                                     }
-                                    /*using (FileStream fs = new FileStream(environmentironment.WebRootPath + file.FileName, FileMode.Create))
-                                    {
-                                        file.CopyTo(fs);
-                                        fs.Flush();
-                                    };*/
+
                                     ms.Answer.SaveAnswer(new Answer
                                     {
                                         Text = answerDto.Text,
@@ -770,10 +782,8 @@ namespace Personal_Testing_System.Controllers
         {
             UpdateTestModel? test = JsonConvert.DeserializeObject<UpdateTestModel>(updatePostModel.Test);
 
-
             if (test != null && !test.Id.IsNullOrEmpty() && !test.Name.IsNullOrEmpty() && ms.Test.GetTestById(test.Id) != null &&
-                !test.Name.IsNullOrEmpty() && test.CompetenceId.HasValue &&
-                test.Questions.Count != 0)
+                !test.Name.IsNullOrEmpty() && test.CompetenceId.HasValue &&  test.Questions.Count != 0)
             {
                 logger.LogInformation($"/user-api/AddTest test: name={test.Name}, idCompetence={test.CompetenceId}," +
                                       $"countOfQuestions={test.Questions.Count}");
@@ -789,38 +799,52 @@ namespace Personal_Testing_System.Controllers
                     Weight = test.Questions.Count
                 });
 
+                List<Question> currentQuestions = ms.Question.GetQuestionsByTest(test.Id);
                 foreach (QuestionModel quest in test.Questions)
                 {
                     logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
-
                     if (!quest.ImagePath.IsNullOrEmpty())
                     {
-                        IFormFile file = updatePostModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
-                        string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
-                        string ext = Path.GetExtension(saveImage);
-                        if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                        if (updatePostModel.Files != null && updatePostModel.Files.Count != 0 && 
+                            !System.IO.File.Exists(Path.Combine(environment.WebRootPath, quest.ImagePath)))
                         {
-                            using (var upload = new FileStream(saveImage, FileMode.Create))
+                            IFormFile file = updatePostModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
+                            string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                            string ext = Path.GetExtension(saveImage);
+                            if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                             {
-                                await file.CopyToAsync(upload);
+                                using (var upload = new FileStream(saveImage, FileMode.Create))
+                                {
+                                    await file.CopyToAsync(upload);
+                                }
                             }
-                            ms.Question.SaveQuestion(new Question
-                            {
-                                Id = quest.Id,
-                                Text = quest.Text,
-                                IdQuestionType = quest.IdQuestionType,
-                                ImagePath = file.FileName,
-                                IdTest = test.Id
-                            });
                         }
                     }
-                    else
+                    if (quest.Id.IsNullOrEmpty())
                     {
+                        quest.Id = Guid.NewGuid().ToString();
                         ms.Question.SaveQuestion(new Question
                         {
                             Id = quest.Id,
                             Text = quest.Text,
                             IdQuestionType = quest.IdQuestionType,
+                            ImagePath = quest.ImagePath,
+                            IdTest = test.Id
+                        });
+                    }
+                    else
+                    {
+                        Question? questToDelete = currentQuestions.Find(x => x.Id.Equals(quest.Id));
+                        if (questToDelete != null)
+                        {
+                            currentQuestions.Remove(questToDelete);
+                        }
+                        ms.Question.SaveQuestion(new Question
+                        {
+                            Id = quest.Id,
+                            Text = quest.Text,
+                            IdQuestionType = quest.IdQuestionType,
+                            ImagePath = quest.ImagePath,
                             IdTest = test.Id
                         });
                     }
@@ -837,22 +861,20 @@ namespace Personal_Testing_System.Controllers
 
                             if (!answerDto.ImagePath.IsNullOrEmpty())
                             {
-                                IFormFile file = updatePostModel.Files.GetFile(answerDto.ImagePath);
-                                string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
-                                string ext = Path.GetExtension(saveImage);
-                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                if (updatePostModel.Files != null && updatePostModel.Files.Count != 0 &&
+                                    !System.IO.File.Exists(Path.Combine(environment.WebRootPath, answerDto.ImagePath)))
                                 {
-                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                    IFormFile file = updatePostModel.Files.GetFile(answerDto.ImagePath);
+                                    string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                    string ext = Path.GetExtension(saveImage);
+                                    if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                     {
-                                        await file.CopyToAsync(upload);
+                                        using (var upload = new FileStream(saveImage, FileMode.Create))
+                                        {
+                                            await file.CopyToAsync(upload);
+                                        }
+
                                     }
-                                    ms.Answer.SaveAnswer(new Answer
-                                    {
-                                        Text = answerDto.Text,
-                                        IdQuestion = quest.Id,
-                                        Correct = answerDto.Correct,
-                                        ImagePath = file.FileName
-                                    });
                                 }
                             }
                             else
@@ -861,7 +883,8 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     Text = answerDto.Text,
                                     IdQuestion = quest.Id,
-                                    Correct = answerDto.Correct
+                                    Correct = answerDto.Correct,
+                                    ImagePath = answerDto.ImagePath
                                 });
                             }
                         }
@@ -899,10 +922,32 @@ namespace Personal_Testing_System.Controllers
                             });
                         }
                     }
+                    foreach (Question questionToDelete in currentQuestions)
+                    {
+                        string questFilePath = environment.WebRootFileProvider.GetFileInfo("images/"+questionToDelete.ImagePath).PhysicalPath;
+                        if (!questionToDelete.ImagePath.IsNullOrEmpty() && System.IO.File.Exists(questFilePath))
+                        {
+                            System.IO.File.Delete(questFilePath);
+                        }
+                        List<Answer> answers =  ms.Answer.GetAnswersByQuestionId(questionToDelete.Id);
+                        foreach (Answer answer in answers)
+                        {
+                            string answerFilePath = environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath;
+                            if (!answer.ImagePath.IsNullOrEmpty() && System.IO.File.Exists(answerFilePath))
+                            {
+                                System.IO.File.Delete(answerFilePath);
+                            }
+                        }
+
+                        ms.Subsequence.DeleteSubsequencesByQuestion(questionToDelete.Id);
+                        ms.DeleteFirstAndSecondPartsByQuestion(questionToDelete.Id);
+
+                        ms.Question.DeleteQuestionById(questionToDelete.Id);
+                    }
                 }
                 return Ok(new { message = "Обновление теста успешно" });
             }
-            return BadRequest(new { message = "Ошибка. Не все поля заполнены " });
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
         [HttpPost("DeleteTest")]
@@ -911,7 +956,7 @@ namespace Personal_Testing_System.Controllers
             if (id.IsNullOrEmpty()) return BadRequest(new { message = "Ошибка. Поле не заполнено" });
             if (ms.Test.GetTestById(id) != null)
             {
-                ms.DeleteTestById(id);
+                ms.DeleteTestById(id, environment);
                 return Ok(new { message = "Тест удален успешно" });
             }
             return NotFound(new { message = "Ошибка. Тест не найден" });

@@ -28,6 +28,13 @@ namespace Personal_Testing_System.Services
             firstPartRepo.DeleteFirstPartById(id);
         }
 
+        public void DeleteFirstPartsByQuestion(string idQuestion)
+        {
+            GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion))
+                              .ToList()
+                              .ForEach(x => DeleteFirstPartById(x.Id));
+        }
+
         public List<FirstPart> GetAllFirstParts()
         {
             return firstPartRepo.GetAllFirstParts();

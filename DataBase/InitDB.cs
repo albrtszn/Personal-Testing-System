@@ -27,7 +27,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            string employeeId = Guid.NewGuid().ToString();
+            /*string employeeId = Guid.NewGuid().ToString();
             if (!db.Employees.Any())
             {
                 db.Employees.Add(new Employee
@@ -43,7 +43,7 @@ namespace DataBase
                 });
 
                 db.SaveChanges(true);
-            }
+            }*/
 
             if (!db.Admins.Any())
             {
@@ -62,7 +62,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            if (!db.Competences.Any())
+            /*if (!db.Competences.Any())
             {
                 db.Competences.Add(new Competence
                 {
@@ -70,7 +70,7 @@ namespace DataBase
                 });
 
                 db.SaveChanges(true);
-            }
+            }*/
 
             if (!db.QuestionTypes.Any())
             {
@@ -97,7 +97,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            string testId = Guid.NewGuid().ToString();
+            /*string testId = Guid.NewGuid().ToString();
             if (!db.Tests.Any())
             {
                 db.Tests.Add(new Test
@@ -127,8 +127,8 @@ namespace DataBase
                         Text = "32",
                         IdQuestion = questionId1,
                         Correct = false
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        //ImagePath
                     });
 
                     db.Answers.Add(new Answer
@@ -136,8 +136,8 @@ namespace DataBase
                         Text = "34",
                         IdQuestion = questionId1,
                         Correct = false
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        //ImagePath
                     });
 
                     db.Answers.Add(new Answer
@@ -145,8 +145,8 @@ namespace DataBase
                         Text = "33",
                         IdQuestion = questionId1,
                         Correct = true
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        //ImagePath
                     });
 
                     //2
@@ -164,8 +164,8 @@ namespace DataBase
                         Text = "3+5",
                         IdQuestion = questionId2,
                         Correct = true
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        //ImagePath
                     });
 
                     db.Answers.Add(new Answer
@@ -173,8 +173,8 @@ namespace DataBase
                         Text = "6+2",
                         IdQuestion = questionId2,
                         Correct = true
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        //ImagePath
                     });
 
                     db.Answers.Add(new Answer
@@ -182,8 +182,8 @@ namespace DataBase
                         Text = "3+3",
                         IdQuestion = questionId2,
                         Correct = false
-                        /*Number
-                        ImagePath*/
+                        //Number
+                        ImagePath
                     });
 
                     //3
@@ -280,11 +280,7 @@ namespace DataBase
                             DatatimePurpose = DateTime.Parse("13.07.2023"),
                         });
 
-                        db.SaveChanges(true);
-                    }
-                }
-            }
-
+                        db.SaveChanges(true);*/
         }
     }
 }

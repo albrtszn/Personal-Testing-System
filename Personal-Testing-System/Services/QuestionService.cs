@@ -20,6 +20,11 @@ namespace Personal_Testing_System.Services
             return questionRepo.GetAllQuestions();
         }
 
+        public List<Question> GetQuestionsByTest(string idTest)
+        {
+            return GetAllQuestions().Where(x => x.IdTest.Equals(idTest)).ToList();
+        }
+
         public Question GetQuestionById(string id)
         {
             return questionRepo.GetQuestionById(id);

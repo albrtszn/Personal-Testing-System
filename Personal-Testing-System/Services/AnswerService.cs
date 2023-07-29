@@ -39,9 +39,21 @@ namespace Personal_Testing_System.Services
             answerRepo.DeleteAnswerById(id);
         }
 
+        public void DeleteAnswersByQuestion(string idQuestion)
+        {
+            GetAllAnswers().Where(x => x.IdQuestion.Equals(idQuestion))
+                           .ToList()
+                           .ForEach(x => DeleteAnswerById(x.Id));
+        }
+
         public List<Answer> GetAllAnswers()
         {
             return answerRepo.GetAllAnswers();
+        }
+
+        public List<Answer> GetAnswersByQuestionId(string id)
+        {
+            return GetAllAnswers().Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
         public List<AnswerDto> GetAllAnswerDtos()

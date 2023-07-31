@@ -1,5 +1,6 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Personal_Testing_System.DTOs;
 
 namespace Personal_Testing_System.Services
 {
@@ -10,6 +11,32 @@ namespace Personal_Testing_System.Services
         {
             this.questionRepo = _questionRepo;
         }
+
+        private QuestionDto ConvertToQuestionDto(Question quest)
+        {
+            return new QuestionDto
+            {
+                Id = quest.Id,
+                Text = quest.Text,
+                IdQuestionType = quest.IdQuestionType,
+                
+                IdTest = quest.IdTest,
+                ImagePath = quest.ImagePath
+            };
+        }
+
+        private Question ConvertToQuestion(QuestionDto questDto)
+        {
+            return new Question
+            {
+                Id = questDto.Id,
+                Text = questDto.Text,
+                IdQuestionType = questDto.IdQuestionType,
+                IdTest = questDto.IdTest,
+                ImagePath = questDto.ImagePath
+            };
+        }
+
         public void DeleteQuestionById(string id)
         {
             questionRepo.DeleteQuestionById(id);
@@ -23,6 +50,15 @@ namespace Personal_Testing_System.Services
         public List<Question> GetQuestionsByTest(string idTest)
         {
             return GetAllQuestions().Where(x => x.IdTest.Equals(idTest)).ToList();
+        }
+
+        public List<QuestionDto> GetQuestionDtosByTest(string idTest)
+        {
+            List<QuestionDto> list = new List<QuestionDto>();
+            GetAllQuestions().Where(x => x.IdTest.Equals(idTest))
+                .ToList()
+                .ForEach(x=>list.Add(ConvertToQuestionDto(x)));
+            return list;
         }
 
         public Question GetQuestionById(string id)

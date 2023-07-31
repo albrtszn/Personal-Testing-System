@@ -1,7 +1,9 @@
-﻿using DataBase.Repository.Models;
+﻿using CRUD.implementations;
+using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Hosting;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
 using System;
 
@@ -26,6 +28,7 @@ namespace Personal_Testing_System.Services
         private AdminService adminService;
         private ResultService resultService;
         private EmployeeResultService employeeResultService;
+        private LogService logService;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
@@ -34,7 +37,8 @@ namespace Personal_Testing_System.Services
                        SubdivisionService _subdivisionPartService, SubsequenceService _subsequenceService,
                        TestPurposeService _testPurposeService, TestService _testService, 
                        CompetenceService _competenceService, AdminService _adminService,
-                       ResultService _resultService ,EmployeeResultService _employeeResultService)
+                       ResultService _resultService ,EmployeeResultService _employeeResultService,
+                       LogService _logService)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -53,6 +57,7 @@ namespace Personal_Testing_System.Services
             adminService = _adminService;
             resultService = _resultService;
             employeeResultService = _employeeResultService;
+            logService = _logService;
         } 
         //public UserService Users { get { return ; } }
 
@@ -73,10 +78,32 @@ namespace Personal_Testing_System.Services
         public AdminService Admin { get { return adminService; } }
         public ResultService Result { get { return resultService; } }
         public EmployeeResultService EmployeeResult { get { return employeeResultService; } }
+        public LogService Log { get { return logService; } }
         /*
          *  Logic
          */
 
+        /*
+         *  First & Second Parts
+         */
+        public List<FirstSecondPartDto> GetFirstSecondPartDtoByQuestion(string id)
+        {
+            List<FirstSecondPartDto> firstSecondPartDtoList = new List<FirstSecondPartDto>();
+            FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(id)).ToList()
+                .ForEach(x => firstSecondPartDtoList.Add(new FirstSecondPartDto
+                {
+                    FirstPartText = x.Text,
+                    SecondPartText = SecondPart.GetSecondPartDtoByFirstPartId(x.Id).Text
+                }));
+            return firstSecondPartDtoList;
+        }
+
+        public void DeleteFirstAndSecondPartsByQuestion(string idQuestion)
+        {
+            List<FirstPart> listFP = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
+            listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
+            listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+        }
         /*
          *  Test
          */
@@ -110,25 +137,51 @@ namespace Personal_Testing_System.Services
             Test.DeleteTestById(id);
         }
         /*
-         *  First & Second Parts
+         *  Result 
          */
-        public List<FirstSecondPartDto> GetFirstSecondPartDtoByQuestion(string id)
+        private ResultModel GetResultModelById(Result result)
         {
-            List<FirstSecondPartDto> firstSecondPartDtoList = new List<FirstSecondPartDto>();
-            FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(id)).ToList()
-                .ForEach(x => firstSecondPartDtoList.Add(new FirstSecondPartDto
-                {
-                    FirstPartText = x.Text,
-                    SecondPartText = SecondPart.GetSecondPartDtoByFirstPartId(x.Id).Text
-                }));
-            return firstSecondPartDtoList;
+            return new ResultModel
+            {
+                Id = result.Id,
+                Test = Test.GetTestGetModelById(result.IdTest),
+                StartDate = result.StartDate.ToString(),
+                StartTime = result.StartTime.ToString(),
+                Duration = result.Duration,
+                EndTime = result.EndTime.ToString(),
+                Description = result.Description
+            };
         }
-
-        public void DeleteFirstAndSecondPartsByQuestion(string idQuestion)
+        /*
+         *  EmployeeResult
+         */
+        private EmployeeResultModel ConvertToEmployeeResultModel(EmployeeResult EmployeeResult)
         {
-            List <FirstPart> listFP = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
-            listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
-            listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+            return new EmployeeResultModel
+            {
+                Id = EmployeeResult.Id,
+                ScoreFrom = EmployeeResult.ScoreFrom,
+                ScoreTo = EmployeeResult.ScoreTo,
+                Employee = employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
+                Result = GetResultModelById(Result.GetResultById(EmployeeResult.IdResult))
+            };
+        }
+        public EmployeeResultModel GetEmployeeResultModelById(int id)
+        {
+            return ConvertToEmployeeResultModel(EmployeeResult.GetEmployeeResultById(id));
+        }
+        public List<EmployeeResultModel> GetAllEmployeeResultModels()
+        {
+            List<EmployeeResultModel> list = new List<EmployeeResultModel>();
+            EmployeeResult.GetAllEmployeeResults().ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
+            return list;
+        }
+        public List<EmployeeResultModel> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
+        {
+            List<EmployeeResultModel> list = new List<EmployeeResultModel>();
+            EmployeeResult.GetAllEmployeeResults().Where(x=>x.IdEmployee.Equals(employeeId)).ToList()
+                          .ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
+            return list;
         }
     }
 }

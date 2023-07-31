@@ -65,11 +65,21 @@ namespace Personal_Testing_System.Services
             subdivisionRepo.SaveSubdivision(SubdivisionToSave);
         }
 
-        public void SaveSubdivisionDto(SubdivisionDto SubdivisionToSave)
+        public void SaveSubdivision(SubdivisionDto SubdivisionToSave)
         {
             subdivisionRepo.SaveSubdivision(ConvertToSubdivision(SubdivisionToSave));
         }
-        public void SaveSubdivisionDto(SubdivisionModel SubdivisionToSave)
+
+        public void SaveSubdivision(AddSubdivisionModel SubdivisionToSave)
+        {
+            subdivisionRepo.SaveSubdivision(new Subdivision
+            {
+                Id=SubdivisionToSave.Id.Value,
+                Name = SubdivisionToSave.Name
+            });
+        }
+
+        public void SaveSubdivision(SubdivisionModel SubdivisionToSave)
         {
             subdivisionRepo.SaveSubdivision(new Subdivision
             {

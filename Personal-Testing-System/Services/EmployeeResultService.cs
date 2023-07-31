@@ -8,14 +8,9 @@ namespace Personal_Testing_System.Services
     public class EmployeeResultService
     {
         private IEmployeeResultRepo EmployeeResultRepo;
-        private ResultService resultService;
-        private EmployeeService employeeService;
-        public EmployeeResultService(IEmployeeResultRepo _EmployeeResultRepo, ResultService _resultService, 
-                                     EmployeeService _employeeService)
+        public EmployeeResultService(IEmployeeResultRepo _EmployeeResultRepo)
         {
             this.EmployeeResultRepo = _EmployeeResultRepo;
-            this.resultService = _resultService;
-            this.employeeService = _employeeService;
         }
         private EmployeeResultDto ConvertToEmployeeResultDto(EmployeeResult EmployeeResult)
         {
@@ -37,17 +32,7 @@ namespace Personal_Testing_System.Services
                 IdResult = EmployeeResultDto.IdResult
             };
         }
-        private EmployeeResultModel ConvertToEmployeeResultModel(EmployeeResult EmployeeResult)
-        {
-            return new EmployeeResultModel
-            {
-                Id = EmployeeResult.Id,
-                ScoreFrom = EmployeeResult.ScoreFrom,
-                ScoreTo = EmployeeResult.ScoreTo,
-                Employee = employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
-                Result = resultService.GetResultDtoById(EmployeeResult.IdResult)
-            };
-        }
+
 
         public void DeleteEmployeeResultById(int id)
         {
@@ -65,12 +50,7 @@ namespace Personal_Testing_System.Services
             EmployeeResultRepo.GetAllEmployeeResults().ForEach(x => EmployeeResults.Add(ConvertToEmployeeResultDto(x)));
             return EmployeeResults;
         }
-        public List<EmployeeResultModel> GetAllEmployeeResultModels()
-        {
-            List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            EmployeeResultRepo.GetAllEmployeeResults().ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
-            return list;
-        }
+        
 
         public List<EmployeeResultDto> GetEmployeeResultDtosByEmployeeId(int id)
         {
@@ -81,12 +61,6 @@ namespace Personal_Testing_System.Services
         {
             return EmployeeResultRepo.GetEmployeeResultById(id);
         }
-
-        public EmployeeResultModel GetEmployeeResultModelById(int id)
-        {
-            return ConvertToEmployeeResultModel(EmployeeResultRepo.GetEmployeeResultById(id));
-        }
-
         public void SaveEmployeeResult(EmployeeResult EmployeeResultToSave)
         {
             EmployeeResultRepo.SaveEmployeeResult(EmployeeResultToSave);

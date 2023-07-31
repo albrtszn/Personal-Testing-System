@@ -8,5 +8,6 @@ namespace Personal_Testing_System.Models
         public string? Name { get; set; }
         public int? CompetenceId { get; set; }
         public List<QuestionModel>? Questions { get; set; }
+        public string? UserId { get; set; }
     }
 }

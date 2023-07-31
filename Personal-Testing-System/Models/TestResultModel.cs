@@ -9,6 +9,5 @@
         public string? EndTime { get; set; }//DateOnly
         public string? Description { get; set; }
         public List<QuestionResultModel>? Questions { get; set; }
-
     }
 }

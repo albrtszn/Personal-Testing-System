@@ -24,21 +24,21 @@ namespace Personal_Testing_System.Controllers
             ms = _masterService;
         }
 
-        //[HttpGet(Name = "test")]
-        [HttpGet("test")]
-        public IActionResult test()
-        {
-            return Ok(new { message = "Personal-Testing-System " + DateTime.Now + Request.Host });
-        }
-
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            logger.LogInformation($"/user-api/Login : login={loginModel.Login}, Password={loginModel.Password} ");
             if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
                 return BadRequest(new { message = "Одно из полей пустое" });
             }
+            logger.LogInformation($"/user-api/Login : login={loginModel.Login}, Password={loginModel.Password} ");
+            ms.Log.SaveLog(new Log
+            {
+                UrlPath = "user-api/Login",
+                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                DataTime = DateTime.Now,
+                Params = $"логин={loginModel.Login}, пароль={loginModel.Password}"
+            });
 
             EmployeeDto? employeeDto = ms.Employee.GetAllEmployeeDtos()
                                   .Find(x => x.Login.Equals(loginModel.Login));
@@ -64,15 +64,24 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetPurposesByEmployeeId")]
-        public async Task<IActionResult> GetPurposesByEmployeeId(string? employeeId)
+        public async Task<IActionResult> GetPurposesByEmployeeId(StringIdModel? id)
         {
-            logger.LogInformation($"/user-api/GetPurposess emmployeeId={employeeId}");
-            if (string.IsNullOrEmpty(employeeId))
+            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
             {
-                return BadRequest(new { message = "Вы ввели пустое поле" });
+                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
+            logger.LogInformation($"/user-api/GetPurposess emmployeeId={id.Id}");
+            ms.Log.SaveLog(new Log
+            {
+                UrlPath = "user-api/GetPurposess",
+                UserId = $"{id.UserId}",
+                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                DataTime = DateTime.Now,
+                Params = $"id={id.Id}"
+            });
+
             List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
-                             .Where(x => x.IdEmployee.Equals(employeeId)).ToList();
+                             .Where(x => x.IdEmployee.Equals(id.UserId)).ToList();
 
             if (purposes.Count == 0)
             {
@@ -86,7 +95,7 @@ namespace Personal_Testing_System.Controllers
                     PurposeModel model = new PurposeModel
                     {
                         Id = purpose.Id,
-                        IdEmployee = employeeId,
+                        IdEmployee = id.Id,
                         Test = ms.Test.GetTestGetModelById(purpose.IdTest),
                         DatatimePurpose = purpose.DatatimePurpose
                     };
@@ -99,72 +108,79 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetTest")]
-        public async Task<IActionResult> GetTest(string? id)
+        public async Task<IActionResult> GetTest(StringIdModel? id)
         {
-            if (!string.IsNullOrEmpty(id))
+            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
             {
-                Test test = ms.Test.GetTestById(id);
-                if (test != null) {
-                    List<Question> questions = ms.Question.GetAllQuestions()
-                        .Where(x => x.IdTest.Equals(id)).ToList();
+                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
+            }
+            logger.LogInformation($"/user-api/GetTest testId={id.Id}");
+            ms.Log.SaveLog(new Log
+            {
+                UrlPath = "user-api/GetTest",
+                UserId = $"{id.UserId}",
+                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                DataTime = DateTime.Now,
+                Params = $"TestId={id.Id}"
+            });
 
-                    //.Where(a => a.IdQuestion.Contains(questions.Id)).ToList();
-                    //.Where(x => questions.ForEach(a=>a.Id.Equals(x.IdQuestion)));
+            Test? test = ms.Test.GetTestById(id.Id);
+            if (test != null)
+            {
+                List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
 
-                    TestModel testDto = new TestModel
+                TestModel testDto = new TestModel
+                {
+                    Id = test.Id,
+                    Name = test.Name,
+                    Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                    Questions = new List<QuestionModel>()
+                };
+
+                foreach (var quest in questions)
+                {
+                    QuestionModel createQuestionDto = new QuestionModel
                     {
-                        Id = test.Id,
-                        Name = test.Name,
-                        Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
-                        Questions = new List<QuestionModel>()
+                        Id = quest.Id,
+                        IdQuestionType = quest.IdQuestionType,
+                        Text = quest.Text,
+                        Answers = new List<object>() { }
                     };
 
-                    foreach (var quest in questions)
+                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
                     {
-                        QuestionModel createQuestionDto = new QuestionModel
-                        {
-                            Id = quest.Id,
-                            IdQuestionType = quest.IdQuestionType,
-                            Text = quest.Text,
-                            Answers = new List<object>() { }
-                        };
-
-                        if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
-                        {
-                            createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
-                        }
-                        if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
-                        {
-                            createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
-                        }
-                        if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
-                        {
-                            createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
-
-                            List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                            foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
-                            {
-                                secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
-                            }
-                            createQuestionDto.Answers.AddRange(secondPartDtos);
-                        }
-
-                        testDto.Questions.Add(createQuestionDto);
+                        createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
                     }
-                    return Ok(testDto);
+                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                    }
+                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                    {
+                        createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+
+                        List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+                        foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                        {
+                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                        }
+                        createQuestionDto.Answers.AddRange(secondPartDtos);
+                    }
+
+                    testDto.Questions.Add(createQuestionDto);
                 }
+                return Ok(testDto);
             }
             else
             {
-                return BadRequest(new { message = "Вы не ввели требуемое поле" });
+                return BadRequest(new { message = "Тест не найден" });
             }
-            return NotFound(new { message = "Тест не найден" });
+            return NotFound(new { message = "Ошибка" });
         }
 
         [HttpPost("PushTest")]
         public async Task<IActionResult> PushTest(TestResultModel testResultModel)
         {
-            logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
 
             if (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
                 !testResultModel.StartDate.IsNullOrEmpty() && !testResultModel.StartTime.IsNullOrEmpty() &&
@@ -172,6 +188,17 @@ namespace Personal_Testing_System.Controllers
             {
                 if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
                     return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
+                
+                logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
+                ms.Log.SaveLog(new Log
+                {
+                    UrlPath = "user-api/GetTestResultsByEmployee",
+                    UserId = $"{testResultModel.EmployeeId}",
+                    UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                    DataTime = DateTime.Now,
+                    Params = $"TestId={testResultModel.TestId}, StartTime={testResultModel.StartTime}, EndTime={testResultModel.EndTime}"
+                });
+
                 string resultId = Guid.NewGuid().ToString();
                 ms.Result.SaveResult(new Result
                 {
@@ -269,16 +296,35 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpGet("GetTestResultsByEmployee")]
-        public async Task<IActionResult> GetTestResultsByEmployee(string? employeeId)
+        public async Task<IActionResult> GetTestResultsByEmployee(StringIdModel? id)
         {
-            return Ok(ms.EmployeeResult.GetAllEmployeeResultModels().Where(x=>x.Employee.Id.Equals(employeeId)));
+            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            {
+                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
+            }
+            logger.LogInformation($"/user-api/GetTestResultsByEmployee testId={id.Id}");
+            ms.Log.SaveLog(new Log
+            {
+                UrlPath = "user-api/GetTestResultsByEmployee",
+                UserId = $"{id.UserId}",
+                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                DataTime = DateTime.Now,
+                Params = $"EmployeeId={id.Id}"
+            });
+
+            List<EmployeeResultModel>? results = ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+            if (results != null && results.Count != 0)
+            {
+                return Ok(results);
+            }
+            return BadRequest(new { message = "Результатов нет" });
         }
 
-        [HttpGet("GetTestResultByEmployee")]
-        public async Task<IActionResult> GetTestResultByEmployee(int? ResultId)
+        [HttpGet("GetTestResultByTest")]
+        public async Task<IActionResult> GetTestResultByEmployee(StringIdModel? id)
         {
             //return NotFound(new { message = "Тест не найден" });
-            return Ok(ms.EmployeeResult.GetEmployeeResultById(ResultId.Value));
+            return Ok();// ms.EmployeeResult.GetEmployeeResultById(id.Id));
         }
     }
 }

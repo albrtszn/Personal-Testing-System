@@ -122,6 +122,17 @@ namespace Personal_Testing_System.Services
             });
         }
 
+        public void SaveTestPurpose(UpdateTestPurposeModel purpose)
+        {
+            testPurposeRepo.SaveTestPurpose(new TestPurpose
+            {
+                Id = purpose.Id.Value,
+                IdEmployee = purpose.IdEmployee,
+                IdTest = purpose.IdTest,
+                DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
+            });
+        }
+
         //logic
 
         public void SavePurposeBySubdivisionId(string testId, int subdivisionId, DateTime time)

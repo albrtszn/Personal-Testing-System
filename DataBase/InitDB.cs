@@ -27,7 +27,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            /*string employeeId = Guid.NewGuid().ToString();
+            string employeeId = Guid.NewGuid().ToString();
             if (!db.Employees.Any())
             {
                 db.Employees.Add(new Employee
@@ -43,7 +43,7 @@ namespace DataBase
                 });
 
                 db.SaveChanges(true);
-            }*/
+            }
 
             if (!db.Admins.Any())
             {
@@ -62,15 +62,15 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            /*if (!db.Competences.Any())
+            if (!db.Competences.Any())
             {
                 db.Competences.Add(new Competence
                 {
-                    Name = "Базовые знания"
+                    Name = "Оценка имеющихся компетенций"
                 });
 
                 db.SaveChanges(true);
-            }*/
+            }
 
             if (!db.QuestionTypes.Any())
             {
@@ -97,7 +97,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            /*string testId = Guid.NewGuid().ToString();
+            string testId = Guid.NewGuid().ToString();
             if (!db.Tests.Any())
             {
                 db.Tests.Add(new Test
@@ -105,7 +105,7 @@ namespace DataBase
                     Id = testId,
                     Name = "Тест для оценки школьных знаний",
                     Weight = 4,
-                    IdCompetence = db.Competences.ToList().Find(x => x.Name.Equals("Базовые знания")).Id
+                    IdCompetence = db.Competences.ToList().Find(x => x.Name.Equals("Оценка имеющихся компетенций")).Id
                 });
                 db.SaveChanges(true);
 
@@ -183,7 +183,7 @@ namespace DataBase
                         IdQuestion = questionId2,
                         Correct = false
                         //Number
-                        ImagePath
+                        //ImagePath
                     });
 
                     //3
@@ -280,7 +280,10 @@ namespace DataBase
                             DatatimePurpose = DateTime.Parse("13.07.2023"),
                         });
 
-                        db.SaveChanges(true);*/
+                        db.SaveChanges(true);
+                    }
+                }
+            }
         }
     }
 }

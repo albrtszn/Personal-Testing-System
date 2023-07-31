@@ -1,8 +1,8 @@
 ﻿namespace Personal_Testing_System.Models
 {
-    public class SubdivisionModel
+    public class IntIdModel
     {
-        public string? Name { get; set; }
+        public int? Id { get; set; }
         public string? UserId { get; set; }
     }
 }

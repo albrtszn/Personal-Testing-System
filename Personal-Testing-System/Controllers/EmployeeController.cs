@@ -8,6 +8,7 @@ using DataBase.Repository.Models;
 using System.Text.Json;
 using Personal_Testing_System.Models;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -22,6 +23,12 @@ namespace Personal_Testing_System.Controllers
         {
             logger = _logger;
             ms = _masterService;
+        }
+
+        [HttpGet("Ping")]
+        public async Task<IActionResult> Ping()
+        {
+            return Ok(new { message = $"Ping: {HttpContext.Request.Host+HttpContext.Request.Path} {DateTime.Now}" });
         }
 
         [HttpPost("Login")]
@@ -51,10 +58,31 @@ namespace Personal_Testing_System.Controllers
             {
                 if (loginModel.Password.Equals(employeeDto.Password))
                 {
-                    return Ok(new
+                    TokenEmployee? tokenEmployee = ms.TokenEmployee.GetTokenEmployeeByEmployeeId(employeeDto.Id);
+                    if (tokenEmployee != null && !ms.IsTokenEmployeeExpired(tokenEmployee))
                     {
-                        EmployeeId = employeeDto.Id
-                    });
+                        return Ok(new
+                        {
+                            TokenEmployee = tokenEmployee.Token,
+                            Employee = employeeDto
+                        });
+                    }
+                    else
+                    {
+                        string token = Guid.NewGuid().ToString();
+                        ms.TokenEmployee.SaveTokenEmployee(new TokenEmployee
+                        {
+                            IdEmployee = employeeDto.Id,
+                            Token = token,
+                            IssuingTime = DateTime.Now,
+                            State = true
+                        });
+                        return Ok(new
+                        {
+                            TokenEmployee = token,
+                            Employee = employeeDto
+                        });
+                    }
                 }
                 else
                 {
@@ -63,268 +91,330 @@ namespace Personal_Testing_System.Controllers
             }
         }
 
-        [HttpGet("GetPurposesByEmployeeId")]
-        public async Task<IActionResult> GetPurposesByEmployeeId(StringIdModel? id)
+        [HttpPost("LogOut")]
+        public async Task<IActionResult> LogOut([FromHeader]string? Authorization)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (!Authorization.IsNullOrEmpty())
             {
-                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
-            }
-            logger.LogInformation($"/user-api/GetPurposess emmployeeId={id.Id}");
-            ms.Log.SaveLog(new Log
-            {
-                UrlPath = "user-api/GetPurposess",
-                UserId = $"{id.UserId}",
-                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                DataTime = DateTime.Now,
-                Params = $"id={id.Id}"
-            });
-
-            List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
-                             .Where(x => x.IdEmployee.Equals(id.UserId)).ToList();
-
-            if (purposes.Count == 0)
-            {
-                return BadRequest(new { message = "Нет назначенных тестов" });
-            }
-            else
-            {
-                List<PurposeModel> models = new List<PurposeModel>();
-                foreach (TestPurposeDto purpose in purposes)
+                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
                 {
-                    PurposeModel model = new PurposeModel
+                    if (ms.IsTokenEmployeeExpired(token))
                     {
-                        Id = purpose.Id,
-                        IdEmployee = id.Id,
-                        Test = ms.Test.GetTestGetModelById(purpose.IdTest),
-                        DatatimePurpose = purpose.DatatimePurpose
-                    };
-
-                    models.Add(model);
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/LogOut : AuthHeader={Authorization}");
+                    ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/LoOut",
+                        UserId = token.IdEmployee,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"Id сотрудника={token.IdEmployee}"
+                    });
+                    ms.TokenEmployee.DeleteTokenEmployeeById(token.Id);
+                    return Ok(new { message = "Выполнен выход из системы" });
                 }
-                return Ok(models);
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
-            return BadRequest(new { message = "Ошибка при запросе" });
+            return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
+        }
+
+        [HttpGet("GetPurposesByEmployeeId")]
+        public async Task<IActionResult> GetPurposesByEmployeeId([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+
+                    List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
+                                     .Where(x => x.IdEmployee.Equals(id.Id)).ToList();
+
+                    if (purposes.Count == 0)
+                    {
+                        return BadRequest(new { message = "Нет назначенных тестов" });
+                    }
+                    else
+                    {
+                        List<PurposeModel> models = new List<PurposeModel>();
+                        foreach (TestPurposeDto purpose in purposes)
+                        {
+                            PurposeModel model = new PurposeModel
+                            {
+                                Id = purpose.Id,
+                                IdEmployee = id.Id,
+                                Test = ms.Test.GetTestGetModelById(purpose.IdTest),
+                                DatatimePurpose = purpose.DatatimePurpose
+                            };
+
+                            models.Add(model);
+                        }
+                        return Ok(models);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
         }
 
         [HttpGet("GetTest")]
-        public async Task<IActionResult> GetTest(StringIdModel? id)
+        public async Task<IActionResult> GetTest([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
-            }
-            logger.LogInformation($"/user-api/GetTest testId={id.Id}");
-            ms.Log.SaveLog(new Log
-            {
-                UrlPath = "user-api/GetTest",
-                UserId = $"{id.UserId}",
-                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                DataTime = DateTime.Now,
-                Params = $"TestId={id.Id}"
-            });
-
-            Test? test = ms.Test.GetTestById(id.Id);
-            if (test != null)
-            {
-                List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
-
-                TestModel testDto = new TestModel
+                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
                 {
-                    Id = test.Id,
-                    Name = test.Name,
-                    Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
-                    Questions = new List<QuestionModel>()
-                };
-
-                foreach (var quest in questions)
-                {
-                    QuestionModel createQuestionDto = new QuestionModel
+                    if (ms.IsTokenEmployeeExpired(token))
                     {
-                        Id = quest.Id,
-                        IdQuestionType = quest.IdQuestionType,
-                        Text = quest.Text,
-                        Answers = new List<object>() { }
-                    };
-
-                    if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
-                    {
-                        createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                    if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                    logger.LogInformation($"/user-api/GetTest testId={id.Id}");
+                    ms.Log.SaveLog(new Log
                     {
-                        createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
-                    }
-                    if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
-                    {
-                        createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+                        UrlPath = "user-api/GetTest",
+                        UserId = $"{token.IdEmployee}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"TestId={id.Id}"
+                    });
 
-                        List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                        foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                    Test? test = ms.Test.GetTestById(id.Id);
+                    if (test != null)
+                    {
+                        List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
+
+                        TestModel testDto = new TestModel
                         {
-                            secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
-                        }
-                        createQuestionDto.Answers.AddRange(secondPartDtos);
-                    }
+                            Id = test.Id,
+                            Name = test.Name,
+                            Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                            Questions = new List<QuestionModel>()
+                        };
 
-                    testDto.Questions.Add(createQuestionDto);
+                        foreach (var quest in questions)
+                        {
+                            QuestionModel createQuestionDto = new QuestionModel
+                            {
+                                Id = quest.Id,
+                                IdQuestionType = quest.IdQuestionType,
+                                Text = quest.Text,
+                                Answers = new List<object>() { }
+                            };
+
+                            if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                            {
+                                createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                            }
+                            if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                            {
+                                createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                            }
+                            if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                            {
+                                createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+
+                                List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+                                foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                                {
+                                    secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                }
+                                createQuestionDto.Answers.AddRange(secondPartDtos);
+                            }
+
+                            testDto.Questions.Add(createQuestionDto);
+                        }
+                        return Ok(testDto);
+                    }
+                    else
+                    {
+                        return NotFound(new { message = "Тест не найден" });
+                    }
                 }
-                return Ok(testDto);
+                else
+                {
+                    return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+                }
             }
-            else
-            {
-                return BadRequest(new { message = "Тест не найден" });
-            }
-            return NotFound(new { message = "Ошибка" });
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
         [HttpPost("PushTest")]
-        public async Task<IActionResult> PushTest(TestResultModel testResultModel)
+        public async Task<IActionResult> PushTest([FromHeader] string? Authorization, [FromBody]TestResultModel testResultModel)
         {
-
-            if (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
+            if (!Authorization.IsNullOrEmpty() && testResultModel != null &&
+                (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
                 !testResultModel.StartDate.IsNullOrEmpty() && !testResultModel.StartTime.IsNullOrEmpty() &&
-                !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0)
+                !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0))
             {
-                if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
-                    return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
-                
-                logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
-                ms.Log.SaveLog(new Log
+                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
                 {
-                    UrlPath = "user-api/GetTestResultsByEmployee",
-                    UserId = $"{testResultModel.EmployeeId}",
-                    UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    DataTime = DateTime.Now,
-                    Params = $"TestId={testResultModel.TestId}, StartTime={testResultModel.StartTime}, EndTime={testResultModel.EndTime}"
-                });
-
-                string resultId = Guid.NewGuid().ToString();
-                ms.Result.SaveResult(new Result
-                {
-                    Id = resultId,
-                    IdTest = testResultModel.TestId,
-                    StartDate = DateOnly.Parse(testResultModel.StartDate),
-                    StartTime = TimeOnly.Parse(testResultModel.StartTime),
-                    EndTime = TimeOnly.Parse(testResultModel.EndTime),
-                    Duration = (TimeOnly.Parse(testResultModel.EndTime).Minute - TimeOnly.Parse(testResultModel.StartTime).Minute),
-                });
-
-                int score = 0;
-                foreach (QuestionResultModel question in testResultModel.Questions)
-                {
-                    int countOfAnswers = 0;
-                    int countOfCorrectAnswer = 0;
-
-                    foreach (JsonElement answer in question.Answers)
+                    if (ms.IsTokenEmployeeExpired(token))
                     {
-                        countOfAnswers++;
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId}");
+                    ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/PushTest",
+                        UserId = $"{token.IdEmployee}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"TestId={testResultModel.TestId}"
+                    });
+                    if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
+                        return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
 
-                        AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
-                        SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
-                        FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
+                    logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
+                    ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/GetTestResultsByEmployee",
+                        UserId = $"{testResultModel.EmployeeId}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"TestId={testResultModel.TestId}, StartTime={testResultModel.StartTime}, EndTime={testResultModel.EndTime}"
+                    });
 
-                        if (answerModel != null && answerModel.AnswerId.HasValue)
+                    string resultId = Guid.NewGuid().ToString();
+                    ms.Result.SaveResult(new Result
+                    {
+                        Id = resultId,
+                        IdTest = testResultModel.TestId,
+                        StartDate = DateOnly.Parse(testResultModel.StartDate),
+                        StartTime = TimeOnly.Parse(testResultModel.StartTime),
+                        EndTime = TimeOnly.Parse(testResultModel.EndTime),
+                        Duration = ((TimeOnly.Parse(testResultModel.EndTime).Minute) - (TimeOnly.Parse(testResultModel.StartTime).Minute)),
+                    });
+
+                    int score = 0;
+                    foreach (QuestionResultModel question in testResultModel.Questions)
+                    {
+                        int countOfAnswers = 0;
+                        int countOfCorrectAnswer = 0;
+
+                        foreach (JsonElement answer in question.Answers)
                         {
-                            logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
+                            countOfAnswers++;
 
-                            if (ms.Answer.GetAnswerById(answerModel.AnswerId.Value).Correct.Value)
+                            AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
+                            SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
+                            FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
+
+                            if (answerModel != null && answerModel.AnswerId.HasValue)
                             {
-                                countOfCorrectAnswer++;
+                                logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
+
+                                if (ms.Answer.GetAnswerById(answerModel.AnswerId.Value).Correct.Value)
+                                {
+                                    countOfCorrectAnswer++;
+                                }
+
+                                ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                                {
+                                    IdResult = resultId,
+                                    IdAnswer = answerModel.AnswerId
+                                });
                             }
-
-                            ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                            if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
                             {
-                                IdResult = resultId,
-                                IdAnswer = answerModel.AnswerId
-                            });
+                                logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
+
+                                if (ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value).Number == (subsequenceModel.Number.Value))
+                                {
+                                    countOfCorrectAnswer++;
+                                }
+
+                                ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                                {
+                                    IdSubsequence = subsequenceModel.SubsequenceId.Value,
+                                    IdResult = resultId,
+                                    Number = subsequenceModel.Number.Value,
+                                });
+                            }
+                            if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
+                            {
+                                logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
+
+                                if (ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value).IdFirstPart.Equals(fsPartModel.FirstPartId))
+                                {
+                                    countOfCorrectAnswer++;
+                                }
+
+                                ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                                {
+                                    IdFirstPart = fsPartModel.FirstPartId,
+                                    IdSecondPart = fsPartModel.SecondPartId,
+                                    IdResult = resultId
+                                });
+                            }
                         }
-                        if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
+                        if (countOfAnswers == countOfCorrectAnswer)
                         {
-                            logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
-
-                            if (ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value).Number == (subsequenceModel.Number.Value))
-                            {
-                                countOfCorrectAnswer++;
-                            }
-
-                            ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
-                            {
-                                IdSubsequence = subsequenceModel.SubsequenceId.Value,
-                                IdResult = resultId,
-                                Number = subsequenceModel.Number.Value,
-                            });
-                        }
-                        if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
-                        {
-                            logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
-
-                            if (ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value).IdFirstPart.Equals(fsPartModel.FirstPartId))
-                            {
-                                countOfCorrectAnswer++;
-                            }
-
-                            ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
-                            {
-                                IdFirstPart = fsPartModel.FirstPartId,
-                                IdSecondPart = fsPartModel.SecondPartId,
-                                IdResult = resultId
-                            });
+                            score++;
                         }
                     }
-                    if (countOfAnswers == countOfCorrectAnswer)
+                    ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
                     {
-                        score++;
-                    }
+                        IdResult = resultId,
+                        IdEmployee = testResultModel.EmployeeId,
+                        ScoreFrom = score, //???
+                        ScoreTo = testResultModel.Questions.Count
+                    });
+
+                    ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+
+                    return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
                 }
-                ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
-                {
-                    IdResult = resultId,
-                    IdEmployee = testResultModel.EmployeeId,
-                    ScoreFrom = score, //???
-                    ScoreTo = testResultModel.Questions.Count
-                });
-
-                ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
-
-                return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
             else
             {
-                return BadRequest(new { message = "Ошибка при отправке теста" });
+                return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
             }
         }
 
         [HttpGet("GetTestResultsByEmployee")]
-        public async Task<IActionResult> GetTestResultsByEmployee(StringIdModel? id)
+        public async Task<IActionResult> GetTestResultsByEmployee([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
-            }
-            logger.LogInformation($"/user-api/GetTestResultsByEmployee testId={id.Id}");
-            ms.Log.SaveLog(new Log
-            {
-                UrlPath = "user-api/GetTestResultsByEmployee",
-                UserId = $"{id.UserId}",
-                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                DataTime = DateTime.Now,
-                Params = $"EmployeeId={id.Id}"
-            });
+                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/GetTestResultsByEmployee testId={id.Id}");
+                    ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/GetTestResultsByEmployee",
+                        UserId = $"{token.IdEmployee}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"EmployeeId={id.Id}"
+                    });
 
-            List<EmployeeResultModel>? results = ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
-            if (results != null && results.Count != 0)
-            {
-                return Ok(results);
+                    List<EmployeeResultModel>? results = ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+                    if (results != null && results.Count != 0)
+                    {
+                        return Ok(results);
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Результатов нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
-            return BadRequest(new { message = "Результатов нет" });
-        }
-
-        [HttpGet("GetTestResultByTest")]
-        public async Task<IActionResult> GetTestResultByEmployee(StringIdModel? id)
-        {
-            //return NotFound(new { message = "Тест не найден" });
-            return Ok();// ms.EmployeeResult.GetEmployeeResultById(id.Id));
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
     }
 }

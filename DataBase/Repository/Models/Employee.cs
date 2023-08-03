@@ -46,4 +46,7 @@ public partial class Employee
 
     [InverseProperty("IdEmployeeNavigation")]
     public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
+
+    [InverseProperty("IdEmployeeNavigation")]
+    public virtual ICollection<TokenEmployee> TokenEmployees { get; set; } = new List<TokenEmployee>();
 }

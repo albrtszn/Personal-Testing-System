@@ -37,4 +37,7 @@ public partial class Admin
     [ForeignKey("IdSubdivision")]
     [InverseProperty("Admins")]
     public virtual Subdivision? IdSubdivisionNavigation { get; set; }
+
+    [InverseProperty("IdAdminNavigation")]
+    public virtual ICollection<TokenAdmin> TokenAdmins { get; set; } = new List<TokenAdmin>();
 }

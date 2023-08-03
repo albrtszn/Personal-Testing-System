@@ -243,7 +243,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("GetEmployee")]
         public async Task<IActionResult> GetEmployee(StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (id == null || string.IsNullOrEmpty(id.Id))
             {
                 return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
@@ -252,7 +252,7 @@ namespace Personal_Testing_System.Controllers
             ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/GetEmployee",
-                UserId = $"{id.UserId}",
+                UserId = $"",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                 DataTime = DateTime.Now,
                 Params = $"Id Сотрудника={id.Id}"
@@ -307,7 +307,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteEmployee")]
         public async Task<IActionResult> DeleteEmployee(StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (id == null || string.IsNullOrEmpty(id.Id) )
             {
                 return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
@@ -315,7 +315,7 @@ namespace Personal_Testing_System.Controllers
             ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/DeleteEmployee",
-                UserId = $"{id.UserId}",
+                UserId = $"",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                 DataTime = DateTime.Now,
                 Params = $"Id Сотрудника={id.Id}"
@@ -404,7 +404,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("GetTest")]
         public async Task<IActionResult> GetTest(StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (id == null || string.IsNullOrEmpty(id.Id) )
             {
                 return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
@@ -412,7 +412,7 @@ namespace Personal_Testing_System.Controllers
             ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/GetTest",
-                UserId = $"{id.UserId}",
+                UserId = $"",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                 DataTime = DateTime.Now,
                 Params = $"Id Теста={id.Id}"
@@ -1068,7 +1068,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteTest")]
         public async Task<IActionResult> DeleteTest(StringIdModel? id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (id == null || string.IsNullOrEmpty(id.Id))
             {
                 return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
@@ -1076,7 +1076,7 @@ namespace Personal_Testing_System.Controllers
             ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/DeleteTest",
-                UserId = $"{id.UserId}",
+                UserId = $"",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                 DataTime = DateTime.Now,
                 Params = $"Id Теста={id.Id}"
@@ -1101,7 +1101,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("GetPurposesByEmployeeId")]
         public async Task<IActionResult> GetPurposesByEmployeeId(StringIdModel id)
         {
-            if (id == null || string.IsNullOrEmpty(id.Id) || string.IsNullOrEmpty(id.UserId))
+            if (id == null || string.IsNullOrEmpty(id.Id))
             {
                 return BadRequest(new { message = "Ошибка.Не все поля заполнены" });
             }
@@ -1109,7 +1109,7 @@ namespace Personal_Testing_System.Controllers
             ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/GetPurposesByEmployeeId",
-                UserId = $"{id.UserId}",
+                UserId = $"",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                 DataTime = DateTime.Now,
                 Params = $"Id Сотрудника={id.Id}"

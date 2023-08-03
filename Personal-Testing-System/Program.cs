@@ -29,6 +29,8 @@ builder.Services.AddTransient<IAdminRepo, AdminRepo>();
 builder.Services.AddTransient<IResultRepo, ResultRepo>();
 builder.Services.AddTransient<IEmployeeResultRepo, EmployeeResultRepo>();
 builder.Services.AddTransient<ILogRepo, LogRepo>();
+builder.Services.AddTransient<ITokenEmployeeRepo, TokenEmployeeRepo>();
+builder.Services.AddTransient<ITokenAdminRepo, TokenAdminRepo>();
 
 builder.Services.AddScoped<EFDbContext>();
 builder.Services.AddScoped<AnswerService>();
@@ -49,6 +51,8 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<ResultService>();
 builder.Services.AddScoped<EmployeeResultService>();
 builder.Services.AddScoped<LogService>();
+builder.Services.AddScoped<TokenEmployeeService>();
+builder.Services.AddScoped<TokenAdminService>();
 builder.Services.AddScoped<MasterService>();
 
 /*builder.Services.AddControllers().AddNewtonsoftJson(jsonOptions =>
@@ -83,11 +87,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+/*if (app.Environment.IsDevelopment())
+{*/
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseStaticFiles();
 app.UseDefaultFiles();

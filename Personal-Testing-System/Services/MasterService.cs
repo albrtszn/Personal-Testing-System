@@ -29,6 +29,8 @@ namespace Personal_Testing_System.Services
         private ResultService resultService;
         private EmployeeResultService employeeResultService;
         private LogService logService;
+        private TokenEmployeeService tokenEmployeeService;
+        private TokenAdminService tokenAdminService;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
@@ -38,7 +40,7 @@ namespace Personal_Testing_System.Services
                        TestPurposeService _testPurposeService, TestService _testService, 
                        CompetenceService _competenceService, AdminService _adminService,
                        ResultService _resultService ,EmployeeResultService _employeeResultService,
-                       LogService _logService)
+                       LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -58,6 +60,8 @@ namespace Personal_Testing_System.Services
             resultService = _resultService;
             employeeResultService = _employeeResultService;
             logService = _logService;
+            tokenEmployeeService = _tokenEmployeeService;
+            tokenAdminService = _tokenAdminService;
         } 
         //public UserService Users { get { return ; } }
 
@@ -79,9 +83,30 @@ namespace Personal_Testing_System.Services
         public ResultService Result { get { return resultService; } }
         public EmployeeResultService EmployeeResult { get { return employeeResultService; } }
         public LogService Log { get { return logService; } }
+        public TokenEmployeeService TokenEmployee { get { return tokenEmployeeService; } }
+        public TokenAdminService TokenAdmin { get { return tokenAdminService; } }
         /*
          *  Logic
          */
+
+        /*
+         *  TokenEmployee
+         */
+        private double hoursToExpireEmployeeToken = 2.0;
+        public bool IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
+        {
+            //int tokenMinutes = tokenEmployee.IssuingTime.Value.ToTimeSpan().Minutes;
+            DateTime dateTime = tokenEmployee.IssuingTime.Value;
+            if (dateTime.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
+            {
+                TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /*
          *  First & Second Parts

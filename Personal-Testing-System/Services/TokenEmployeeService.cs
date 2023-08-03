@@ -35,7 +35,7 @@ namespace Personal_Testing_System.Services
 
         public TokenEmployee? GetTokenEmployeeByEmployeeId(string id)
         {
-            return GetAllTokenEmployees().FirstOrDefault(x => x.IdEmployee.Equals(id));
+            return GetAllTokenEmployees().Find(x => x.IdEmployee.Equals(id));
         }
 
         public TokenEmployee? GetTokenEmployeeByToken(string token)

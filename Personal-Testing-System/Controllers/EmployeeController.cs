@@ -9,12 +9,14 @@ using System.Text.Json;
 using Personal_Testing_System.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Personal_Testing_System.Controllers
 {
     [ApiController]
     [Route("user-api")]
     //[controller]")]
+    //[Authorize]
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> logger;
@@ -28,13 +30,36 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("Ping")]
         public async Task<IActionResult> Ping()
         {
-            return Ok(new { message = $"Ping: {HttpContext.Request.Host+HttpContext.Request.Path} {DateTime.Now}" });
+            return Ok(new { message = $"Ping: {HttpContext.Request.Host+HttpContext.Request.Path} {DateTime.Now}." });
+        }
+
+        [HttpGet("TestGetEmployees")]
+        public async Task<IActionResult> TestGetEmployees()
+        {
+            return Ok(ms.Employee.GetAllEmployeeDtos());
+        }
+
+        [HttpPost("DeleteEmployeeTokens")]
+        public async Task<IActionResult> DeleteEmployeeTokens()
+        {
+            ms.TokenEmployee.GetAllTokenEmployees().ForEach(x => ms.TokenEmployee.DeleteTokenEmployeeById(x.Id));
+            if (!ms.TokenEmployee.GetAllTokenEmployees().Any())
+            {
+                return Ok(new { messsage = "Токены удалены" });
+            }
+            return BadRequest(new { messsage = "Ошибка при удалении токенов" });
+        }
+
+        [HttpGet("TestGetEmployeeTokens")]
+        public async Task<IActionResult> TestGetEmployeeTokens()
+        {
+            return Ok(ms.TokenEmployee.GetAllTokenEmployees());
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody]LoginModel? loginModel)
         {
-            if (string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
+            if (loginModel == null || string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
                 return BadRequest(new { message = "Одно из полей пустое" });
             }
@@ -92,7 +117,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("LogOut")]
-        public async Task<IActionResult> LogOut([FromHeader]string? Authorization)
+        public async Task<IActionResult> LogOut([FromHeader]string Authorization)
         {
             if (!Authorization.IsNullOrEmpty())
             {

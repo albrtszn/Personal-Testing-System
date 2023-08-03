@@ -96,16 +96,18 @@ namespace Personal_Testing_System.Services
         public bool IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
         {
             //int tokenMinutes = tokenEmployee.IssuingTime.Value.ToTimeSpan().Minutes;
-            DateTime dateTime = tokenEmployee.IssuingTime.Value;
-            if (dateTime.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
-            {
-                TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            DateTime? dateTime = tokenEmployee.IssuingTime.Value;
+            /*if (dateTime!=null)
+            {*/
+                if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
+                {
+                    TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
         }
 
         /*

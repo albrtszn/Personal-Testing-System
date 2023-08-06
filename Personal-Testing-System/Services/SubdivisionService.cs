@@ -55,7 +55,7 @@ namespace Personal_Testing_System.Services
             return subdivisionRepo.GetSubdivisionById(id);
         }
 
-        public SubdivisionDto GetSubdivisionDtoById(int id)
+        public SubdivisionDto? GetSubdivisionDtoById(int id)
         {
             return ConvertToSubdivisionDto(subdivisionRepo.GetSubdivisionById(id));
         }

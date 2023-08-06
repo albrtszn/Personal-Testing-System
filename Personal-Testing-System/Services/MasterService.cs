@@ -37,9 +37,9 @@ namespace Personal_Testing_System.Services
                        EmployeeSubsequenceService _employeeSubsequenceService, FirstPartService _firstPartService,
                        QuestionService _questionService, QuestionTypeService _questionTypeServiceService, SecondPartService _secondPartService,
                        SubdivisionService _subdivisionPartService, SubsequenceService _subsequenceService,
-                       TestPurposeService _testPurposeService, TestService _testService, 
+                       TestPurposeService _testPurposeService, TestService _testService,
                        CompetenceService _competenceService, AdminService _adminService,
-                       ResultService _resultService ,EmployeeResultService _employeeResultService,
+                       ResultService _resultService, EmployeeResultService _employeeResultService,
                        LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService)
         {
             answerService = _answerService;
@@ -62,7 +62,7 @@ namespace Personal_Testing_System.Services
             logService = _logService;
             tokenEmployeeService = _tokenEmployeeService;
             tokenAdminService = _tokenAdminService;
-        } 
+        }
         //public UserService Users { get { return ; } }
 
         public AnswerService Answer { get { return answerService; } }
@@ -95,19 +95,31 @@ namespace Personal_Testing_System.Services
         private double hoursToExpireEmployeeToken = 2.0;
         public bool IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
         {
-            //int tokenMinutes = tokenEmployee.IssuingTime.Value.ToTimeSpan().Minutes;
             DateTime? dateTime = tokenEmployee.IssuingTime.Value;
-            /*if (dateTime!=null)
-            {*/
-                if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
-                {
-                    TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
+            {
+                TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private double hoursToExpireAdminToken = 5.0;
+        public bool IsTokenAdminExpired(TokenAdmin tokenAdmin)
+        {
+            DateTime? dateTime = tokenAdmin.IssuingTime.Value;
+            if (dateTime.Value.AddHours(hoursToExpireAdminToken) <= DateTime.Now)
+            {
+                TokenAdmin.DeleteTokenAdminById(tokenAdmin.Id);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /*
@@ -134,9 +146,9 @@ namespace Personal_Testing_System.Services
         /*
          *  Test
          */
-        public void DeleteTestById(string id,IWebHostEnvironment env)
+        public void DeleteTestById(string id, IWebHostEnvironment env)
         {
-            foreach (Question quest in Question.GetAllQuestions().Where(x=>x.IdTest.Equals(id)).ToList())
+            foreach (Question quest in Question.GetAllQuestions().Where(x => x.IdTest.Equals(id)).ToList())
             {
                 List<Answer> answerList = Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
                 foreach (Answer answer in answerList)
@@ -206,7 +218,7 @@ namespace Personal_Testing_System.Services
         public List<EmployeeResultModel> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            EmployeeResult.GetAllEmployeeResults().Where(x=>x.IdEmployee.Equals(employeeId)).ToList()
+            EmployeeResult.GetAllEmployeeResults().Where(x => x.IdEmployee.Equals(employeeId)).ToList()
                           .ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
             return list;
         }

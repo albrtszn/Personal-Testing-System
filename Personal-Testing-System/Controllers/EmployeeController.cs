@@ -30,7 +30,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("Ping")]
         public async Task<IActionResult> Ping()
         {
-            return Ok(new { message = $"Ping: {HttpContext.Request.Host+HttpContext.Request.Path} {DateTime.Now}." });
+            return Ok(new { message = $"Ping: {HttpContext.Request.Host + HttpContext.Request.Path} {DateTime.Now}." });
         }
 
         [HttpGet("TestGetEmployees")]
@@ -39,7 +39,7 @@ namespace Personal_Testing_System.Controllers
             return Ok(ms.Employee.GetAllEmployeeDtos());
         }
 
-        [HttpPost("DeleteEmployeeTokens")]
+        [HttpDelete("DeleteEmployeeTokens")]
         public async Task<IActionResult> DeleteEmployeeTokens()
         {
             ms.TokenEmployee.GetAllTokenEmployees().ForEach(x => ms.TokenEmployee.DeleteTokenEmployeeById(x.Id));
@@ -57,7 +57,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginModel? loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginModel? loginModel)
         {
             if (loginModel == null || string.IsNullOrEmpty(loginModel.Login) || string.IsNullOrEmpty(loginModel.Password))
             {
@@ -117,7 +117,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("LogOut")]
-        public async Task<IActionResult> LogOut([FromHeader]string Authorization)
+        public async Task<IActionResult> LogOut([FromHeader] string Authorization)
         {
             if (!Authorization.IsNullOrEmpty())
             {
@@ -145,8 +145,8 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
         }
 
-        [HttpGet("GetPurposesByEmployeeId")]
-        public async Task<IActionResult> GetPurposesByEmployeeId([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
+        [HttpPost("GetPurposesByEmployeeId")]
+        public async Task<IActionResult> GetPurposesByEmployeeId([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
@@ -188,8 +188,8 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
         }
 
-        [HttpGet("GetTest")]
-        public async Task<IActionResult> GetTest([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
+        [HttpPost("GetTest")]
+        public async Task<IActionResult> GetTest([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
@@ -271,7 +271,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("PushTest")]
-        public async Task<IActionResult> PushTest([FromHeader] string? Authorization, [FromBody]TestResultModel testResultModel)
+        public async Task<IActionResult> PushTest([FromHeader] string? Authorization, [FromBody] TestResultModel testResultModel)
         {
             if (!Authorization.IsNullOrEmpty() && testResultModel != null &&
                 (!testResultModel.TestId.IsNullOrEmpty() && !testResultModel.EmployeeId.IsNullOrEmpty() &&
@@ -405,8 +405,8 @@ namespace Personal_Testing_System.Controllers
             }
         }
 
-        [HttpGet("GetTestResultsByEmployee")]
-        public async Task<IActionResult> GetTestResultsByEmployee([FromHeader]string? Authorization, [FromBody]StringIdModel? id)
+        [HttpPost("GetTestResultsByEmployee")]
+        public async Task<IActionResult> GetTestResultsByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {

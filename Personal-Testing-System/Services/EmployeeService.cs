@@ -45,9 +45,9 @@ namespace Personal_Testing_System.Services
             };
         }
         //Model
-        private EmployeeModel ConvertToEmployeeModel(Employee employee)
+        private EmployeeModel? ConvertToEmployeeModel(Employee employee)
         {
-            SubdivisionDto subdivision = subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
+            SubdivisionDto? subdivision = subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
             return new EmployeeModel
             {
                 Id = employee.Id,

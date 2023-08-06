@@ -11,7 +11,7 @@ namespace Personal_Testing_System.Services
         {
             this.TokenAdminRepo = _TokenAdminRepo;
         }
-        
+
         public void DeleteTokenAdminById(int id)
         {
             TokenAdminRepo.DeleteTokenAdminById(id);
@@ -30,6 +30,16 @@ namespace Personal_Testing_System.Services
         public TokenAdmin GetTokenAdminById(int id)
         {
             return TokenAdminRepo.GetTokenAdminById(id);
+        }
+
+        public TokenAdmin? GetTokenEmployeeByAdminId(string id)
+        {
+            return GetAllTokenAdmins().Find(x => x.IdAdmin.Equals(id));
+        }
+
+        public TokenAdmin? GetTokenAdminByToken(string token)
+        {
+            return GetAllTokenAdmins().Find(x => x.Token.Equals(token));
         }
 
         public void SaveTokenAdmin(TokenAdmin TokenAdminToSave)

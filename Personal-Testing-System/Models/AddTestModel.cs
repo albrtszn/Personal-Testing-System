@@ -4,7 +4,6 @@
     {
         public string? Name { get; set; }
         public int? CompetenceId { get; set; }
-        public string? UserId { get; set; }
         public List<QuestionModel>? Questions { get; set; }
     }
 }

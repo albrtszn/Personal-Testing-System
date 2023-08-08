@@ -296,7 +296,7 @@ Authorization(header): xxxxxxxxxxxxx
 ```
 ### admin-api/
 ---
-1. POST https://localhost:7273/admin-api/Login
+1. POST /admin-api/Login.
 - Request <- [LoginModel](Personal-Testing-System/Models/LoginModel.cs):
 ```
 {
@@ -319,7 +319,7 @@ Authorization(header): xxxxxxxxxxxxx
   }
 }
 ```
-2. GET https://localhost:7273/admin-api/GetSubdivisions
+2. GET /admin-api/GetSubdivisions.
 - Request - Authorization.
 - Response -> list of [SubdivisionDto](Personal-Testing-System/DTOs/SubdivisionDto.cs):
 ```
@@ -334,7 +334,7 @@ Authorization(header): xxxxxxxxxxxxx
   }
 ]
 ```
-3. POST https://localhost:7273/admin-api/AddSubdivision
+3. POST /admin-api/AddSubdivision.
 - Request <- Authorization, [SubdivisionModel](Personal-Testing-System/Models/SubdivisionModel.cs):
 ```
 {
@@ -342,7 +342,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-4. POST https://localhost:7273/admin-api/UpdateSubdivision
+4. POST /admin-api/UpdateSubdivision.
 - Request <- Authorization, [AddSubdivisionModel](Personal-Testing-System/Models/AddSubdivisionModel.cs):
 ```
 {
@@ -351,7 +351,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-5. POST https://localhost:7273/admin-api/DeleteSubdivision
+5. POST /admin-api/DeleteSubdivision.
 - Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs):
 ```
 {
@@ -359,7 +359,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-6. GET https://localhost:7273/admin-api/GetEmployees
+6. GET /admin-api/GetEmployees.
 - Request - Authorization.
 - Response -> list of [EmployeeModels](Personal-Testing-System/Models/EmployeeModel.cs).
 ```
@@ -379,7 +379,7 @@ Authorization(header): xxxxxxxxxxxxx
   }
 ]
 ```
-7. GET https://localhost:7273/user-api/GetEmployee
+7. GET /user-api/GetEmployee.
 - Request <- Authorization, [StringIdModel]((Personal-Testing-System/Models/StringIdModel.cs)).
 ```
 {
@@ -402,7 +402,7 @@ Authorization(header): xxxxxxxxxxxxx
     }
   }
 ```
-8. POST https://localhost:7273/user-api/AddEmployee
+8. POST /user-api/AddEmployee.
 - Request <- Authorization, [AddEmployeeModel](Personal-Testing-System/Models/Employeemodel.cs).
 ```
 {
@@ -416,7 +416,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-9. POST https://localhost:7273/admin-api/UpdateEmployee
+9. POST /admin-api/UpdateEmployee.
 - Request <- Authorization, [EmployeeDto](Personal-Testing-System/DTOs/EmployeeDto.cs).
 ```
 {
@@ -431,7 +431,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-10. POST https://localhost:7273/admin-api/DeleteEmployee
+10. POST /admin-api/DeleteEmployee.
 - Request <- Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
@@ -439,7 +439,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Output -> stautus message.
-11. GET https://localhost:7273/admin-api/GetCompetences
+11. GET /admin-api/GetCompetences.
 - Request - Authoriztion.
 - Response -> list of [CompetenceDto](Personal-Testing-System/DTOs/CompetenceDto.cs):
 ```
@@ -451,7 +451,7 @@ Authorization(header): xxxxxxxxxxxxx
 ]
 
 ```
-12. GET https://localhost:7273/admin-api/GetCompetence
+12. GET /admin-api/GetCompetence.
 - Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
   {
@@ -465,7 +465,7 @@ Authorization(header): xxxxxxxxxxxxx
     "Name": "Оценка имеющихся компетенций"
   }
 ```
-13. POST https://localhost:7273/admin-api/AddCompetence
+13. POST /admin-api/AddCompetence.
 - Request <- Autorization, [AddCompetenceModel](Personal-Testing-System/Models/AddCompetenceModel.cs):
 ```
 {
@@ -473,7 +473,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-14. POST https://localhost:7273/admin-api/UpdateCompetence
+14. POST /admin-api/UpdateCompetence.
 - Request <- [CopmpetenceDto](Personal-Testing-System/DTOs/CompetenceDto.cs).
 ```
 {
@@ -482,7 +482,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-15. POST https://localhost:7273/admin-api/DeleteCompetence
+15. POST /admin-api/DeleteCompetence.
 - Request <- Authorization, I[ntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
 {
@@ -491,7 +491,7 @@ Authorization(header): xxxxxxxxxxxxx
 }
 ```
 - Response -> status message.
-16. GET https://localhost:7273/admin-api/GetTests
+16. GET /admin-api/GetTests.
 - Request - Authorization.
 - Response -> list of [GetTestModels](Personal-Testing-System/Models/GetTestModel.cs):
 ```
@@ -514,8 +514,8 @@ Authorization(header): xxxxxxxxxxxxx
   }
 ]
 ```
-17. GET https://localhost:7273/admin-api/GetTest?id
- [TestModel](Personal-Testing-System/Models/Test.cs) имttт сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerModel](Personal-Testing-System/Models/AnswerModel.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs).
+17. GET /admin-api/GetTest?id.
+ [TestModel](Personal-Testing-System/Models/TestModel.cs) имttт сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerModel](Personal-Testing-System/Models/AnswerModel.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs).
 - Request <- Aythorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {

@@ -10,32 +10,57 @@ Testing system for personal(workers/candidates). Conducting a test to determine 
 - Пользователь: прохождение теста после авторизации со стационарного компьютера.
 ---
 ## Документация API
+В header 'Authorization' записывается токен авторизации для доступа к приложению. Вся информация принимается в Request body(пр. StringIdModel, IntIdmodel, и т.д.), отправляется в Response body(пр. TestModel, TestResultModel и т.д.). 
 ### /user-api
 ---
 1. POST /Login
-Input <- LoginModel:
+Request <- [LoginModel](Personal-Testing-System/Models/LoginModel.cs):
 ```
 {
     "Login":"login",
     "Password":"password"
 }
 ```
-Output -> string:
+Response -> string, [employeeDto](Personal-Testing-System/DTOs/EmployeeDto.cs):
 ```
 {
-    "EmployeeId":"xxxxxxxxxxxxxx..."
+    "TokenEmployee": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "Employee": {
+        "Id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "FirstName": "Андрей",
+        "SecondName": "Кравцов",
+        "LastName": "Нежеленко",
+        "Login": "login",
+        "Password": "password",
+        "DateOfBirth": "01.01.2000",
+        "IdSubdivision": 2
+    }
 }
 ```
-1. GET /GetPurposesByEmployeeId?employeeId=d4359d8e-7bd9-4fae-b060-5633801f7a1a
-- Input <- value(employeeId) in url.
-- Output -> List of PurposeModels:
+2. Post /user-api/LogOut
+Request - Authorization.
+Response - status message.
+```
+{
+  "message": "Выполнен выход из системы"
+}
+```
+3. GET /GetPurposesByEmployeeId
+- Request <- Authroziation, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+```
+Authorization(header): xxxxxxxxxxxxx
+{
+  "Id": "xxxxxxxxxxx"
+}
+```
+- Response -> List of [PurposeModels](Personal-Testing-System/Models/PurposeModel.cs):
 ```
 [
     {
         "Id": 1,
-        "IdEmployee": "2bf2df78-80dc-4539-be61-167bdd901b49",
+        "IdEmployee": "xxxxxxxxxxxxxxxxxxx",
         "Test": {
-            "Id": "57e6acdc-1c76-4bf8-b815-cc136deff9ac",
+            "Id": "xxxxxxxxxxxxxxxxxxxx",
             "Name": "Тест для оценки школьных знаний",
             "Competence": {
                 "Id": 1,
@@ -46,135 +71,154 @@ Output -> string:
     }
 ]
 ```
-1. GET /GetTest?id=21fb8618-5277-474d-a759-08403a7f65e0
-- Input <- value(id of test) in url.
-- Output -> TestModel:
+4. GET /GetTest
+- Request <- [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
-    "Id": "57e6acdc-1c76-4bf8-b815-cc136deff9ac",
-    "Name": "Тест для оценки школьных знаний",
-    "Competence": {
-        "Id": 1,
-        "Name": "Базовые знания"
-    },
-    "Questions": [
-        {
-            "Id": "288c27c1-bca7-4682-aa58-ce81b0186c4c",
-            "Text": "Составте последовательность действий при чп на рабочем месте расставляя варианты в нужном порядке:",
-            "IdQuestionType": 4,
-            "Answers": [
-                {
-                    "Id": 1,
-                    "Text": "Выключить станок/компьютер и устранить последствия",
-                    "IdQuestion": "288c27c1-bca7-4682-aa58-ce81b0186c4c",
-                    "Number": 2
-                },
-                {
-                    "Id": 2,
-                    "Text": "Разбить стекло шкафа с аптечкой и подхилиться",
-                    "IdQuestion": "288c27c1-bca7-4682-aa58-ce81b0186c4c",
-                    "Number": 1
-                },
-                {
-                    "Id": 3,
-                    "Text": "Сообщить начальнику о чп",
-                    "IdQuestion": "288c27c1-bca7-4682-aa58-ce81b0186c4c",
-                    "Number": 3
-                }
-            ]
-        },
-        {
-            "Id": "468ae1fe-c2a4-45fd-8e38-bb431c51d8e1",
-            "Text": "Сумма чисел равная 8 в следующих вариантах:",
-            "IdQuestionType": 2,
-            "Answers": [
-                {
-                    "Id": 4,
-                    "Text": "3+5",
-                    "IdQuestion": "468ae1fe-c2a4-45fd-8e38-bb431c51d8e1",
-                    "Correct": true
-                },
-                {
-                    "Id": 5,
-                    "Text": "6+2",
-                    "IdQuestion": "468ae1fe-c2a4-45fd-8e38-bb431c51d8e1",
-                    "Correct": true
-                },
-                {
-                    "Id": 6,
-                    "Text": "3+3",
-                    "IdQuestion": "468ae1fe-c2a4-45fd-8e38-bb431c51d8e1",
-                    "Correct": false
-                }
-            ]
-        },
-        {
-            "Id": "c37a74f3-6c02-48a7-9e13-744b2aad9114",
-            "Text": "Переведите слова с английского языка и соедините с правильным вариантом:",
-            "IdQuestionType": 3,
-            "Answers": [
-                {
-                    "Id": "07e96419-cbc6-4b80-bebb-96c3db6883cb",
-                    "Text": "Kind-hearted",
-                    "IdQuestion": "c37a74f3-6c02-48a7-9e13-744b2aad9114"
-                },
-                {
-                    "Id": "753f6352-89aa-4f02-a977-607ad65d56b0",
-                    "Text": "Motherhood",
-                    "IdQuestion": "c37a74f3-6c02-48a7-9e13-744b2aad9114"
-                },
-                {
-                    "Id": "c677f824-f7cc-4ecd-8ebe-0fa9446a53c0",
-                    "Text": "Remote relatives",
-                    "IdQuestion": "c37a74f3-6c02-48a7-9e13-744b2aad9114"
-                },
-                {
-                    "Id": 3,
-                    "Text": "Добродушный",
-                    "IdFirstPart": "07e96419-cbc6-4b80-bebb-96c3db6883cb"
-                },
-                {
-                    "Id": 1,
-                    "Text": "Родина",
-                    "IdFirstPart": "753f6352-89aa-4f02-a977-607ad65d56b0"
-                },
-                {
-                    "Id": 2,
-                    "Text": "Дальние родственники",
-                    "IdFirstPart": "c677f824-f7cc-4ecd-8ebe-0fa9446a53c0"
-                }
-            ]
-        },
-        {
-            "Id": "eba3f532-1a01-4ecd-89fe-5aacc8a5a59d",
-            "Text": "Выберите правильное кол-во букв в русском алфавите:",
-            "IdQuestionType": 1,
-            "Answers": [
-                {
-                    "Id": 1,
-                    "Text": "32",
-                    "IdQuestion": "eba3f532-1a01-4ecd-89fe-5aacc8a5a59d",
-                    "Correct": false
-                },
-                {
-                    "Id": 2,
-                    "Text": "34",
-                    "IdQuestion": "eba3f532-1a01-4ecd-89fe-5aacc8a5a59d",
-                    "Correct": false
-                },
-                {
-                    "Id": 3,
-                    "Text": "33",
-                    "IdQuestion": "eba3f532-1a01-4ecd-89fe-5aacc8a5a59d",
-                    "Correct": true
-                }
-            ]
-        }
-    ]
+  "Id": "xxxxxxxxxxxxxxxx"
 }
 ```
-1. POST /PushTest
-- Input <- TestResultModel.
+- Response -> [TestModel](Personal-Testing-System/Models/TestModel.cs):
+```
+{
+  "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
+  "Name": "Тест для оценки школьных знаний",
+  "Competence": {
+    "Id": 1,
+    "Name": "Оценка имеющихся компетенций"
+  },
+  "Questions": [
+    {
+      "Id": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70",
+      "Text": "Переведите слова с английского языка и соедините с правильным вариантом:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 3,
+      "Answers": [
+        {
+          "IdFirstPart": "0d9855bc-e833-4e13-ad72-b8bd1541afcb",
+          "Text": "Motherhood",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdFirstPart": "3fe5113f-f0d6-41a6-bfd7-4c8a011887c3",
+          "Text": "Remote relatives",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdFirstPart": "644078bb-05c2-44db-b330-8dabe350f492",
+          "Text": "Kind-hearted",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdSecondPart": 1,
+          "Text": "Родина",
+          "IdFirstPart": "0d9855bc-e833-4e13-ad72-b8bd1541afcb"
+        },
+        {
+          "IdSecondPart": 2,
+          "Text": "Дальние родственники",
+          "IdFirstPart": "3fe5113f-f0d6-41a6-bfd7-4c8a011887c3"
+        },
+        {
+          "IdSecondPart": 3,
+          "Text": "Добродушный",
+          "IdFirstPart": "644078bb-05c2-44db-b330-8dabe350f492"
+        }
+      ]
+    },
+    {
+      "Id": "647113ea-5c83-465e-8d63-fb311f377d4b",
+      "Text": "Составте последовательность действий при чп на рабочем месте расставляя варианты в нужном порядке:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 4,
+      "Answers": [
+        {
+          "IdSubsequence": 1,
+          "Text": "Выключить станок/компьютер и устранить последствия",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 2
+        },
+        {
+          "IdSubsequence": 2,
+          "Text": "Разбить стекло шкафа с аптечкой и подхилиться",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 1
+        },
+        {
+          "IdSubsequence": 3,
+          "Text": "Сообщить начальнику о чп",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 3
+        }
+      ]
+    },
+    {
+      "Id": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+      "Text": "Выберите правильное кол-во букв в русском алфавите:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 1,
+      "Answers": [
+        {
+          "IdAnswer": 1,
+          "Text": "32",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": false,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 2,
+          "Text": "34",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": false,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 3,
+          "Text": "33",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": true,
+          "ImagePath": null
+        }
+      ]
+    },
+    {
+      "Id": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+      "Text": "Сумма чисел равная 8 в следующих вариантах:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 2,
+      "Answers": [
+        {
+          "IdAnswer": 4,
+          "Text": "3+5",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": true,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 5,
+          "Text": "6+2",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": true,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 6,
+          "Text": "3+3",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": false,
+          "ImagePath": null
+        }
+      ]
+    }
+  ]
+}
+```
+5. POST /PushTest
+- Request <- [TestResultModel](Personal-Testing-System/Models/TestResultModel.cs).
 ```
 {
     "TestId" : "57e6acdc-1c76-4bf8-b815-cc136deff9ac",
@@ -244,7 +288,7 @@ Output -> string:
     ]
 }
 ```
-- Output -> string(score):
+- Response -> string(score):
 ```
 {
     "message": "Тест выполнен. Оценка: 3"
@@ -253,64 +297,113 @@ Output -> string:
 ### admin-api/
 ---
 1. POST https://localhost:7273/admin-api/Login
-- Input <- :
+- Request <- [LoginModel](Personal-Testing-System/Models/LoginModel.cs):
 ```
 {
     "Login": "admin",
     "Password": "password"
 }
 ```
-- Output -> :
+- Response -> [AdminDto](Personal-Testing-System/DTOs/AdminDto.cs) + string(TokenAdmin):
 ```
-
+{
+  "TokenAdmin": "xxxxxxxxxxxxxxxx",
+  "Admin": {
+    "Id": "xxxxxxxxxxxxxxxxxx",
+    "FirstName": "Евгений",
+    "SecondName": "Жма",
+    "LastName": "Дворцов",
+    "Login": "admin",
+    "Password": "password",
+    "IdSubdivision": 1
+  }
+}
 ```
-1. GET https://localhost:7273/admin-api/GetSubdivisions
-- Output -> :
+2. GET https://localhost:7273/admin-api/GetSubdivisions
+- Request - Authorization.
+- Response -> list of [SubdivisionDto](Personal-Testing-System/DTOs/SubdivisionDto.cs):
 ```
-
+[
+  {
+    "Id": 1,
+    "Name": "Отдел кадров"
+  },
+  {
+    "Id": 2,
+    "Name": "Инженерный цех"
+  }
+]
 ```
-1. POST https://localhost:7273/admin-api/AddSubdivision
-- Input <- :
+3. POST https://localhost:7273/admin-api/AddSubdivision
+- Request <- Authorization, [SubdivisionModel](Personal-Testing-System/Models/SubdivisionModel.cs):
 ```
 {
     "Name" : "Финансовый отдел"
 }
 ```
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/UpdateSubdivision
-- Input <- :
+- Response -> status message.
+4. POST https://localhost:7273/admin-api/UpdateSubdivision
+- Request <- Authorization, [AddSubdivisionModel](Personal-Testing-System/Models/AddSubdivisionModel.cs):
 ```
 {
     "Id" : 7,
     "Name" : "Финансовый отдел."
 }
 ```
-- Output -> :
+- Response -> status message.
+5. POST https://localhost:7273/admin-api/DeleteSubdivision
+- Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs):
 ```
-
+{
+    "Id" : 7
+}
 ```
-1. POST https://localhost:7273/admin-api/DeleteSubdivision?id=7
-- Input <- id in url:
-- Output -> :
+- Response -> status message.
+6. GET https://localhost:7273/admin-api/GetEmployees
+- Request - Authorization.
+- Response -> list of [EmployeeModels](Personal-Testing-System/Models/EmployeeModel.cs).
 ```
-
+[
+  {
+    "Id": "xxxxxxxxxxxxxxxxxx",
+    "FirstName": "Андрей",
+    "SecondName": "Кравцов",
+    "LastName": "Нежеленко",
+    "Login": "login",
+    "Password": "password",
+    "DateOfBirth": "01.01.2000",
+    "Subdivision": {
+      "Id": 2,
+      "Name": "Инженерный цех"
+    }
+  }
+]
 ```
-1. GET https://localhost:7273/admin-api/GetEmployees
-- Output -> :
+7. GET https://localhost:7273/user-api/GetEmployee
+- Request <- Authorization, [StringIdModel]((Personal-Testing-System/Models/StringIdModel.cs)).
 ```
-
+{
+    "Id" : "xxxxxxxxxxxxxxxxxxxx"
+}
 ```
-1. GET https://localhost:7273/user-api/GetEmployee?id=2
-- Input <- id in url.
-- Output -> :
+- Response -> [EmployeeModel](Personal-Testing-System/Models/EmployeeModel.cs).
 ```
-
+  {
+    "Id": "xxxxxxxxxxxxxxxxxx",
+    "FirstName": "Андрей",
+    "SecondName": "Кравцов",
+    "LastName": "Нежеленко",
+    "Login": "login",
+    "Password": "password",
+    "DateOfBirth": "01.01.2000",
+    "Subdivision": {
+      "Id": 2,
+      "Name": "Инженерный цех"
+    }
+  }
 ```
-1. POST https://localhost:7273/user-api/AddEmployee
-- Input <- :
+8. POST https://localhost:7273/user-api/AddEmployee
+- Request <- Authorization, [AddEmployeeModel](Personal-Testing-System/Models/Employeemodel.cs).
 ```
 {
     "FirstName": "Водила",
@@ -322,12 +415,9 @@ Output -> string:
     "IdSubdivision": "1"
 }
 ```
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/UpdateEmployee
-- Input <- :
+- Response -> status message.
+9. POST https://localhost:7273/admin-api/UpdateEmployee
+- Request <- Authorization, [EmployeeDto](Personal-Testing-System/DTOs/EmployeeDto.cs).
 ```
 {
     "Id": "2722684a-d6c7-4ebc-9f46-dc66ed43d5af",
@@ -340,116 +430,358 @@ Output -> string:
     "IdSubdivision": "7"
 }
 ```
-- Output -> :
+- Response -> status message.
+10. POST https://localhost:7273/admin-api/DeleteEmployee
+- Request <- Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
+{
+    "Id" : "xxxxxxxxxxxxxxxxxxxx"
+}
+```
+- Output -> stautus message.
+11. GET https://localhost:7273/admin-api/GetCompetences
+- Request - Authoriztion.
+- Response -> list of [CompetenceDto](Personal-Testing-System/DTOs/CompetenceDto.cs):
+```
+[
+  {
+    "Id": 1,
+    "Name": "Оценка имеющихся компетенций"
+  }
+]
 
 ```
-1. POST https://localhost:7273/admin-api/DeleteEmployee?employeeId=e272d93f-1308-4d63-9fe4-0d0addfec917
-- Input <- id in url.
-- Output -> :
+12. GET https://localhost:7273/admin-api/GetCompetence
+- Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
-
+  {
+    "Id": 1
+  }
 ```
-1. GET https://localhost:7273/admin-api/GetCompetences
-- Output -> :
+- Response -> [CompetenceDto](Personal-Testing-System/DTOs/CompetenceDto.cs).
 ```
-
+  {
+    "Id": 1,
+    "Name": "Оценка имеющихся компетенций"
+  }
 ```
-1. GET https://localhost:7273/admin-api/GetCompetence?competenceId=1
-- Input <- id in url.
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/AddCompetence
-- Input <- :
+13. POST https://localhost:7273/admin-api/AddCompetence
+- Request <- Autorization, [AddCompetenceModel](Personal-Testing-System/Models/AddCompetenceModel.cs):
 ```
 {
     "Name" : "Проверка квалификации"
 }
 ```
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/UpdateCompetence
-- Input <- :
+- Response -> status message.
+14. POST https://localhost:7273/admin-api/UpdateCompetence
+- Request <- [CopmpetenceDto](Personal-Testing-System/DTOs/CompetenceDto.cs).
 ```
 {
     "Id" : 3,
     "Name" : "Проверка квалификации."
 }
 ```
-- Output -> :
+- Response -> status message.
+15. POST https://localhost:7273/admin-api/DeleteCompetence
+- Request <- Authorization, I[ntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
-
+{
+    "Id" : 3,
+    "Name" : "Проверка квалификации."
+}
 ```
-1. POST https://localhost:7273/admin-api/DeleteCompetence?competenceId=2
-- Input <- id in url.
-- Output -> :
+- Response -> status message.
+16. GET https://localhost:7273/admin-api/GetTests
+- Request - Authorization.
+- Response -> list of [GetTestModels](Personal-Testing-System/Models/GetTestModel.cs):
 ```
-
+[
+  {
+    "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
+    "Name": "Тест для оценки школьных знаний",
+    "Competence": {
+      "Id": 1,
+      "Name": "Оценка имеющихся компетенций"
+    }
+  },
+  {
+    "Id": "8dd4cca5-016f-4241-a9a7-0363c736d02f",
+    "Name": "new Test1",
+    "Competence": {
+      "Id": 1,
+      "Name": "Оценка имеющихся компетенций"
+    }
+  }
+]
 ```
-1. GET https://localhost:7273/admin-api/GetTests
-- Output -> :
+17. GET https://localhost:7273/admin-api/GetTest?id
+ [TestModel](Personal-Testing-System/Models/Test.cs) имttт сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerModel](Personal-Testing-System/Models/AnswerModel.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs).
+- Request <- Aythorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
-
+{
+    "Id" : "xxxxx"
+}
 ```
-1. GET https://localhost:7273/admin-api/GetTest?id
-- Input <- id in url.
-- Output -> :
+- Response -> [TestModel](Personal-Testing-System/Models/TestModel.cs).
 ```
-
+{
+  "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
+  "Name": "Тест для оценки школьных знаний",
+  "Competence": {
+    "Id": 1,
+    "Name": "Оценка имеющихся компетенций"
+  },
+  "Questions": [
+    {
+      "Id": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70",
+      "Text": "Переведите слова с английского языка и соедините с правильным вариантом:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 3,
+      "Answers": [
+        {
+          "IdFirstPart": "0d9855bc-e833-4e13-ad72-b8bd1541afcb",
+          "Text": "Motherhood",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdFirstPart": "3fe5113f-f0d6-41a6-bfd7-4c8a011887c3",
+          "Text": "Remote relatives",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdFirstPart": "644078bb-05c2-44db-b330-8dabe350f492",
+          "Text": "Kind-hearted",
+          "IdQuestion": "02adb7d6-ad30-4a7d-bbd4-6463b8089a70"
+        },
+        {
+          "IdSecondPart": 1,
+          "Text": "Родина",
+          "IdFirstPart": "0d9855bc-e833-4e13-ad72-b8bd1541afcb"
+        },
+        {
+          "IdSecondPart": 2,
+          "Text": "Дальние родственники",
+          "IdFirstPart": "3fe5113f-f0d6-41a6-bfd7-4c8a011887c3"
+        },
+        {
+          "IdSecondPart": 3,
+          "Text": "Добродушный",
+          "IdFirstPart": "644078bb-05c2-44db-b330-8dabe350f492"
+        }
+      ]
+    },
+    {
+      "Id": "647113ea-5c83-465e-8d63-fb311f377d4b",
+      "Text": "Составте последовательность действий при чп на рабочем месте расставляя варианты в нужном порядке:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 4,
+      "Answers": [
+        {
+          "IdSubsequence": 1,
+          "Text": "Выключить станок/компьютер и устранить последствия",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 2
+        },
+        {
+          "IdSubsequence": 2,
+          "Text": "Разбить стекло шкафа с аптечкой и подхилиться",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 1
+        },
+        {
+          "IdSubsequence": 3,
+          "Text": "Сообщить начальнику о чп",
+          "IdQuestion": "647113ea-5c83-465e-8d63-fb311f377d4b",
+          "Number": 3
+        }
+      ]
+    },
+    {
+      "Id": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+      "Text": "Выберите правильное кол-во букв в русском алфавите:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 1,
+      "Answers": [
+        {
+          "IdAnswer": 1,
+          "Text": "32",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": false,
+          "Base64Image": null,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 2,
+          "Text": "34",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": false,
+          "Base64Image": null,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 3,
+          "Text": "33",
+          "IdQuestion": "c91631c2-e518-41f0-9761-0ee2a9669f59",
+          "Correct": true,
+          "Base64Image": null,
+          "ImagePath": null
+        }
+      ]
+    },
+    {
+      "Id": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+      "Text": "Сумма чисел равная 8 в следующих вариантах:",
+      "ImagePath": null,
+      "Base64Image": null,
+      "IdQuestionType": 2,
+      "Answers": [
+        {
+          "IdAnswer": 4,
+          "Text": "3+5",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": true,
+          "Base64Image": null,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 5,
+          "Text": "6+2",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": true,
+          "Base64Image": null,
+          "ImagePath": null
+        },
+        {
+          "IdAnswer": 6,
+          "Text": "3+3",
+          "IdQuestion": "d567b54c-9028-4051-a18f-09fad7b9c9d6",
+          "Correct": false,
+          "Base64Image": null,
+          "ImagePath": null
+        }
+      ]
+    }
+  ]
+}
 ```
-1. POST https://localhost:7273/user-api/AddTest
-- Input <- FormData contains files ans AddTestPostModel(json):
+18. POST https://localhost:7273/user-api/AddTest
+[AddTestPostModel](Personal-Testing-System/Models/AddPostTestModel.cs) имеет сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerDto](Personal-Testing-System/DTOs/AnswerDto.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstSecondPartDto](Personal-Testing-System/DTOs/FirstSecondPartDto.cs).
+- Request <- FormData contains files ans [AddTestPostModel](Personal-Testing-System/Models/AddPostTestModel.cs):
 ```
 files    /D:/Wallpapers/16220688790371.jpg
 Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
 ```
-- Output -> :
+- Response -> status message.
+19. Post https://localhost:7273/admin-api/GetPdfTest
+- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+```
+{
+    "Id" : "xxxxx"
+}
+```
+- Response - content-type: application/pdf: 
+20. Post https://localhost:7273/admin-api/GetPdfCorrectTest
+- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+```
+{
+    "Id" : "xxxxx"
+}
+```
+- Response - content-type: application/pdf: 
+21. POST https://localhost:7273/admin-api/UpdateTest
+[UpdateTestPostModel](Personal-Testing-System/Models/UpdatePostTestModel.cs) имеет сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerDto](Personal-Testing-System/DTOs/AnswerDto.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs), [FirstSecondPartDto](Personal-Testing-System/DTOs/FirstSecondPartDto.cs).
+- Request <- FormData contains files and [UpdateTestPostModel](Personal-Testing-System/Models/UpdateTestPostModel.cs):
+```
+files    /D:/Wallpapers/16220688790371.jpg
+Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
+```
+- Response -> :
 ```
 
 ```
-1. POST https://localhost:7273/admin-api/UpdateTest
-- Input <- FormData contains files ans UpdateTestPostModel(json):
+22. POST https://localhost:7273/admin-api/DeleteTest
+- Request <- Authourization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
+{
+    "Id" : "xxxxx"
+}
 ```
-- Output -> :
-```
+- Response -> status message.
 
+23. GET https://localhost:7273/admin-api/GetPurposes
+- Request - Authorization.
+- Response -> list of [PurposeAdminModels](Personal-Testing-System/Models/PurposeAdminModel.cs):
 ```
-1. POST https://localhost:7273/admin-api/DeleteTest?id=5f7511c8-0cae-4864-8ca1-51b3135f10a7
-- Input <- id in url.
-- Output -> :
+[
+  {
+    "Id": 2,
+    "Employee": {
+      "Id": "48f04c54-d4b3-4889-9f3b-2d6098a6d3de",
+      "FirstName": "Андрей",
+      "SecondName": "Кравцов",
+      "LastName": "Нежеленко",
+      "Login": "login",
+      "Password": "password",
+      "DateOfBirth": "01.01.2000",
+      "Subdivision": {
+        "Id": 2,
+        "Name": "Инженерный цех"
+      }
+    },
+    "Test": {
+      "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
+      "Name": "Тест для оценки школьных знаний",
+      "Competence": {
+        "Id": 1,
+        "Name": "Оценка имеющихся компетенций"
+      }
+    },
+    "DatatimePurpose": "08.08.2023 14:30:00"
+  }
+]
 ```
-
+24. GET https://localhost:7273/admin-api/GetPurposesByEmployeeId
+- Request <- Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
-1. GET https://localhost:7273/admin-api/GetPdfTest?id=1554092c-a4b6-4979-a86d-d800f676b718
-- Input <- id in url.
-- Output -> :
+{
+    "Id" : "xxxxxxxxxxxxxx"
+}
 ```
-
+- Response -> list of [PurposeModels](Personal-Testing-System/Models/PurposeModel.cs).
 ```
-1. GET https://localhost:7273/admin-api/GetPdfCorerectTest?id=6957a83a-82af-4f79-b31e-0d2deefaad2d
-- Input <- id in url.
-- Output -> :
+[
+  {
+    "Id": 2,
+    "Employee": {
+      "Id": "48f04c54-d4b3-4889-9f3b-2d6098a6d3de",
+      "FirstName": "Андрей",
+      "SecondName": "Кравцов",
+      "LastName": "Нежеленко",
+      "Login": "login",
+      "Password": "password",
+      "DateOfBirth": "01.01.2000",
+      "Subdivision": {
+        "Id": 2,
+        "Name": "Инженерный цех"
+      }
+    },
+    "Test": {
+      "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
+      "Name": "Тест для оценки школьных знаний",
+      "Competence": {
+        "Id": 1,
+        "Name": "Оценка имеющихся компетенций"
+      }
+    },
+    "DatatimePurpose": "08.08.2023 14:30:00"
+  }
+]
 ```
-
-```
-1. GET https://localhost:7273/admin-api/GetPurposes
-- Output -> :
-```
-
-```
-1. GET https://localhost:7273/admin-api/GetPurposesByEmployeeId?employeeId=8b69bcf7-a600-41d3-999d-ec3d76c72ec1
-- Input <- id in url.
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/AddPurpose
-- Input <- AddPurposeModel:
+25. POST https://localhost:7273/admin-api/AddPurpose
+- Request <- Authorization, [AddTestPurposeModel](Personal-Testing-System/Models/AddTestPurposeModel.cs):
 ```
 {
     "IdEmployee" : "8b69bcf7-a600-41d3-999d-ec3d76c72ec1",
@@ -457,20 +789,20 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
     "DataTimePurpose" : "30.07.2023 14:00:00"
 }
 ```
-- Output -> :
+- Response -> :
 ```
 
 ```
-1. POST https://localhost:7273/admin-api/AddPurposesBySubdivision?testId=b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e&idSubdivision=1&time=26.07.2023 17:00:00
-- Input <- query params in url.
+26. POST https://localhost:7273/admin-api/AddPurposesBySubdivision?testId=b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e&idSubdivision=1&time=26.07.2023 17:00:00
+- Request <- query params in url.
 ```
 ```
-- Output -> :
+- Response -> :
 ```
 
 ```
-1. POST https://localhost:7273/admin-api/UpdatePurpose
-- Input <- :
+27. POST https://localhost:7273/admin-api/UpdatePurpose
+- Request <- Authorization, [UpdateTestPurposeModel](Personal-Testing-System/Models/UpdatePurposeModel.cs).
 ```
 {
     "Id" : 4,
@@ -479,34 +811,30 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
     "DataTimePurpose" : "26.07.2023 10:00:00"
 }
 ```
-- Output -> :
+- Response -> status message.
+28. POST https://localhost:7273/admin-api/DeletePurpose
+- Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
-
+{
+    "Id" : 1
+}
 ```
-1. POST https://localhost:7273/admin-api/DeletePurpose?purposeId=4
-- Input <- id in url.
-- Output -> :
-```
-
-```
-1. POST https://localhost:7273/admin-api/DeleteResults
-- Output -> :
-```
-
-```
-1. GET https://localhost:7273/admin-api/GetResults
-- Input <- :
+- Response -> status message.
+29. POST https://localhost:7273/admin-api/DeleteResults
+- Request - Authorization.
+30. GET https://localhost:7273/admin-api/GetResults
+- Input <- [ResultQuerryModel](Personal-Testing-System/Models/ResultQuerryModel.cs):
 ```
 {
     "idSubdivision": "",
     "FirstName": "",
     "SecondName": "",
     "LastName": "",
-    "score": "",
-    "sortType": ""
+    "Score": "",
+    "SortType": ""
 }
 ```
-- Output -> :
+- Response -> list of [EmployeeResultModels](Personal-Testing-System/Models/EmployeeResultModel.cs).
 ```
 
 ```

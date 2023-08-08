@@ -328,7 +328,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteSubdivision")]
+        [HttpPost("DeleteSubdivision")]
         public async Task<IActionResult> DeleteSubdivision([FromHeader] string Authorization, [FromBody]IntIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
@@ -515,7 +515,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteEmployee")]
+        [HttpPost("DeleteEmployee")]
         public async Task<IActionResult> DeleteEmployee([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
@@ -689,7 +689,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteCompetence")]
+        [HttpPost("DeleteCompetence")]
         public async Task<IActionResult> DeleteCompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null )
@@ -805,10 +805,40 @@ namespace Personal_Testing_System.Controllers
                                     ImagePath = quest.ImagePath,
                                     Answers = new List<object>() { }
                                 };
+                                if (!quest.ImagePath.IsNullOrEmpty())
+                                {
+                                    if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                    {
+                                        byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                        string base64 = Convert.ToBase64String(array);
+                                        createQuestionDto.Base64Image = base64;
+                                    }
+                                }
 
                                 if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
                                 {
-                                    createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                                    List<Answer> list = ms.Answer.GetAnswersByQuestionId(quest.Id);
+                                    foreach (Answer answer in list)
+                                    {
+                                        AnswerModel model = new AnswerModel
+                                        {
+                                            IdAnswer = answer.Id,
+                                            Text = answer.Text,
+                                            IdQuestion = answer.IdQuestion,
+                                            Correct = answer.Correct
+                                        };
+                                        if (!answer.ImagePath.IsNullOrEmpty())
+                                        {
+                                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                            {
+                                                byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                                string base64 = Convert.ToBase64String(array);
+                                                model.Base64Image = base64;
+                                                model.ImagePath = answer.ImagePath;
+                                            }
+                                        }
+                                        createQuestionDto.Answers.Add(model);
+                                    }
                                 }
                                 if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
                                 {
@@ -896,7 +926,7 @@ namespace Personal_Testing_System.Controllers
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
                                     html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
-                                    html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/></p>";
+                                    html += $"<p><img style=\"width:300px; height:auto;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
                             }
                             else
@@ -920,7 +950,7 @@ namespace Personal_Testing_System.Controllers
                                                     answer.Text + "</p>";*/
                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
                                             string base64 = Convert.ToBase64String(array);
-                                            html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/png;base64,{base64}'/></p>";
+                                            html += $"<p><img style=\"width:200px; height:auto;\" src='data:image/png;base64,{base64}'/></p>";
                                         }
                                     }
                                     html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Text}</span>";
@@ -1123,7 +1153,7 @@ namespace Personal_Testing_System.Controllers
                                 Weight = test.Questions.Count
                             });
 
-                            foreach (QuestionModel quest in test.Questions)
+                            foreach (AddQuestionModel quest in test.Questions)
                             {
                                 logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
 
@@ -1134,7 +1164,7 @@ namespace Personal_Testing_System.Controllers
                                     string ext = Path.GetExtension(quest.ImagePath);
                                     if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                     {
-                                        if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                        if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
                                         {
                                             string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", file.FileName);
                                             using (var upload = new FileStream(saveImage, FileMode.Create))
@@ -1200,7 +1230,7 @@ namespace Personal_Testing_System.Controllers
                                             string ext = Path.GetExtension(answerDto.ImagePath);
                                             if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                             {
-                                                if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                                if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath))
                                                 {
                                                     string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", answerDto.ImagePath);
                                                     using (var upload = new FileStream(saveImage, FileMode.Create))
@@ -1335,7 +1365,7 @@ namespace Personal_Testing_System.Controllers
                                         !System.IO.File.Exists(Path.Combine(environment.WebRootPath, quest.ImagePath)))
                                     {
                                         IFormFile file = updatePostModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
-                                        string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                        string saveImage = Path.Combine(environment.WebRootPath+"/images/", file.FileName);
                                         string ext = Path.GetExtension(saveImage);
                                         if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                         {
@@ -1392,7 +1422,7 @@ namespace Personal_Testing_System.Controllers
                                                 !System.IO.File.Exists(Path.Combine(environment.WebRootPath, answerDto.ImagePath)))
                                             {
                                                 IFormFile file = updatePostModel.Files.GetFile(answerDto.ImagePath);
-                                                string saveImage = Path.Combine(environment.WebRootPath, file.FileName);
+                                                string saveImage = Path.Combine(environment.WebRootPath+"/images/", file.FileName);
                                                 string ext = Path.GetExtension(saveImage);
                                                 if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                                 {
@@ -1502,7 +1532,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteTest")]
+        [HttpPost("DeleteTest")]
         public async Task<IActionResult> DeleteTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
@@ -1641,6 +1671,15 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
+                        if (ms.Test.GetTestById(purpose.IdTest) == null)
+                                return BadRequest(new { message = "Ошибка. Пользователя с эти Id нет" });
+
+                        if (ms.Employee.GetEmployeeById(purpose.IdEmployee) == null)
+                            return BadRequest(new { message = "Ошибка. Теста с этим Id нет" });
+
+                        if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(purpose.IdTest,purpose.IdEmployee) != null)
+                                return BadRequest(new { message = "Ошибка. Этот тест уже назначен этому пользованелю" });
+
                         logger.LogInformation($"/admin-api/AddPurpose employeeId={purpose.IdEmployee}, testId={purpose.IdTest}, datatime={purpose.DatatimePurpose}");
                         ms.Log.SaveLog(new Log
                         {
@@ -1660,7 +1699,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("AddPurposesBySubdivision")]
-        public async Task<IActionResult> AddPurposesBySubdivision([FromHeader] string Authorization, string? testId, int? idSubdivision, string? time, string? userId)
+        public async Task<IActionResult> AddPurposesBySubdivision([FromHeader] string Authorization, string? testId, int? idSubdivision, string? time)
         {
             if (!Authorization.IsNullOrEmpty() && !testId.IsNullOrEmpty() && idSubdivision.HasValue && !time.IsNullOrEmpty())
             {
@@ -1749,7 +1788,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeletePurpose")]
+        [HttpPost("DeletePurpose")]
         public async Task<IActionResult> DeletePurpose([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
@@ -1812,7 +1851,7 @@ namespace Personal_Testing_System.Controllers
                         });
 
                         List<EmployeeResultModel> list = ms.GetAllEmployeeResultModels();
-                        if (query.IdSubdivision.HasValue)
+                        if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
                         {
                             list = list.Where(x => x.Employee.Subdivision.Id == query.IdSubdivision).ToList();
                         }
@@ -1874,7 +1913,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteResults")]
+        [HttpPost("DeleteResults")]
         public async Task<IActionResult> DeleteResults([FromHeader] string Authorization)//!!!
         {
             if (!Authorization.IsNullOrEmpty())
@@ -1912,7 +1951,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpDelete("DeleteResult")]
+        [HttpPost("DeleteResult")]
         public async Task<IActionResult> DeleteResult([FromHeader] string Authorization, [FromBody] IntIdModel resultId)
         {
             if (!Authorization.IsNullOrEmpty())

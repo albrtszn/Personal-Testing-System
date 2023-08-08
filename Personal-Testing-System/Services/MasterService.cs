@@ -153,7 +153,7 @@ namespace Personal_Testing_System.Services
                 List<Answer> answerList = Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
                 foreach (Answer answer in answerList)
                 {
-                    string answerFilePath = env.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath;
+                    string answerFilePath = env.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath;
                     if (!string.IsNullOrEmpty(answer.ImagePath) && System.IO.File.Exists(answerFilePath))
                     {
                         System.IO.File.Delete(answerFilePath);
@@ -166,7 +166,7 @@ namespace Personal_Testing_System.Services
                 List<FirstPart> list = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
                 list.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
                 list.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
-                string path = env.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath;
+                string path = env.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath;
                 if (File.Exists(path))
                 {
                     File.Delete(path);

@@ -315,7 +315,7 @@ namespace Personal_Testing_System.Controllers
                         StartDate = DateOnly.Parse(testResultModel.StartDate),
                         StartTime = TimeOnly.Parse(testResultModel.StartTime),
                         EndTime = TimeOnly.Parse(testResultModel.EndTime),
-                        Duration = ((TimeOnly.Parse(testResultModel.EndTime).Minute) - (TimeOnly.Parse(testResultModel.StartTime).Minute)),
+                        Duration = (int)((TimeOnly.Parse(testResultModel.EndTime).ToTimeSpan().TotalMinutes) - (TimeOnly.Parse(testResultModel.StartTime).ToTimeSpan().TotalMinutes)),
                     });
 
                     int score = 0;

@@ -142,12 +142,15 @@ namespace Personal_Testing_System.Services
             {
                 if (employee.IdSubdivision == subdivisionId)
                 {
-                    testPurposeRepo.SaveTestPurpose(new TestPurpose
+                    if (GetTestPurposeByEmployeeTestId(testId, employee.Id) == null)
                     {
-                        IdEmployee = employee.Id,
-                        IdTest = testId,
-                        DatatimePurpose = time
-                    });
+                        testPurposeRepo.SaveTestPurpose(new TestPurpose
+                        {
+                            IdEmployee = employee.Id,
+                            IdTest = testId,
+                            DatatimePurpose = time
+                        });
+                    }
                 }
             }
         }

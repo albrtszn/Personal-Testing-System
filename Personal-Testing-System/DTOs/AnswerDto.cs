@@ -10,6 +10,5 @@ namespace Personal_Testing_System.DTOs
         public string? IdQuestion { get; set; }
         public bool? Correct { get; set; }
         public string? ImagePath { get; set; }
-
     }
 }

@@ -10,6 +10,7 @@ using Personal_Testing_System.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -20,11 +21,13 @@ namespace Personal_Testing_System.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly ILogger<EmployeeController> logger;
+        private readonly IWebHostEnvironment environment;
         private MasterService ms;
-        public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService)
+        public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService, IWebHostEnvironment environment)
         {
             logger = _logger;
             ms = _masterService;
+            this.environment = environment;
         }
 
         [HttpGet("Ping")]
@@ -232,10 +235,40 @@ namespace Personal_Testing_System.Controllers
                                 Text = quest.Text,
                                 Answers = new List<object>() { }
                             };
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    createQuestionDto.Base64Image = base64;
+                                }
+                            }
 
                             if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
                             {
-                                createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                                //createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
+                                foreach (AnswerDto answerDto in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                {
+                                    AnswerModel model = new AnswerModel
+                                    {
+                                        IdAnswer = answerDto.IdAnswer,
+                                        Text = answerDto.Text,
+                                        IdQuestion = answerDto.IdQuestion,
+                                        Correct = answerDto.Correct
+                                    };
+                                    if (!answerDto.ImagePath.IsNullOrEmpty())
+                                    {
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + answerDto.ImagePath).PhysicalPath))
+                                        {
+                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answerDto.ImagePath).PhysicalPath);
+                                            string base64 = Convert.ToBase64String(array);
+                                            model.ImagePath = answerDto.ImagePath;
+                                            model.Base64Image = base64;
+                                        }
+                                    }
+                                    createQuestionDto.Answers.Add(model);
+                                }
                             }
                             if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
                             {

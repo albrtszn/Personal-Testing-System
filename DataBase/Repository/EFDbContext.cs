@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using DataBase.Repository.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DataBase.Repository;
 
 public partial class EFDbContext : DbContext
 {
-    public EFDbContext()
+    private IConfiguration configuration;
+    public EFDbContext(IConfiguration _configuration)
     {
+        configuration = _configuration;
     }
 
-    public EFDbContext(DbContextOptions<EFDbContext> options)
+    public EFDbContext(DbContextOptions<EFDbContext> options,
+                       IConfiguration _configuration)
         : base(options)
     {
+        configuration = _configuration;
     }
 
     public virtual DbSet<Admin> Admins { get; set; }
@@ -58,7 +63,8 @@ public partial class EFDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PersonalTestingSystemBD;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        => optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefautConnection"));
+        //=> optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PersonalTestingSystemBD;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

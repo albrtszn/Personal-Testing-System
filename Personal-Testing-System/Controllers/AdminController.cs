@@ -1,4 +1,6 @@
-﻿using DataBase.Repository.Models;
+﻿using DataBase;
+using DataBase.Repository;
+using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -24,11 +26,12 @@ namespace Personal_Testing_System.Controllers
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
         public AdminController(ILogger<AdminController> _logger, MasterService _masterService,
-                               IWebHostEnvironment _environmentironment)
+                               IWebHostEnvironment _environmentironment, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             environment = _environmentironment;
+            InitDB.InitData(db);
             //CreateDirectory !!!
             /*if (!Directory.Exists(environment.WebRootPath + "/images"))
             {
@@ -807,7 +810,7 @@ namespace Personal_Testing_System.Controllers
                                 };
                                 if (!quest.ImagePath.IsNullOrEmpty())
                                 {
-                                    if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                    if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
                                     {
                                         byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                         string base64 = Convert.ToBase64String(array);
@@ -829,7 +832,7 @@ namespace Personal_Testing_System.Controllers
                                         };
                                         if (!answer.ImagePath.IsNullOrEmpty())
                                         {
-                                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
                                             {
                                                 byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                                 string base64 = Convert.ToBase64String(array);

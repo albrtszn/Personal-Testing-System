@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using DataBase.Repository;
+using DataBase;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -23,11 +25,13 @@ namespace Personal_Testing_System.Controllers
         private readonly ILogger<EmployeeController> logger;
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
-        public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService, IWebHostEnvironment environment)
+        public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService,
+                                  IWebHostEnvironment environment, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             this.environment = environment;
+            InitDB.InitData(db);
         }
 
         [HttpGet("Ping")]
@@ -237,11 +241,12 @@ namespace Personal_Testing_System.Controllers
                             };
                             if (!quest.ImagePath.IsNullOrEmpty())
                             {
-                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
                                 {
-                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
                                     createQuestionDto.Base64Image = base64;
+                                    createQuestionDto.ImagePath = quest.ImagePath;
                                 }
                             }
 
@@ -259,9 +264,9 @@ namespace Personal_Testing_System.Controllers
                                     };
                                     if (!answerDto.ImagePath.IsNullOrEmpty())
                                     {
-                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + answerDto.ImagePath).PhysicalPath))
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath))
                                         {
-                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answerDto.ImagePath).PhysicalPath);
+                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath);
                                             string base64 = Convert.ToBase64String(array);
                                             model.ImagePath = answerDto.ImagePath;
                                             model.Base64Image = base64;

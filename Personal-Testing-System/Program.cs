@@ -110,12 +110,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 //init data in database
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<EFDbContext>();
     InitDB.InitData(context);
-}
+}*/
 
 // Configure the HTTP request pipeline.
 /*if (app.Environment.IsDevelopment())

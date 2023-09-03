@@ -1,10 +1,13 @@
 ﻿using CRUD.implementations;
 using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
+using SixLabors.ImageSharp;
 using System;
 
 namespace Personal_Testing_System.Services
@@ -31,6 +34,8 @@ namespace Personal_Testing_System.Services
         private LogService logService;
         private TokenEmployeeService tokenEmployeeService;
         private TokenAdminService tokenAdminService;
+        
+        private IConfiguration config;
 
         public MasterService(AnswerService _answerService, EmployeeAnswerService _employeeAnswerService,
                        EmployeeMatchingService _employeeMatchingService, EmployeeService _employeeService,
@@ -40,7 +45,8 @@ namespace Personal_Testing_System.Services
                        TestPurposeService _testPurposeService, TestService _testService,
                        CompetenceService _competenceService, AdminService _adminService,
                        ResultService _resultService, EmployeeResultService _employeeResultService,
-                       LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService)
+                       LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService,
+                       IConfiguration _config)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -62,6 +68,8 @@ namespace Personal_Testing_System.Services
             logService = _logService;
             tokenEmployeeService = _tokenEmployeeService;
             tokenAdminService = _tokenAdminService;
+
+            config = _config;
         }
         //public UserService Users { get { return ; } }
 
@@ -95,6 +103,12 @@ namespace Personal_Testing_System.Services
         private double hoursToExpireEmployeeToken = 2.0;
         public bool IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
         {
+            double ttl = config.GetValue<double>("TokenTimeToLiveInHours:EmployeeToken");
+            if (ttl > 0)
+            {
+                hoursToExpireEmployeeToken = ttl;
+            }
+
             DateTime? dateTime = tokenEmployee.IssuingTime.Value;
             if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
             {
@@ -110,6 +124,12 @@ namespace Personal_Testing_System.Services
         private double hoursToExpireAdminToken = 5.0;
         public bool IsTokenAdminExpired(TokenAdmin tokenAdmin)
         {
+            double ttl = config.GetValue<double>("TokenTimeToLiveInHours:AdminToken");
+            if (ttl > 0)
+            {
+                hoursToExpireAdminToken = ttl;
+            }
+
             DateTime? dateTime = tokenAdmin.IssuingTime.Value;
             if (dateTime.Value.AddHours(hoursToExpireAdminToken) <= DateTime.Now)
             {
@@ -140,8 +160,11 @@ namespace Personal_Testing_System.Services
         public void DeleteFirstAndSecondPartsByQuestion(string idQuestion)
         {
             List<FirstPart> listFP = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
-            listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
-            listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+            if (listFP.Count > 0)
+            {
+                listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
+                listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+            }
         }
         /*
          *  Test

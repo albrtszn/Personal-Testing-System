@@ -1,8 +1,7 @@
-﻿namespace Personal_Testing_System.DTOs
+﻿namespace Personal_Testing_System.Models
 {
-    public class AdminDto
+    public class AddAdminModel
     {
-        public string? Id { get; set; }
         public string? FirstName { get; set; }
         public string? SecondName { get; set; }
         public string? LastName { get; set; }

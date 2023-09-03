@@ -26,12 +26,12 @@ namespace Personal_Testing_System.Controllers
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
         public AdminController(ILogger<AdminController> _logger, MasterService _masterService,
-                               IWebHostEnvironment _environmentironment, EFDbContext db)
+                               IWebHostEnvironment _environmentironment)//, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             environment = _environmentironment;
-            InitDB.InitData(db);
+            ///InitDB.InitData(db);
             //CreateDirectory !!!
             /*if (!Directory.Exists(environment.WebRootPath + "/images"))
             {
@@ -45,78 +45,8 @@ namespace Personal_Testing_System.Controllers
             return Ok(new { message = $"Ping: {HttpContext.Request.Host + HttpContext.Request.Path} {DateTime.Now}." });
         }
         /*
-         *  TestPDF
+         *  TEST METHODS
          */
-        [HttpGet("GETPDF")]
-        public async Task<IActionResult> GETPDF()
-        {
-            if (!System.IO.File.Exists(Path.Combine(environment.WebRootPath) + "\\images\\logo.jpg"))
-            {
-                return BadRequest("файл не найден");
-            }
-
-            var doc = new PdfDocument();
-            string html = "";
-            string url = "htpps://" + Request.Host.Value + "/images/logo.jpg";
-            html += $"1<img src='{url}'/>";
-            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath);
-            string base64 = Convert.ToBase64String(array);
-            html += $"2<img src='data:image/png;base64,{base64}'/>";
-            PdfGenerator.AddPdfPages(doc, html, PdfSharpCore.PageSize.A4);
-            byte[] res = null;
-            using (MemoryStream s = new MemoryStream())
-            {
-                doc.Save(s);
-                res = s.ToArray();
-            }
-            return File(res, "application/pdf", "ADMIN_GETPDF.pdf");
-            //environment.WebRootFileProvider.GetFileInfo("images/logo.jpg").PhysicalPath
-
-
-
-
-
-            /*PdfDocument pdf = renderer.RenderHtmlAsPdf($"<img src='{"https://img1.goodfon.ru/original/320x240/4/f3/les-gory-minimalizm.jpg"}' />"+
-                                                       $"<img src='{"https://" + Request.Host.Value + "/images/trashcan.jpg\""}' />");
-            var Renderer = new IronPdf.ChromePdfRenderer();
-            var pngBinaryData = System.IO.File.ReadAllBytes(Path.Combine(environmentironment.WebRootPath) + "\\images\\trashcan.jpg");
-            var ImgDataURI = @"data:image/png;base64," + Convert.ToBase64String(pngBinaryData);
-            var ImgHtml = $"<img src='{ImgDataURI}'>";
-            using var pdfdoc = Renderer.RenderHtmlAsPdf(ImgHtml);
-
-            //using var PDF = IronPdf.ChromePdfRenderer.StaticRenderUrlAsPdf(new Uri("https://en.wikipedia.org"));
-            return File(pdfdoc.BinaryData, "application/pdf", "TESTPDF.Pdf");*/
-
-            /*string someUrl = "https://" + Request.Host.Value + "/images/trashcan.jpg";
-            byte[] imageBytes1 = null;
-            using (var webClient = new WebClient())
-            {
-                imageBytes1 = webClient.DownloadData(someUrl);
-            }
-            string htmlContent = "";
-            htmlContent += "<style>\r\n img.logo \r\n{ \r\nwidth:110px;\r\nheight:110px;\r\ncontent: url('data:image/jpeg;base64," + Convert.ToBase64String(imageBytes) + "')\r\n} \r\n</style>\r\n";
-            string data = @"data:image/jpg;base64," + Convert.ToBase64String(imageBytes1);
-            htmlContent += $"<img  src='{data}' />";
-            htmlContent += "<img class='logo' src='data:image/jpeg;base64," + Convert.ToBase64String(imageBytes1) + "'/>";
-            string imageUrl = "https://" + Request.Host.Value + "/images/trashcan.jpg";
-            string imageUrl1 = "https://img1.goodfon.ru/original/320x240/4/f3/les-gory-minimalizm.jpg";
-            htmlContent += "<img src='"+ imageUrl +"'/>";
-            htmlContent += "<img src=\""+ imageUrl1 +"\"/>";
-            //htmlContent +=
-            PdfDocument doc = new PdfDocument();
-            PdfGenerator.AddPdfPages(doc, htmlContent, PageSize.A4);
-            byte[] res = null;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                doc.Save(ms);
-                res = ms.ToArray();
-            }
-            return File(res, "application/pdf", "TEST.pdf");*/
-        }
-        /*
-        * 
-        */
-
         [HttpGet("TestGetAdmins")]
         public async Task<IActionResult> TestGetAdmins()
         {
@@ -138,6 +68,9 @@ namespace Personal_Testing_System.Controllers
             }
             return BadRequest(new { messsage = "Ошибка при удалении токенов" });
         }
+        /*
+         * 
+         */
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel? loginModel)
@@ -554,6 +487,187 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
+         *  Admin
+         */
+        [HttpGet("GetAdmins")]
+        public async Task<IActionResult> GetAdmins([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetAdmins ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetAdmins",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+                        return Ok(ms.Admin.GetAllAdminDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+                 
+        [HttpPost("GetAdmins")]
+        public async Task<IActionResult> GetAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetAdmin ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetAdmin",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Администратора={id.Id}"
+                        });
+                        if (ms.Admin.GetAdminById(id.Id) != null)
+                            return Ok(ms.Admin.GetAdminDtoById(id.Id));
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateAdmin")]
+        public async Task<IActionResult> UpdateAdmin([FromHeader] string Authorization, [FromBody] AdminDto? admin)
+        {
+            if (!Authorization.IsNullOrEmpty() && admin != null && !string.IsNullOrEmpty(admin.Id) &&
+                !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
+                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0 )
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateAdmin ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateAdmin",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Администратора={admin.Id}"
+                        });
+                        if (ms.Admin.GetAdminById(admin.Id) != null)
+                        {
+                            ms.Admin.SaveAdmin(admin);
+                            return Ok(new { message = "Администратор добавлен" });
+                        }else
+                        {
+                            return NotFound(new { message = "Ошибка. Такого пользователя не существует" });
+                        }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [HttpPost("AddAdmin")]
+        public async Task<IActionResult> AddAdmin([FromHeader] string Authorization, [FromBody] AddAdminModel? admin)
+        {
+            if (!Authorization.IsNullOrEmpty() && admin != null && 
+                !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
+                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddAdmin ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddAdmin",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Логин Администратора={admin.Login}"
+                        });
+                        ms.Admin.SaveAdmin(admin);
+                        return Ok(new { message = "Администратор добавлен" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [HttpPost("DeleteAdmins")]
+        public async Task<IActionResult> DeleteAdmins([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteAdmin ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteAdmin",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Администратора={id.Id}"
+                        });
+
+                        if (id.Id.Equals(token.IdAdmin))
+                            return BadRequest(new { message = "Ошибка. Вы не можете удалить свою учетную запись" });
+
+                        Admin? adminToDelete = ms.Admin.GetAdminById(id.Id);
+                        if (adminToDelete == null)
+                            return NotFound(new { message = "Администратор не найден" });
+
+                        ms.Admin.DeleteAdminById(adminToDelete.Id);
+                        return Ok(new { message = "Администратор удален" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
          *  Competence
          */
         [HttpGet("GetCompetences")]
@@ -812,9 +926,9 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
                                     {
-                                        byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                        byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
                                         string base64 = Convert.ToBase64String(array);
-                                        createQuestionDto.Base64Image = base64;
+                                        //createQuestionDto.Base64Image = base64;
                                     }
                                 }
 
@@ -832,11 +946,11 @@ namespace Personal_Testing_System.Controllers
                                         };
                                         if (!answer.ImagePath.IsNullOrEmpty())
                                         {
-                                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
+                                            if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath))
                                             {
-                                                byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                                byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath);
                                                 string base64 = Convert.ToBase64String(array);
-                                                model.Base64Image = base64;
+                                                //model.Base64Image = base64;
                                                 model.ImagePath = answer.ImagePath;
                                             }
                                         }
@@ -1422,9 +1536,9 @@ namespace Personal_Testing_System.Controllers
                                         if (!answerDto.ImagePath.IsNullOrEmpty())
                                         {
                                             if (updatePostModel.Files != null && updatePostModel.Files.Count != 0 &&
-                                                !System.IO.File.Exists(Path.Combine(environment.WebRootPath, answerDto.ImagePath)))
+                                                !System.IO.File.Exists(Path.Combine(environment.WebRootPath+"/images/", answerDto.ImagePath)))
                                             {
-                                                IFormFile file = updatePostModel.Files.GetFile(answerDto.ImagePath);
+                                                IFormFile file = updatePostModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
                                                 string saveImage = Path.Combine(environment.WebRootPath+"/images/", file.FileName);
                                                 string ext = Path.GetExtension(saveImage);
                                                 if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
@@ -1436,11 +1550,21 @@ namespace Personal_Testing_System.Controllers
                                                 }
                                             }
                                         }
-                                        else
+                                        if (answerDto.IdAnswer.HasValue)
                                         {
                                             ms.Answer.SaveAnswer(new Answer
                                             {
                                                 Id = answerDto.IdAnswer.Value,
+                                                Text = answerDto.Text,
+                                                IdQuestion = quest.Id,
+                                                Correct = answerDto.Correct,
+                                                ImagePath = answerDto.ImagePath
+                                            });
+                                        }
+                                        else
+                                        {
+                                            ms.Answer.SaveAnswer(new Answer
+                                            {
                                                 Text = answerDto.Text,
                                                 IdQuestion = quest.Id,
                                                 Correct = answerDto.Correct,
@@ -1456,7 +1580,7 @@ namespace Personal_Testing_System.Controllers
                                             Id = subsequenceDto.IdSubsequence,
                                             Text = subsequenceDto.Text,
                                             Number = subsequenceDto.Number,
-                                            IdQuestion = subsequenceDto.IdQuestion
+                                            IdQuestion = quest.Id
                                         });
                                     }
                                     if (firstPartDto is FirstPartDto && !string.IsNullOrEmpty(firstPartDto.IdFirstPart) &&

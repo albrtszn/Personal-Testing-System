@@ -42,9 +42,12 @@ namespace Personal_Testing_System.Services
 
         public void DeleteSubsequencesByQuestion(string idQuestion)
         {
-            GetAllSubsequences().Where(x => x.IdQuestion.Equals(idQuestion))
-                                .ToList()
-                                .ForEach(x => DeleteSubsequenceById(x.Id));
+            var list = GetAllSubsequences().Where(x => x.IdQuestion.Equals(idQuestion))
+                                .ToList();
+            if (list.Count > 0)
+            {
+                list.ForEach(x => DeleteSubsequenceById(x.Id));
+            }
         }
 
         public List<Subsequence> GetAllSubsequences()

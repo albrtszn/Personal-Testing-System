@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CRUD.interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CRUD.implementations
 {
@@ -34,7 +35,21 @@ namespace CRUD.implementations
 
         public void SaveAdmin(Admin AdminToSave)
         {
-            context.Admins.Add(AdminToSave);
+            Admin? admin = GetAdminById(AdminToSave.Id);
+            if (admin != null && !AdminToSave.Id.IsNullOrEmpty())
+            {
+                //context.Admins.Update(AdminToSave);
+                admin.FirstName = AdminToSave.FirstName;
+                admin.SecondName = AdminToSave.SecondName;
+                admin.LastName = AdminToSave.LastName;
+                admin.Login = AdminToSave.Login;
+                admin.Password = AdminToSave.Password;
+                admin.IdSubdivision = AdminToSave.IdSubdivision;
+            }
+            else
+            {
+                context.Admins.Add(AdminToSave);
+            }
             context.SaveChanges();
         }
     }

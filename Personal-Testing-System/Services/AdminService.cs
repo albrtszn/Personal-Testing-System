@@ -1,6 +1,7 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Models;
 
 namespace Personal_Testing_System.Services
 {
@@ -37,6 +38,19 @@ namespace Personal_Testing_System.Services
                 IdSubdivision = AdminDto.IdSubdivision
             };
         }
+        private Admin ConvertToAdmin(AddAdminModel admin)
+        {
+            return new Admin
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = admin.FirstName,
+                SecondName = admin.SecondName,
+                LastName = admin.LastName,
+                Login = admin.Login,
+                Password = admin.Password,
+                IdSubdivision = admin.IdSubdivision
+            };
+        }
         public void DeleteAdminById(string id)
         {
             AdminRepo.DeleteAdminById(id);
@@ -54,19 +68,29 @@ namespace Personal_Testing_System.Services
             return Admins;
         }
 
-        public List<AdminDto> GetAdminDtosByQuestionId(int id)
-        {
-            return GetAllAdminDtos().Where(x => x.Id.Equals(id)).ToList();
-        }
-
         public Admin GetAdminById(string id)
         {
             return AdminRepo.GetAdminById(id);
         }
 
+        public AdminDto GetAdminDtoById(string id)
+        {
+            return ConvertToAdminDto(AdminRepo.GetAdminById(id));
+        }
+
         public void SaveAdmin(Admin AdminToSave)
         {
             AdminRepo.SaveAdmin(AdminToSave);
+        }
+
+        public void SaveAdmin(AdminDto AdminDtoToSave)
+        {
+            AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToSave));
+        }
+
+        public void SaveAdmin(AddAdminModel AdminDtoToAdd)
+        {
+            AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToAdd));
         }
     }
 }

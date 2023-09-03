@@ -26,12 +26,12 @@ namespace Personal_Testing_System.Controllers
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
         public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService,
-                                  IWebHostEnvironment environment, EFDbContext db)
+                                  IWebHostEnvironment environment)//, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             this.environment = environment;
-            InitDB.InitData(db);
+            //InitDB.InitData(db);
         }
 
         [HttpGet("Ping")]
@@ -245,7 +245,7 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    createQuestionDto.Base64Image = base64;
+                                    //createQuestionDto.Base64Image = base64;
                                     createQuestionDto.ImagePath = quest.ImagePath;
                                 }
                             }
@@ -269,7 +269,7 @@ namespace Personal_Testing_System.Controllers
                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath);
                                             string base64 = Convert.ToBase64String(array);
                                             model.ImagePath = answerDto.ImagePath;
-                                            model.Base64Image = base64;
+                                            //model.Base64Image = base64;
                                         }
                                     }
                                     createQuestionDto.Answers.Add(model);

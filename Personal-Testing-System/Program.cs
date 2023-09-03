@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using Personal_Testing_System;
 using Personal_Testing_System.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,9 @@ builder.Services.AddScoped<LogService>();
 builder.Services.AddScoped<TokenEmployeeService>();
 builder.Services.AddScoped<TokenAdminService>();
 builder.Services.AddScoped<MasterService>();
+
+//builder.Services.Configure<TokenTimeToLiveInHours>(builder.Configuration.GetSection("TokenTimeToLiveInHours"));
+//builder.Services.AddScoped<TokenTimeToLiveInHours>();
 
 /*builder.Services.AddControllers().AddNewtonsoftJson(jsonOptions =>
 {
@@ -110,12 +114,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 //init data in database
-/*using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<EFDbContext>();
     InitDB.InitData(context);
-}*/
+}
 
 // Configure the HTTP request pipeline.
 /*if (app.Environment.IsDevelopment())

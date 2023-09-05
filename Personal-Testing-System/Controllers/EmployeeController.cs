@@ -269,7 +269,7 @@ namespace Personal_Testing_System.Controllers
                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath);
                                             string base64 = Convert.ToBase64String(array);
                                             model.ImagePath = answerDto.ImagePath;
-                                            //model.Base64Image = base64;
+                                            model.Base64Image = base64;
                                         }
                                     }
                                     createQuestionDto.Answers.Add(model);

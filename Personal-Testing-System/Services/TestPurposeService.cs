@@ -63,9 +63,10 @@ namespace Personal_Testing_System.Services
             DeleteTestPurposeById(list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)).Id.Value);
         }
 
-        public TestPurpose GetTestPurposeByEmployeeTestId(string testId, string employeeId)
+        public TestPurpose? GetTestPurposeByEmployeeTestId(string testId, string employeeId)
         {
             List<TestPurpose> list = GetAllTestPurposes();
+            if (list == null || list.Count == 0) return null;
             return (list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)));
         }
 

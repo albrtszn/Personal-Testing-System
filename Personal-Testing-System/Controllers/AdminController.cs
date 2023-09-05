@@ -892,7 +892,7 @@ namespace Personal_Testing_System.Controllers
                         ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetTest",
-                            UserId = $"",
+                            UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
                             Params = $"Id Теста={id.Id}"
@@ -928,7 +928,7 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
                                         string base64 = Convert.ToBase64String(array);
-                                        //createQuestionDto.Base64Image = base64;
+                                        createQuestionDto.Base64Image = base64;
                                     }
                                 }
 
@@ -950,7 +950,7 @@ namespace Personal_Testing_System.Controllers
                                             {
                                                 byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath);
                                                 string base64 = Convert.ToBase64String(array);
-                                                //model.Base64Image = base64;
+                                                model.Base64Image = base64;
                                                 model.ImagePath = answer.ImagePath;
                                             }
                                         }
@@ -1164,7 +1164,7 @@ namespace Personal_Testing_System.Controllers
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
                                     html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
-                                    html += $"<img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/>";
+                                    html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
                             }
                             else
@@ -1181,7 +1181,7 @@ namespace Personal_Testing_System.Controllers
                                         {
                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
                                             string base64 = Convert.ToBase64String(array);
-                                            html += $"<img style=\"width:auto; height:150px;\" src='data:image/png;base64,{base64}'/>";
+                                            html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/png;base64,{base64}'/></p>";
                                         }
                                     }
                                     if (answer.Correct.Value)
@@ -1677,7 +1677,7 @@ namespace Personal_Testing_System.Controllers
                         ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteTest",
-                            UserId = $"",
+                            UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
                             Params = $"Id Теста={id.Id}"
@@ -1725,7 +1725,6 @@ namespace Personal_Testing_System.Controllers
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
-            
         }
 
         [HttpPost("GetPurposesByEmployeeId")]
@@ -2058,6 +2057,7 @@ namespace Personal_Testing_System.Controllers
                         ms.Log.SaveLog(new Log
                         {
                             UrlPath = "user-api/DeletePurpose",
+                            UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
                         });
@@ -2111,6 +2111,36 @@ namespace Personal_Testing_System.Controllers
                             return Ok(new { message = "Результаты удалены" });
                         }
                         return BadRequest(new { message = "Ошибка. Такого результата нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetLogs")]
+        public async Task<IActionResult> GetLogs([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/Getlogs ");
+                        ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/Getlogs",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+                        return Ok(ms.Log.GetAllLogDtos());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });

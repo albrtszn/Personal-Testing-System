@@ -48,6 +48,13 @@ namespace Personal_Testing_System.Services
             return LogRepo.GetAllLogs();
         }
 
+        public List<LogDto> GetAllLogDtos()
+        {
+            List<LogDto> list = new List<LogDto>();
+            LogRepo.GetAllLogs().ForEach(x => list.Add(ConvertToLogDto(x)));
+            return list;
+        }
+
         public Log GetLogById(int id)
         {
             return LogRepo.GetLogById(id);

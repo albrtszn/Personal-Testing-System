@@ -54,7 +54,9 @@ namespace Personal_Testing_System.Services
 
         public TestGetModel GetTestGetModelById(string id)
         {
-            return ConvertToGetTestModel(testRepo.GetTestById(id));
+            var test = testRepo.GetTestById(id);
+            if (test == null) return null;
+            return ConvertToGetTestModel(test);
         }
 
         public void SaveTest(Test TestToSave)

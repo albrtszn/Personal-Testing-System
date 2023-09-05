@@ -29,6 +29,6 @@ public partial class Log
     public DateTime? DataTime { get; set; }
 
     [Column("params")]
-    [StringLength(100)]
+    [StringLength(150)]
     public string? Params { get; set; }
 }

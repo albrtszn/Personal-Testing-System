@@ -64,13 +64,13 @@ public partial class EFDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefautConnection"));
-        //=> optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PersonalTestingSystemBD;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+    //=> optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PersonalTestingSystemBD;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Admin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Admin__3213E83F9296F71D");
+            entity.HasKey(e => e.Id).HasName("PK__Admin__3213E83FD26E8523");
 
             entity.HasOne(d => d.IdSubdivisionNavigation).WithMany(p => p.Admins)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -79,7 +79,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<Answer>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Answer__3213E83F366E7CD9");
+            entity.HasKey(e => e.Id).HasName("PK__Answer__3213E83FEDB3FDB4");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.Answers)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -88,12 +88,12 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<Competence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F2E0DEC54");
+            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F34333F8B");
         });
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F037E4481");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F6450CB79");
 
             entity.HasOne(d => d.IdSubdivisionNavigation).WithMany(p => p.Employees)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -102,7 +102,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<EmployeeAnswer>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FFA47128A");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F5BFB567C");
 
             entity.HasOne(d => d.IdAnswerNavigation).WithMany(p => p.EmployeeAnswers)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -115,7 +115,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<EmployeeMatching>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FC693D823");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F40F2C6A0");
 
             entity.HasOne(d => d.IdFirstPartNavigation).WithMany(p => p.EmployeeMatchings).HasConstraintName("FK__EmployeeM__idFir__656C112C");
 
@@ -130,10 +130,10 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<EmployeeResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FB40E14A4");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F21366D75");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.EmployeeResults)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__EmployeeR__idEmp__5AEE82B9");
 
             entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeResults).HasConstraintName("FK__EmployeeR__idRes__59FA5E80");
@@ -141,7 +141,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<EmployeeSubsequence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FBF1EF555");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F8E1F0550");
 
             entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeSubsequences)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -154,7 +154,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<FirstPart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__FirstPar__3213E83F7FEA0945");
+            entity.HasKey(e => e.Id).HasName("PK__FirstPar__3213E83F2B6D2E6C");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.FirstParts)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -163,12 +163,12 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Log__3213E83F32DC2642");
+            entity.HasKey(e => e.Id).HasName("PK__Log__3213E83F25D9A789");
         });
 
         modelBuilder.Entity<Question>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83F41CAE1B3");
+            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83FCEBCF828");
 
             entity.HasOne(d => d.IdQuestionTypeNavigation).WithMany(p => p.Questions)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -179,21 +179,21 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<QuestionType>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83F8E7D36F5");
+            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83FF84FC582");
         });
 
         modelBuilder.Entity<Result>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Result__3213E83FF75C02A9");
+            entity.HasKey(e => e.Id).HasName("PK__Result__3213E83F307125FF");
 
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.Results)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__Result__idTest__571DF1D5");
         });
 
         modelBuilder.Entity<SecondPart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__SecondPa__3213E83FE40451C2");
+            entity.HasKey(e => e.Id).HasName("PK__SecondPa__3213E83F5F771C08");
 
             entity.HasOne(d => d.IdFirstPartNavigation).WithOne(p => p.SecondPart)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -202,12 +202,12 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<Subdivision>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subdivis__3213E83FA6B61C9C");
+            entity.HasKey(e => e.Id).HasName("PK__Subdivis__3213E83FA7C92765");
         });
 
         modelBuilder.Entity<Subsequence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subseque__3213E83FCCCBF4BD");
+            entity.HasKey(e => e.Id).HasName("PK__Subseque__3213E83FB2B9928D");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.Subsequences)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -216,7 +216,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<Test>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Test__3213E83F9034389A");
+            entity.HasKey(e => e.Id).HasName("PK__Test__3213E83FF83CF68C");
 
             entity.HasOne(d => d.IdCompetenceNavigation).WithMany(p => p.Tests)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -225,7 +225,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<TestPurpose>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TestPurp__3213E83FEEC35354");
+            entity.HasKey(e => e.Id).HasName("PK__TestPurp__3213E83F6A115653");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TestPurposes)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -238,7 +238,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<TokenAdmin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TokenAdm__3213E83FEEC8DDB4");
+            entity.HasKey(e => e.Id).HasName("PK__TokenAdm__3213E83F19193715");
 
             entity.HasOne(d => d.IdAdminNavigation).WithMany(p => p.TokenAdmins)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -247,7 +247,7 @@ public partial class EFDbContext : DbContext
 
         modelBuilder.Entity<TokenEmployee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TokenEmp__3213E83FF69C08D5");
+            entity.HasKey(e => e.Id).HasName("PK__TokenEmp__3213E83F98922C71");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TokenEmployees)
                 .OnDelete(DeleteBehavior.SetNull)

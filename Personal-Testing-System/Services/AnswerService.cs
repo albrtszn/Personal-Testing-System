@@ -19,6 +19,7 @@ namespace Personal_Testing_System.Services
                 IdAnswer = answer.Id,
                 IdQuestion = answer.IdQuestion,
                 Text = answer.Text,
+                Number = Convert.ToInt32(answer.Number),
                 ImagePath = answer.ImagePath,
                 Correct = answer.Correct
             };
@@ -27,10 +28,11 @@ namespace Personal_Testing_System.Services
         {
             return new Answer
             {
-                Id = (int)answerDto.IdAnswer,
+                Id = answerDto.IdAnswer.Value,
                 IdQuestion = answerDto.IdQuestion,
-                Text = answerDto.Text,  
-                ImagePath= answerDto.ImagePath,
+                Text = answerDto.Text,
+                Number = Convert.ToByte(answerDto.Number),
+                ImagePath = answerDto.ImagePath,
                 Correct = answerDto.Correct
             };
         }

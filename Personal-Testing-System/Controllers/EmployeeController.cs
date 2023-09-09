@@ -237,6 +237,7 @@ namespace Personal_Testing_System.Controllers
                                 Id = quest.Id,
                                 IdQuestionType = quest.IdQuestionType,
                                 Text = quest.Text,
+                                Number = Convert.ToInt32(quest.Number),
                                 Answers = new List<object>() { }
                             };
                             if (!quest.ImagePath.IsNullOrEmpty())
@@ -259,6 +260,7 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         IdAnswer = answerDto.IdAnswer,
                                         Text = answerDto.Text,
+                                        Number = answerDto.Number,
                                         IdQuestion = answerDto.IdQuestion,
                                         Correct = answerDto.Correct
                                     };

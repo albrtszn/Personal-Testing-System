@@ -6,6 +6,7 @@
         public string? Text { get; set; }
         public string? ImagePath { get; set; }
         public string? Base64Image { get; set; }
+        public int? Number { get; set; }
         public int? IdQuestionType { get; set; }
         public List<object>? Answers { get; set; }//AnswerDto, SubsequenceDto, FirstPartDto, SecondPartDto
     }

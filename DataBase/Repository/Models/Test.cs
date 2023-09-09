@@ -24,6 +24,14 @@ public partial class Test
     [Column("idCompetence")]
     public int? IdCompetence { get; set; }
 
+    [Column("description")]
+    [StringLength(500)]
+    public string? Description { get; set; }
+
+    [Column("instruction")]
+    [StringLength(500)]
+    public string? Instruction { get; set; }
+
     [ForeignKey("IdCompetence")]
     [InverseProperty("Tests")]
     public virtual Competence? IdCompetenceNavigation { get; set; }

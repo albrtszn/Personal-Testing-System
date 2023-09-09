@@ -6,7 +6,10 @@ namespace Personal_Testing_System.Models
     {
         public string? Id { get; set; }
         public string? Name { get; set; }
+        public int? Weight { get; set; }
         public int? CompetenceId { get; set; }
+        public string? Description { get; set; }
+        public string? Instructuion { get; set; }
         public List<QuestionModel>? Questions { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataBase.Repository.Models;
 
 [Table("SecondPart")]
-[Index("IdFirstPart", Name = "UQ__SecondPa__7D5B4DC37489BB7D", IsUnique = true)]
+[Index("IdFirstPart", Name = "UQ__SecondPa__7D5B4DC3AE7AC36C", IsUnique = true)]
 public partial class SecondPart
 {
     [Key]

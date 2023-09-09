@@ -47,6 +47,68 @@ namespace Personal_Testing_System.Controllers
         /*
          *  TEST METHODS
          */
+        [HttpPost("InitDB")]
+        public async Task<IActionResult> InitDB()
+        {
+            if (!ms.Subdivision.GetAllSubdivisions().Any())
+            {
+                ms.Subdivision.SaveSubdivision(new Subdivision
+                {
+                    Name = "Отдел кадров"
+                });
+
+                ms.Subdivision.SaveSubdivision(new Subdivision
+                {
+                    Name = "Инженерный цех"
+                });
+            }
+            if (!ms.Admin.GetAllAdmins().Any())
+            {
+                ms.Admin.SaveAdmin(new Admin
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    FirstName = "Евгений",
+                    SecondName = "Жма",
+                    LastName = "Дворцов",
+                    Login = "admin",
+                    Password = "password",
+                    //DateOfBirth = DateOnly.Parse("01.01.2000"),
+                    IdSubdivision = ms.Subdivision.GetAllSubdivisions().Find(x => x.Name.Equals("Отдел кадров")).Id
+                });
+            }
+
+            if (!ms.TestType.GetAllCompetences().Any())
+            {
+                ms.TestType.SaveCompetence(new Competence
+                {
+                    Name = "Оценка имеющихся компетенций"
+                });
+            }
+
+            if (!ms.QuestionType.GetAllQuestionTypes().Any())
+            {
+                ms.QuestionType.SaveQuestionType(new QuestionType
+                {
+                    Name = "Выбор одного варианта ответа"
+                });
+
+                ms.QuestionType.SaveQuestionType(new QuestionType
+                {
+                    Name = "Выбор нескольких вариантов ответа"
+                });
+
+                ms.QuestionType.SaveQuestionType(new QuestionType
+                {
+                    Name = "Установка соответствия"
+                });
+
+                ms.QuestionType.SaveQuestionType(new QuestionType
+                {
+                    Name = "Расстановка в нужном порядке"
+                });
+            }
+            return Ok();
+        }
         [HttpGet("TestGetAdmins")]
         public async Task<IActionResult> TestGetAdmins()
         {
@@ -908,6 +970,9 @@ namespace Personal_Testing_System.Controllers
                             {
                                 Id = test.Id,
                                 Name = test.Name,
+                                Weight = test.Weight,
+                                Instruction = test.Instruction,
+                                Description = test.Description,
                                 Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
                                 Questions = new List<QuestionModel>()
                             };
@@ -920,6 +985,7 @@ namespace Personal_Testing_System.Controllers
                                     IdQuestionType = quest.IdQuestionType,
                                     Text = quest.Text,
                                     ImagePath = quest.ImagePath,
+                                    Number = Convert.ToInt32(quest.Number),
                                     Answers = new List<object>() { }
                                 };
                                 if (!quest.ImagePath.IsNullOrEmpty())
@@ -942,6 +1008,8 @@ namespace Personal_Testing_System.Controllers
                                             IdAnswer = answer.Id,
                                             Text = answer.Text,
                                             IdQuestion = answer.IdQuestion,
+                                            Number = answer.Number,
+                                            Weight = answer.Weight,
                                             Correct = answer.Correct
                                         };
                                         if (!answer.ImagePath.IsNullOrEmpty())
@@ -1238,7 +1306,7 @@ namespace Personal_Testing_System.Controllers
             if (postModel != null && !postModel.Test.IsNullOrEmpty())
             {
                 AddTestModel? test = JsonConvert.DeserializeObject<AddTestModel>(postModel.Test);
-                if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() &&
+                if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions!=null && test.Questions.Count != 0 &&
                     test.CompetenceId != 0 && ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
                 {
@@ -1267,13 +1335,14 @@ namespace Personal_Testing_System.Controllers
                                 Id = idTest,
                                 Name = test.Name,
                                 IdCompetence = test.CompetenceId,
-                                Weight = test.Questions.Count
+                                Weight = test.Weight,
+                                Description = test.Description,
+                                Instruction = test.Instruction
                             });
-
+                            int countOfQuestions = 1;
                             foreach (AddQuestionModel quest in test.Questions)
                             {
                                 logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
-
                                 string idQuestion = Guid.NewGuid().ToString();
                                 if (!quest.ImagePath.IsNullOrEmpty() && postModel.Files != null && postModel.Files.Count != 0)
                                 {
@@ -1294,6 +1363,7 @@ namespace Personal_Testing_System.Controllers
                                                 Text = quest.Text,
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = quest.ImagePath,
+                                                Number = Convert.ToByte(countOfQuestions),
                                                 IdTest = idTest
                                             });
                                         }
@@ -1311,6 +1381,7 @@ namespace Personal_Testing_System.Controllers
                                                 Text = quest.Text,
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = imagePath,
+                                                Number = Convert.ToByte(countOfQuestions),
                                                 IdTest = idTest
                                             });
                                         }
@@ -1324,11 +1395,15 @@ namespace Personal_Testing_System.Controllers
                                         Text = quest.Text,
                                         IdQuestionType = quest.IdQuestionType,
                                         ImagePath = quest.ImagePath,
+                                        Number = Convert.ToByte(countOfQuestions),
                                         IdTest = idTest
                                     });
                                 }
+                                countOfQuestions++;
+                                int countOfAnswer = 0;
                                 foreach (JObject answer in quest.Answers)
                                 {
+                                    countOfAnswer++;
                                     /*AnswerDto answerDto = answer.Deserialize<AnswerDto>();
                                     SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
                                     FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();*/
@@ -1360,6 +1435,8 @@ namespace Personal_Testing_System.Controllers
                                                         Text = answerDto.Text,
                                                         IdQuestion = idQuestion,
                                                         Correct = answerDto.Correct,
+                                                        Weight = answerDto.Weight,
+                                                        Number = Convert.ToByte(countOfAnswer),
                                                         ImagePath = file.FileName
                                                     });
                                                 }
@@ -1377,6 +1454,8 @@ namespace Personal_Testing_System.Controllers
                                                         Text = answerDto.Text,
                                                         IdQuestion = idQuestion,
                                                         Correct = answerDto.Correct,
+                                                        Weight = answerDto.Weight,
+                                                        Number = Convert.ToByte(countOfAnswer),
                                                         ImagePath = imagePath
                                                     });
                                                 }
@@ -1389,6 +1468,8 @@ namespace Personal_Testing_System.Controllers
                                                 Text = answerDto.Text,
                                                 IdQuestion = idQuestion,
                                                 Correct = answerDto.Correct,
+                                                Weight = answerDto.Weight,
+                                                Number = Convert.ToByte(countOfAnswer),
                                                 ImagePath = answerDto.ImagePath
                                             });
                                         }
@@ -1437,7 +1518,7 @@ namespace Personal_Testing_System.Controllers
             if (updatePostModel != null && !updatePostModel.Test.IsNullOrEmpty())
             {
                 UpdateTestModel? test = JsonConvert.DeserializeObject<UpdateTestModel>(updatePostModel.Test);
-                if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() &&
+                if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions != null && test.Questions.Count != 0 &&
                     test.CompetenceId != 0 && ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
                 {
@@ -1468,8 +1549,10 @@ namespace Personal_Testing_System.Controllers
                             {
                                 Id = test.Id,
                                 Name = test.Name,
+                                Weight = test.Weight,
                                 IdCompetence = test.CompetenceId,
-                                Weight = test.Questions.Count
+                                Instruction = test.Instructuion,
+                                Description = test.Description
                             });
 
                             List<QuestionDto> currentQuestions = ms.Question.GetQuestionDtosByTest(test.Id);
@@ -1501,8 +1584,9 @@ namespace Personal_Testing_System.Controllers
                                         Id = quest.Id,
                                         Text = quest.Text,
                                         IdQuestionType = quest.IdQuestionType,
+                                        IdTest = test.Id,
                                         ImagePath = quest.ImagePath,
-                                        IdTest = test.Id
+                                        Number = Convert.ToByte(quest.Number)
                                     });
                                 }
                                 else
@@ -1518,7 +1602,8 @@ namespace Personal_Testing_System.Controllers
                                         Text = quest.Text,
                                         IdQuestionType = quest.IdQuestionType,
                                         ImagePath = quest.ImagePath,
-                                        IdTest = test.Id
+                                        IdTest = test.Id,
+                                        Number = Convert.ToByte(quest.Number)
                                     });
                                 }
                                 foreach (JObject answer in quest.Answers)
@@ -1558,7 +1643,8 @@ namespace Personal_Testing_System.Controllers
                                                 Text = answerDto.Text,
                                                 IdQuestion = quest.Id,
                                                 Correct = answerDto.Correct,
-                                                ImagePath = answerDto.ImagePath
+                                                ImagePath = answerDto.ImagePath,
+                                                Weight = answerDto.Weight
                                             });
                                         }
                                         else
@@ -1568,7 +1654,8 @@ namespace Personal_Testing_System.Controllers
                                                 Text = answerDto.Text,
                                                 IdQuestion = quest.Id,
                                                 Correct = answerDto.Correct,
-                                                ImagePath = answerDto.ImagePath
+                                                ImagePath = answerDto.ImagePath,
+                                                Weight = answerDto.Weight
                                             });
                                         }
                                     }

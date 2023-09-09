@@ -29,6 +29,9 @@ public partial class Question
     [StringLength(150)]
     public string? ImagePath { get; set; }
 
+    [Column("number")]
+    public byte? Number { get; set; }
+
     [InverseProperty("IdQuestionNavigation")]
     public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
 

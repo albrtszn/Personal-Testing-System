@@ -302,7 +302,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            string employeeId = Guid.NewGuid().ToString();
+            /*string employeeId = Guid.NewGuid().ToString();
             if (!db.Employees.Any())
             {
                 db.Employees.Add(new Employee
@@ -318,7 +318,7 @@ namespace DataBase
                 });
 
                 db.SaveChanges(true);
-            }
+            }*/
 
             if (!db.Admins.Any())
             {
@@ -372,7 +372,7 @@ namespace DataBase
                 db.SaveChanges(true);
             }
 
-            string testId = Guid.NewGuid().ToString();
+            /*string testId = Guid.NewGuid().ToString();
             if (!db.Tests.Any())
             {
                 db.Tests.Add(new Test
@@ -554,11 +554,12 @@ namespace DataBase
                             IdTest = testId,
                             DatatimePurpose = DateTime.Parse("13.07.2023 12:00:00"),
                         });
-
+            
                         db.SaveChanges(true);
                     }
                 }
-            }
+            }*/
+            db.SaveChanges(true);
         }
     }
 }

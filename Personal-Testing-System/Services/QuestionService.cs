@@ -19,7 +19,7 @@ namespace Personal_Testing_System.Services
                 Id = quest.Id,
                 Text = quest.Text,
                 IdQuestionType = quest.IdQuestionType,
-                
+                Number = Convert.ToInt32(quest.Number),
                 IdTest = quest.IdTest,
                 ImagePath = quest.ImagePath
             };
@@ -32,6 +32,7 @@ namespace Personal_Testing_System.Services
                 Id = questDto.Id,
                 Text = questDto.Text,
                 IdQuestionType = questDto.IdQuestionType,
+                Number = Convert.ToByte(questDto.Number),
                 IdTest = questDto.IdTest,
                 ImagePath = questDto.ImagePath
             };

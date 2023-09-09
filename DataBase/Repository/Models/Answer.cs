@@ -31,6 +31,9 @@ public partial class Answer
     [StringLength(150)]
     public string? ImagePath { get; set; }
 
+    [Column("weight")]
+    public int? Weight { get; set; }
+
     [InverseProperty("IdAnswerNavigation")]
     public virtual ICollection<EmployeeAnswer> EmployeeAnswers { get; set; } = new List<EmployeeAnswer>();
 

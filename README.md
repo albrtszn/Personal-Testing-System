@@ -516,13 +516,13 @@ Authorization(header): xxxxxxxxxxxxx
 ```
 17. GET /admin-api/GetTest?id.
 [TestModel](Personal-Testing-System/Models/TestModel.cs) имеет сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerModel](Personal-Testing-System/Models/AnswerModel.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs).
--Request <- Aythorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+- Request <- Aythorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs):
 ```
 {
     "Id" : "xxxxx"
 }
 ```
--Response -> [TestModel](Personal-Testing-System/Models/TestModel.cs).
+- Response -> [TestModel](Personal-Testing-System/Models/TestModel.cs):
 ```
 {
   "Id": "02d3b2fa-f356-400a-ac20-90b5f358ea5d",
@@ -676,7 +676,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 - Response -> status message.
 19. Post https://localhost:7273/admin-api/GetPdfTest.
-- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs):
 ```
 {
     "Id" : "xxxxx"
@@ -684,7 +684,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 - Response - content-type: application/pdf: 
 20. Post https://localhost:7273/admin-api/GetPdfCorrectTest.
-- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+- Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs):
 ```
 {
     "Id" : "xxxxx"
@@ -703,7 +703,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 
 ```
 22. POST https://localhost:7273/admin-api/DeleteTest.
-- Request <- Authourization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
+- Request <- Authourization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs):
 ```
 {
     "Id" : "xxxxx"

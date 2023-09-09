@@ -14,6 +14,10 @@ public partial class Result
     [StringLength(50)]
     public string Id { get; set; } = null!;
 
+    [Column("idTest")]
+    [StringLength(50)]
+    public string? IdTest { get; set; }
+
     [Column("startDate")]
     public DateOnly? StartDate { get; set; }
 
@@ -29,10 +33,6 @@ public partial class Result
     [Column("description")]
     [StringLength(3000)]
     public string? Description { get; set; }
-
-    [Column("idTest")]
-    [StringLength(50)]
-    public string? IdTest { get; set; }
 
     [InverseProperty("IdResultNavigation")]
     public virtual ICollection<EmployeeAnswer> EmployeeAnswers { get; set; } = new List<EmployeeAnswer>();

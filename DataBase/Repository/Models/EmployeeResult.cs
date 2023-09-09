@@ -17,15 +17,15 @@ public partial class EmployeeResult
     [StringLength(50)]
     public string? IdResult { get; set; }
 
+    [Column("idEmployee")]
+    [StringLength(50)]
+    public string? IdEmployee { get; set; }
+
     [Column("scoreFrom")]
     public int? ScoreFrom { get; set; }
 
     [Column("scoreTo")]
     public int? ScoreTo { get; set; }
-
-    [Column("idEmployee")]
-    [StringLength(50)]
-    public string? IdEmployee { get; set; }
 
     [ForeignKey("IdEmployee")]
     [InverseProperty("EmployeeResults")]

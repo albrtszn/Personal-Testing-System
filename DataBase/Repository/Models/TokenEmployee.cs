@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataBase.Repository.Models;
 
 [Table("TokenEmployee")]
-[Index("Token", Name = "UQ__TokenEmp__CA90DA7AB4D187E6", IsUnique = true)]
+[Index("Token", Name = "UQ__TokenEmp__CA90DA7A3EA2792A", IsUnique = true)]
 public partial class TokenEmployee
 {
     [Key]
@@ -22,11 +22,11 @@ public partial class TokenEmployee
     [StringLength(50)]
     public string? Token { get; set; }
 
-    [Column("state")]
-    public bool? State { get; set; }
-
     [Column("issuingTime", TypeName = "datetime")]
     public DateTime? IssuingTime { get; set; }
+
+    [Column("state")]
+    public bool? State { get; set; }
 
     [ForeignKey("IdEmployee")]
     [InverseProperty("TokenEmployees")]

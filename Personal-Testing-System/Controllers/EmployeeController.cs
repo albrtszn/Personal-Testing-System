@@ -226,6 +226,9 @@ namespace Personal_Testing_System.Controllers
                         {
                             Id = test.Id,
                             Name = test.Name,
+                            Weight = test.Weight,
+                            Description = test.Description,
+                            Instruction = test.Instruction,
                             Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
                             Questions = new List<QuestionModel>()
                         };
@@ -262,7 +265,8 @@ namespace Personal_Testing_System.Controllers
                                         Text = answerDto.Text,
                                         Number = answerDto.Number,
                                         IdQuestion = answerDto.IdQuestion,
-                                        Correct = answerDto.Correct
+                                        Correct = answerDto.Correct,
+                                        Weight = answerDto.Weight
                                     };
                                     if (!answerDto.ImagePath.IsNullOrEmpty())
                                     {

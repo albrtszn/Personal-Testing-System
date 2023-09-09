@@ -21,9 +21,6 @@ public partial class Test
     [Column("weight")]
     public int? Weight { get; set; }
 
-    [Column("idCompetence")]
-    public int? IdCompetence { get; set; }
-
     [Column("description")]
     [StringLength(500)]
     public string? Description { get; set; }
@@ -31,6 +28,9 @@ public partial class Test
     [Column("instruction")]
     [StringLength(500)]
     public string? Instruction { get; set; }
+
+    [Column("idCompetence")]
+    public int? IdCompetence { get; set; }
 
     [ForeignKey("IdCompetence")]
     [InverseProperty("Tests")]

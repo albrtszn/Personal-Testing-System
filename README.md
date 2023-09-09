@@ -667,7 +667,7 @@ Authorization(header): xxxxxxxxxxxxx
   ]
 }
 ```
-18. POST https://localhost:7273/user-api/AddTest
+18. POST https://localhost:7273/user-api/AddTest.
 [AddTestPostModel](Personal-Testing-System/Models/AddPostTestModel.cs) имеет сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerDto](Personal-Testing-System/DTOs/AnswerDto.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstSecondPartDto](Personal-Testing-System/DTOs/FirstSecondPartDto.cs).
 - Request <- FormData contains files ans [AddTestPostModel](Personal-Testing-System/Models/AddPostTestModel.cs):
 ```
@@ -675,7 +675,7 @@ files    /D:/Wallpapers/16220688790371.jpg
 Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
 ```
 - Response -> status message.
-19. Post https://localhost:7273/admin-api/GetPdfTest
+19. Post https://localhost:7273/admin-api/GetPdfTest.
 - Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
@@ -683,7 +683,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 }
 ```
 - Response - content-type: application/pdf: 
-20. Post https://localhost:7273/admin-api/GetPdfCorrectTest
+20. Post https://localhost:7273/admin-api/GetPdfCorrectTest.
 - Request - Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
@@ -691,7 +691,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 }
 ```
 - Response - content-type: application/pdf: 
-21. POST https://localhost:7273/admin-api/UpdateTest
+21. POST https://localhost:7273/admin-api/UpdateTest.
 [UpdateTestPostModel](Personal-Testing-System/Models/UpdatePostTestModel.cs) имеет сложную структуру, так как существует несколько типов вопросов. [QuestionModel](Personal-Testing-System/Models/QuestionModel.cs) включает в себя List<Object>, который может содержать [AnswerDto](Personal-Testing-System/DTOs/AnswerDto.cs), [SubsequenceDto](Personal-Testing-System/DTOs/SubsequenceDto.cs), [FirstPartDto](Personal-Testing-System/DTOs/FirstPartDto.cs), [SecondPartDto](Personal-Testing-System/DTOs/SecondPartDto.cs), [FirstSecondPartDto](Personal-Testing-System/DTOs/FirstSecondPartDto.cs).
 - Request <- FormData contains files and [UpdateTestPostModel](Personal-Testing-System/Models/UpdateTestPostModel.cs):
 ```
@@ -702,7 +702,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 
 ```
-22. POST https://localhost:7273/admin-api/DeleteTest
+22. POST https://localhost:7273/admin-api/DeleteTest.
 - Request <- Authourization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
@@ -711,7 +711,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 - Response -> status message.
 
-23. GET https://localhost:7273/admin-api/GetPurposes
+23. GET https://localhost:7273/admin-api/GetPurposes.
 - Request - Authorization.
 - Response -> list of [PurposeAdminModels](Personal-Testing-System/Models/PurposeAdminModel.cs):
 ```
@@ -743,7 +743,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
   }
 ]
 ```
-24. GET https://localhost:7273/admin-api/GetPurposesByEmployeeId
+24. GET https://localhost:7273/admin-api/GetPurposesByEmployeeId.
 - Request <- Authorization, [StringIdModel](Personal-Testing-System/Models/StringIdModel.cs).
 ```
 {
@@ -780,7 +780,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
   }
 ]
 ```
-25. POST https://localhost:7273/admin-api/AddPurpose
+25. POST https://localhost:7273/admin-api/AddPurpose.
 - Request <- Authorization, [AddTestPurposeModel](Personal-Testing-System/Models/AddTestPurposeModel.cs):
 ```
 {
@@ -793,7 +793,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 
 ```
-26. POST https://localhost:7273/admin-api/AddPurposesBySubdivision?testId=b0490b9d-8c07-4cd3-a1c5-cdce9b1cb33e&idSubdivision=1&time=26.07.2023 17:00:00
+26. POST https://localhost:7273/admin-api/AddPurposesBySubdivision.
 - Request <- query params in url.
 ```
 ```
@@ -801,7 +801,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 ```
 
 ```
-27. POST https://localhost:7273/admin-api/UpdatePurpose
+27. POST https://localhost:7273/admin-api/UpdatePurpose.
 - Request <- Authorization, [UpdateTestPurposeModel](Personal-Testing-System/Models/UpdatePurposeModel.cs).
 ```
 {
@@ -812,7 +812,7 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 }
 ```
 - Response -> status message.
-28. POST https://localhost:7273/admin-api/DeletePurpose
+28. POST https://localhost:7273/admin-api/DeletePurpose.
 - Request <- Authorization, [IntIdModel](Personal-Testing-System/Models/IntIdModel.cs).
 ```
 {
@@ -820,9 +820,9 @@ Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions"
 }
 ```
 - Response -> status message.
-29. POST https://localhost:7273/admin-api/DeleteResults
+29. POST https://localhost:7273/admin-api/DeleteResults.
 - Request - Authorization.
-30. GET https://localhost:7273/admin-api/GetResults
+30. GET https://localhost:7273/admin-api/GetResults.
 - Input <- [ResultQuerryModel](Personal-Testing-System/Models/ResultQuerryModel.cs):
 ```
 {

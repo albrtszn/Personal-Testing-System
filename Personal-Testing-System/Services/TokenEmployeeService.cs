@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 
@@ -12,9 +13,9 @@ namespace Personal_Testing_System.Services
             this.TokenEmployeeRepo = _TokenEmployeeRepo;
         }
 
-        public void DeleteTokenEmployeeById(int id)
+        public async Task<bool> DeleteTokenEmployeeById(int id)
         {
-            TokenEmployeeRepo.DeleteTokenEmployeeById(id);
+            return await TokenEmployeeRepo.DeleteTokenEmployeeById(id);
         }
 
         public void DeleteExpiredTokenEmployees(string timeToExpire)
@@ -23,30 +24,30 @@ namespace Personal_Testing_System.Services
                            .ForEach(x => DeleteTokenEmployeeById(x.Id));*/
         }
 
-        public List<TokenEmployee> GetAllTokenEmployees()
+        public async Task<List<TokenEmployee>> GetAllTokenEmployees()
         {
-            return TokenEmployeeRepo.GetAllTokenEmployees();
+            return await TokenEmployeeRepo.GetAllTokenEmployees();
         }
 
-        public TokenEmployee? GetTokenEmployeeById(int id)
+        public async Task<TokenEmployee> GetTokenEmployeeById(int id)
         {
-            return TokenEmployeeRepo.GetTokenEmployeeById(id);
+            return await TokenEmployeeRepo.GetTokenEmployeeById(id);
         }
 
-        public TokenEmployee? GetTokenEmployeeByEmployeeId(string id)
+        public async Task<TokenEmployee?> GetTokenEmployeeByEmployeeId(string id)
         {
-            return GetAllTokenEmployees().Find(x => x.IdEmployee.Equals(id));
+            return (await GetAllTokenEmployees()).Find(x => x.IdEmployee.Equals(id));
         }
 
-        public TokenEmployee? GetTokenEmployeeByToken(string token)
+        public async Task<TokenEmployee?> GetTokenEmployeeByToken(string token)
         {
-            return TokenEmployeeRepo.GetAllTokenEmployees()
+            return (await TokenEmployeeRepo.GetAllTokenEmployees())
                                     .Find(x => x.Token.Equals(token));
         }
 
-        public void SaveTokenEmployee(TokenEmployee TokenEmployeeToSave)
+        public async Task<bool> SaveTokenEmployee(TokenEmployee TokenEmployeeToSave)
         {
-            TokenEmployeeRepo.SaveTokenEmployee(TokenEmployeeToSave);
+            return await TokenEmployeeRepo.SaveTokenEmployee(TokenEmployeeToSave);
         }
     }
 }

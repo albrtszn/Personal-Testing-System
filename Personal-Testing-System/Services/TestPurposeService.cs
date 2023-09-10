@@ -8,15 +8,15 @@ namespace Personal_Testing_System.Services
 {
     public class TestPurposeService
     {
-        private ITestPurposeRepo testPurposeRepo;
-        private EmployeeService employeeSercvice;
-        private TestService testSercvice;
-        public TestPurposeService(ITestPurposeRepo _testPurposeRepo, EmployeeService employeeSercvice,
-                                  TestService testSercvice)
+        private ITestPurposeRepo TestPurposeRepo;
+        private EmployeeService employeeService;
+        private TestService testService;
+        public TestPurposeService(ITestPurposeRepo _testPurposeRepo, EmployeeService employeeService,
+                                  TestService testSercice)
         {
-            this.testPurposeRepo = _testPurposeRepo;
-            this.employeeSercvice = employeeSercvice;
-            this.testSercvice = testSercvice;
+            this.TestPurposeRepo = _testPurposeRepo;
+            this.employeeService = employeeService;
+            this.testService = testService;
         }
 
         private TestPurpose ConvertToTestPurpose(TestPurposeDto testPurposeDto)
@@ -41,111 +41,119 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        private PurposeAdminModel ConvertToPurposeAdminModel(TestPurpose purpose)
+        private async Task<PurposeAdminModel> ConvertToPurposeTestPurposeModel(TestPurpose purpose)
         {
             return new PurposeAdminModel
             {
                 Id = purpose.Id,
-                Employee = employeeSercvice.GetEmployeeModelById(purpose.IdEmployee),
-                Test = testSercvice.GetTestGetModelById(purpose.IdTest),
+                Employee = await employeeService.GetEmployeeModelById(purpose.IdEmployee),
+                Test = await testService.GetTestGetModelById(purpose.IdTest),
                 DatatimePurpose = purpose.DatatimePurpose.ToString()
             };
         }
 
-        public void DeleteTestPurposeById(int id)
+        public async Task<bool> DeleteTestPurposeById(int id)
         {
-            testPurposeRepo.DeleteTestPurposeById(id);
+            return await TestPurposeRepo.DeleteTestPurposeById(id);
         }
 
-        public void DeleteTestPurposeByEmployeeId(string testId, string employeeId)
+        public async Task<bool> DeleteTestPurposeByEmployeeId(string testId, string employeeId)
         {
-            List<TestPurposeDto> list = GetAllTestPurposeDtos();
-            DeleteTestPurposeById(list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)).Id.Value);
+            List<TestPurposeDto> list = await GetAllTestPurposeDtos();
+            await DeleteTestPurposeById(list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)).Id.Value);
+            return true;
         }
 
-        public TestPurpose? GetTestPurposeByEmployeeTestId(string testId, string employeeId)
+        public async Task<TestPurpose?> GetTestPurposeByEmployeeTestId(string testId, string employeeId)
         {
-            List<TestPurpose> list = GetAllTestPurposes();
+            List<TestPurpose> list = await GetAllTestPurposes();
             if (list == null || list.Count == 0) return null;
             return (list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId)));
         }
 
-        public List<TestPurpose> GetAllTestPurposes()
+        public async Task<List<TestPurpose>> GetAllTestPurposes()
         {
-            return testPurposeRepo.GetAllTestPurposes();
+            return await TestPurposeRepo.GetAllTestPurposes();
         }
 
-        public List<TestPurposeDto> GetAllTestPurposeDtos()
+        public async Task<List<TestPurposeDto>> GetAllTestPurposeDtos()
         {
             List<TestPurposeDto> TestPurposes = new List<TestPurposeDto>();
-            testPurposeRepo.GetAllTestPurposes().ForEach(x => TestPurposes.Add(ConvertToTestPurposeDto(x)));
+            List<TestPurpose> list = await TestPurposeRepo.GetAllTestPurposes();
+            list.ForEach(x => TestPurposes.Add(ConvertToTestPurposeDto(x)));
             return TestPurposes;
         }
 
-        public List<PurposeAdminModel> GetAllPurposeAdminModels()
+        public async Task<List<PurposeAdminModel>> GetAllPurposeAdminModels()
         {
             List<PurposeAdminModel> list = new List<PurposeAdminModel>();
-            testPurposeRepo.GetAllTestPurposes().ForEach(x => list.Add(ConvertToPurposeAdminModel(x)));
+            List<TestPurpose> purposes = await TestPurposeRepo.GetAllTestPurposes();
+            foreach(TestPurpose purpose in purposes)
+            {
+                list.Add(await ConvertToPurposeTestPurposeModel(purpose));
+            }
             return list;
         }
 
-        public TestPurpose GetTestPurposeById(int id)
+        public async Task<TestPurpose> GetTestPurposeById(int id)
         {
-            return testPurposeRepo.GetTestPurposeById(id);
+            return await TestPurposeRepo.GetTestPurposeById(id);
         }
 
-        public TestPurposeDto GetTestPurposeDtoById(int id)
+        public async Task<TestPurposeDto> GetTestPurposeDtoById(int id)
         {
-            return ConvertToTestPurposeDto(testPurposeRepo.GetTestPurposeById(id));
+            return ConvertToTestPurposeDto(await TestPurposeRepo.GetTestPurposeById(id));
         }
 
-        public PurposeAdminModel GetTestPurposeAdminModelById(int id) 
+        public async Task<PurposeAdminModel >GetTestPurposeTestPurposeModelById(int id) 
         { 
-            return ConvertToPurposeAdminModel(testPurposeRepo.GetTestPurposeById(id));
+            return await ConvertToPurposeTestPurposeModel(await TestPurposeRepo.GetTestPurposeById(id));
         }
-        public void SaveTestPurpose(TestPurpose TestPurposeToSave)
+        public async Task<bool> SaveTestPurpose(TestPurpose TestPurposeToSave)
         {
-            testPurposeRepo.SaveTestPurpose(TestPurposeToSave);
-        }
-
-        public void SaveTestPurpose(TestPurposeDto TestPurposeDtoToSave)
-        {
-            testPurposeRepo.SaveTestPurpose(ConvertToTestPurpose(TestPurposeDtoToSave));
+            return await TestPurposeRepo.SaveTestPurpose(TestPurposeToSave);
         }
 
-        public void SaveTestPurpose(AddTestPurposeModel purpose)
+        public async Task<bool> SaveTestPurpose(TestPurposeDto TestPurposeDtoToSave)
         {
-            testPurposeRepo.SaveTestPurpose(new TestPurpose
+            return await TestPurposeRepo.SaveTestPurpose(ConvertToTestPurpose(TestPurposeDtoToSave));
+        }
+
+        public async Task<bool> SaveTestPurpose(AddTestPurposeModel purpose)
+        {
+            await TestPurposeRepo.SaveTestPurpose(new TestPurpose
             {
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
                 DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
+            return true;
         }
 
-        public void SaveTestPurpose(UpdateTestPurposeModel purpose)
+        public async Task<bool> SaveTestPurpose(UpdateTestPurposeModel purpose)
         {
-            testPurposeRepo.SaveTestPurpose(new TestPurpose
+            await TestPurposeRepo.SaveTestPurpose(new TestPurpose
             {
                 Id = purpose.Id.Value,
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
                 DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
+            return true;
         }
 
         //logic
 
-        public void SavePurposeBySubdivisionId(string testId, int subdivisionId, DateTime time)
+        public async Task<bool> SavePurposeBySubdivisionId(string testId, int subdivisionId, DateTime time)
         {
-            List<EmployeeDto> employees = employeeSercvice.GetAllEmployeeDtos();
+            List<EmployeeDto> employees = await employeeService.GetAllEmployeeDtos();
             foreach (EmployeeDto employee in employees)
             {
                 if (employee.IdSubdivision == subdivisionId)
                 {
-                    if (GetTestPurposeByEmployeeTestId(testId, employee.Id) == null)
+                    if (await GetTestPurposeByEmployeeTestId(testId, employee.Id) == null)
                     {
-                        testPurposeRepo.SaveTestPurpose(new TestPurpose
+                        await TestPurposeRepo.SaveTestPurpose(new TestPurpose
                         {
                             IdEmployee = employee.Id,
                             IdTest = testId,
@@ -154,6 +162,7 @@ namespace Personal_Testing_System.Services
                     }
                 }
             }
+            return true;
         }
     }
 }

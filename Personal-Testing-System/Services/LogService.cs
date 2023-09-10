@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 
@@ -38,35 +39,38 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteLogById(int id)
+        public async Task<bool> DeleteLogById(int id)
         {
-            LogRepo.DeleteLogById(id);
+            return await LogRepo.DeleteLogById(id);
         }
 
-        public List<Log> GetAllLogs()
+        public async Task<List<Log>> GetAllLogs()
         {
-            return LogRepo.GetAllLogs();
+            return await LogRepo.GetAllLogs();
         }
 
-        public List<LogDto> GetAllLogDtos()
+        public async Task<List<LogDto>> GetAllLogDtos()
         {
-            List<LogDto> list = new List<LogDto>();
-            LogRepo.GetAllLogs().ForEach(x => list.Add(ConvertToLogDto(x)));
-            return list;
+            List<LogDto> Logs = new List<LogDto>();
+            List<Log> list = await LogRepo.GetAllLogs();
+            list.ForEach(x => Logs.Add(ConvertToLogDto(x)));
+            return Logs;
         }
 
-        public Log GetLogById(int id)
+        public async Task<Log> GetLogById(int id)
         {
-            return LogRepo.GetLogById(id);
+            return await LogRepo.GetLogById(id);
         }
 
-        public void SaveLog(Log LogToSave)
+        public async Task<bool> SaveLog(Log LogToSave)
         {
-            LogRepo.SaveLog(LogToSave);
+            await LogRepo.SaveLog(LogToSave);
+            return true;
         }
-        public void SaveLogDto(LogDto LogDtoToSave)
+        public async Task<bool> SaveLogDto(LogDto LogDtoToSave)
         {
-            LogRepo.SaveLog(ConvertToLog(LogDtoToSave));
+            await LogRepo.SaveLog(ConvertToLog(LogDtoToSave));
+            return true;
         }
     }
 }

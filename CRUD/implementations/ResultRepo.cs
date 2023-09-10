@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +18,28 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteResultById(string id)
+        public async Task<bool> DeleteResultById(string id)
         {
-            context.Results.Remove(GetAllResults().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Results.Remove((await GetAllResults()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Result> GetAllResults()
+        public async Task<List<Result>> GetAllResults()
         {
-            return context.Results.ToList();
+            return await context.Results.ToListAsync();
         }
 
-        public Result GetResultById(string id)
+        public async Task<Result> GetResultById(string id)
         {
-            return GetAllResults().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Results.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveResult(Result ResultToSave)
+        public async Task<bool> SaveResult(Result ResultToSave)
         {
-            context.Results.Add(ResultToSave);
-            context.SaveChanges();
+            await context.Results.AddAsync(ResultToSave);
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

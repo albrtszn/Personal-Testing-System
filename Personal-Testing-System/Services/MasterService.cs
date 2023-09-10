@@ -101,7 +101,7 @@ namespace Personal_Testing_System.Services
          *  TokenEmployee
          */
         private double hoursToExpireEmployeeToken = 2.0;
-        public bool IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
+        public async Task<bool> IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
         {
             double ttl = config.GetValue<double>("TokenTimeToLiveInHours:EmployeeToken");
             if (ttl > 0)
@@ -112,7 +112,7 @@ namespace Personal_Testing_System.Services
             DateTime? dateTime = tokenEmployee.IssuingTime.Value;
             if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
             {
-                TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
+                await TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
                 return true;
             }
             else
@@ -122,7 +122,7 @@ namespace Personal_Testing_System.Services
         }
 
         private double hoursToExpireAdminToken = 5.0;
-        public bool IsTokenAdminExpired(TokenAdmin tokenAdmin)
+        public async Task<bool> IsTokenAdminExpired(TokenAdmin tokenAdmin)
         {
             double ttl = config.GetValue<double>("TokenTimeToLiveInHours:AdminToken");
             if (ttl > 0)
@@ -133,7 +133,7 @@ namespace Personal_Testing_System.Services
             DateTime? dateTime = tokenAdmin.IssuingTime.Value;
             if (dateTime.Value.AddHours(hoursToExpireAdminToken) <= DateTime.Now)
             {
-                TokenAdmin.DeleteTokenAdminById(tokenAdmin.Id);
+                await TokenAdmin.DeleteTokenAdminById(tokenAdmin.Id);
                 return true;
             }
             else
@@ -145,35 +145,44 @@ namespace Personal_Testing_System.Services
         /*
          *  First & Second Parts
          */
-        public List<FirstSecondPartDto> GetFirstSecondPartDtoByQuestion(string id)
+        public async Task<List<FirstSecondPartDto>> GetFirstSecondPartDtoByQuestion(string id)
         {
             List<FirstSecondPartDto> firstSecondPartDtoList = new List<FirstSecondPartDto>();
-            FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(id)).ToList()
-                .ForEach(x => firstSecondPartDtoList.Add(new FirstSecondPartDto
+            List<FirstPart> list = (await FirstPart.GetAllFirstParts()).Where(x => x.IdQuestion.Equals(id)).ToList();
+            foreach (FirstPart fp in list)
+            {
+                firstSecondPartDtoList.Add(new FirstSecondPartDto
                 {
-                    FirstPartText = x.Text,
-                    SecondPartText = SecondPart.GetSecondPartDtoByFirstPartId(x.Id).Text
-                }));
+                    FirstPartText = fp.Text,
+                    SecondPartText = (await SecondPart.GetSecondPartDtoByFirstPartId(fp.Id)).Text
+                });
+            }
             return firstSecondPartDtoList;
         }
 
-        public void DeleteFirstAndSecondPartsByQuestion(string idQuestion)
+        public async Task<bool> DeleteFirstAndSecondPartsByQuestion(string idQuestion)
         {
-            List<FirstPart> listFP = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
+            List<FirstPart> listFP = (await FirstPart.GetAllFirstParts()).Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
             if (listFP.Count > 0)
             {
-                listFP.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
-                listFP.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+                foreach (FirstPart fp in listFP)
+                {
+                    int secondPartId = (await SecondPart.GetSecondPartDtoByFirstPartId(fp.Id)).IdSecondPart.Value;
+                    await SecondPart.DeleteSecondPartById(secondPartId);
+
+                    await FirstPart.DeleteFirstPartById(fp.Id);
+                }
             }
+            return true;
         }
         /*
          *  Test
          */
-        public void DeleteTestById(string id, IWebHostEnvironment env)
+        public async Task<bool> DeleteTestById(string id, IWebHostEnvironment env)
         {
-            foreach (Question quest in Question.GetAllQuestions().Where(x => x.IdTest.Equals(id)).ToList())
+            foreach (Question quest in (await Question.GetAllQuestions()).Where(x => x.IdTest.Equals(id)).ToList())
             {
-                List<Answer> answerList = Answer.GetAllAnswers().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
+                List<Answer> answerList = (await Answer.GetAllAnswers()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
                 foreach (Answer answer in answerList)
                 {
                     string answerFilePath = env.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath;
@@ -182,31 +191,32 @@ namespace Personal_Testing_System.Services
                         System.IO.File.Delete(answerFilePath);
                     }
                 }
-                answerList.ForEach(x => Answer.DeleteAnswerById(x.Id));
+                answerList.ForEach(async x => await Answer.DeleteAnswerById(x.Id));
 
-                Subsequence.GetAllSubsequences().Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
-                      .ForEach(x => Subsequence.DeleteSubsequenceById(x.Id));
-                List<FirstPart> list = FirstPart.GetAllFirstParts().Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
-                list.ForEach(x => SecondPart.DeleteSecondPartById(SecondPart.GetSecondPartDtoByFirstPartId(x.Id).IdSecondPart.Value));
-                list.ForEach(x => FirstPart.DeleteFirstPartById(x.Id));
+                (await Subsequence.GetAllSubsequences()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
+                      .ForEach(async x => await Subsequence.DeleteSubsequenceById(x.Id));
+                List<FirstPart> list = (await FirstPart.GetAllFirstParts()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
+                list.ForEach(async x => await SecondPart.DeleteSecondPartById((await SecondPart.GetSecondPartDtoByFirstPartId(x.Id)).IdSecondPart.Value));
+                list.ForEach(async x => await FirstPart.DeleteFirstPartById(x.Id));
                 string path = env.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath;
                 if (File.Exists(path))
                 {
                     File.Delete(path);
                 }
-                Question.DeleteQuestionById(quest.Id);
+                await Question.DeleteQuestionById(quest.Id);
             }
-            Test.DeleteTestById(id);
+            await Test.DeleteTestById(id);
+            return true;
         }
         /*
          *  Result 
          */
-        private ResultModel GetResultModelById(Result result)
+        private async Task<ResultModel> GetResultModelById(Result result)
         {
             return new ResultModel
             {
                 Id = result.Id,
-                Test = Test.GetTestGetModelById(result.IdTest),
+                Test = await Test.GetTestGetModelById(result.IdTest),
                 StartDate = result.StartDate.ToString(),
                 StartTime = result.StartTime.ToString(),
                 Duration = result.Duration,
@@ -217,32 +227,32 @@ namespace Personal_Testing_System.Services
         /*
          *  EmployeeResult
          */
-        private EmployeeResultModel ConvertToEmployeeResultModel(EmployeeResult EmployeeResult)
+        private async Task<EmployeeResultModel> ConvertToEmployeeResultModel(EmployeeResult EmployeeResult)
         {
             return new EmployeeResultModel
             {
                 Id = EmployeeResult.Id,
                 ScoreFrom = EmployeeResult.ScoreFrom,
                 ScoreTo = EmployeeResult.ScoreTo,
-                Employee = employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
-                Result = GetResultModelById(Result.GetResultById(EmployeeResult.IdResult))
+                Employee = await employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
+                Result = await GetResultModelById( await Result.GetResultById(EmployeeResult.IdResult))
             };
         }
-        public EmployeeResultModel GetEmployeeResultModelById(int id)
+        public async Task<EmployeeResultModel> GetEmployeeResultModelById(int id)
         {
-            return ConvertToEmployeeResultModel(EmployeeResult.GetEmployeeResultById(id));
+            return await ConvertToEmployeeResultModel(await EmployeeResult.GetEmployeeResultById(id));
         }
-        public List<EmployeeResultModel> GetAllEmployeeResultModels()
+        public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModels()
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            EmployeeResult.GetAllEmployeeResults().ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
+            (await EmployeeResult.GetAllEmployeeResults()).ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
             return list;
         }
-        public List<EmployeeResultModel> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
+        public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            EmployeeResult.GetAllEmployeeResults().Where(x => x.IdEmployee.Equals(employeeId)).ToList()
-                          .ForEach(x => list.Add(ConvertToEmployeeResultModel(x)));
+            (await EmployeeResult.GetAllEmployeeResults()).Where(x => x.IdEmployee.Equals(employeeId)).ToList()
+                          .ForEach(async x => list.Add( await ConvertToEmployeeResultModel(x)));
             return list;
         }
     }

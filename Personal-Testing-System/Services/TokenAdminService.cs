@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 
@@ -12,39 +13,41 @@ namespace Personal_Testing_System.Services
             this.TokenAdminRepo = _TokenAdminRepo;
         }
 
-        public void DeleteTokenAdminById(int id)
+        public async Task<bool> DeleteTokenAdminById(int id)
         {
-            TokenAdminRepo.DeleteTokenAdminById(id);
+            return await TokenAdminRepo.DeleteTokenAdminById(id);
         }
 
         public void DeleteExpiredTokenAdmins(string timeToExpire)
         {
-            //GetAllTokenAdmins().Where(x => x.IssuingTime).ToList();
+            /*GetAllTokenAdmins().Where(x => x.IdQuestion.Equals(idQuestion)).ToList()
+                           .ForEach(x => DeleteTokenAdminById(x.Id));*/
         }
 
-        public List<TokenAdmin> GetAllTokenAdmins()
+        public async Task<List<TokenAdmin>> GetAllTokenAdmins()
         {
-            return TokenAdminRepo.GetAllTokenAdmins();
+            return await TokenAdminRepo.GetAllTokenAdmins();
         }
 
-        public TokenAdmin GetTokenAdminById(int id)
+        public async Task<TokenAdmin> GetTokenAdminById(int id)
         {
-            return TokenAdminRepo.GetTokenAdminById(id);
+            return await TokenAdminRepo.GetTokenAdminById(id);
         }
 
-        public TokenAdmin? GetTokenEmployeeByAdminId(string id)
+        public async Task<TokenAdmin?> GetTokenAdminByAdminId(string id)
         {
-            return GetAllTokenAdmins().Find(x => x.IdAdmin.Equals(id));
+            return (await GetAllTokenAdmins()).Find(x => x.IdAdmin.Equals(id));
         }
 
-        public TokenAdmin? GetTokenAdminByToken(string token)
+        public async Task<TokenAdmin?> GetTokenAdminByToken(string token)
         {
-            return GetAllTokenAdmins().Find(x => x.Token.Equals(token));
+            return (await TokenAdminRepo.GetAllTokenAdmins())
+                                    .Find(x => x.Token.Equals(token));
         }
 
-        public void SaveTokenAdmin(TokenAdmin TokenAdminToSave)
+        public async Task<bool> SaveTokenAdmin(TokenAdmin TokenAdminToSave)
         {
-            TokenAdminRepo.SaveTokenAdmin(TokenAdminToSave);
+            return await TokenAdminRepo.SaveTokenAdmin(TokenAdminToSave);
         }
     }
 }

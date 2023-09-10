@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 
@@ -37,36 +38,36 @@ namespace Personal_Testing_System.Services
                 Description = ResultDto.Description
             };
         }
-        public void DeleteResultById(string id)
+        public async Task<List<Result>> GetAllResults()
         {
-            ResultRepo.DeleteResultById(id);
+            return await ResultRepo.GetAllResults();
+        }
+        public async Task<bool> DeleteResultById(string id)
+        {
+            return await ResultRepo.DeleteResultById(id);
         }
 
-        public List<Result> GetAllResults()
-        {
-            return ResultRepo.GetAllResults();
-        }
-
-        public List<ResultDto> GetAllResultDtos()
+        public async Task<List<ResultDto>> GetAllResultDtos()
         {
             List<ResultDto> Results = new List<ResultDto>();
-            ResultRepo.GetAllResults().ForEach(x => Results.Add(ConvertToResultDto(x)));
+            List<Result> list = await ResultRepo.GetAllResults();
+            list.ForEach(x => Results.Add(ConvertToResultDto(x)));
             return Results;
         }
 
-        public Result GetResultById(string id)
+        public async Task<Result> GetResultById(string id)
         {
-            return ResultRepo.GetResultById(id);
+            return await ResultRepo.GetResultById(id);
         }
 
-        public ResultDto GetResultDtoById(string id)
+        public async Task<ResultDto> GetResultDtoById(string id)
         {
-            return ConvertToResultDto(ResultRepo.GetResultById(id));
+            return ConvertToResultDto(await ResultRepo.GetResultById(id));
         }
 
-        public void SaveResult(Result ResultToSave)
+        public async Task<bool> SaveResult(Result ResultToSave)
         {
-            ResultRepo.SaveResult(ResultToSave);
+            return await ResultRepo.SaveResult(ResultToSave);
         }
     }
 }

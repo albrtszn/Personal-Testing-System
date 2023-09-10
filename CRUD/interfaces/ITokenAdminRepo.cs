@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ITokenAdminRepo
     {
-        List<TokenAdmin> GetAllTokenAdmins();
-        TokenAdmin GetTokenAdminById(int id);
-        void SaveTokenAdmin(TokenAdmin TokenAdminToSave);
-        void DeleteTokenAdminById(int id);
+        Task<List<TokenAdmin>> GetAllTokenAdmins();
+        Task<TokenAdmin> GetTokenAdminById(int id);
+        Task<bool> SaveTokenAdmin(TokenAdmin AdminToSave);
+        Task<bool> DeleteTokenAdminById(int id);
     }
 }

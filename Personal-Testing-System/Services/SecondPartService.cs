@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class SecondPartService
     {
-        private ISecondPartRepo secondPartRepo;
+        private ISecondPartRepo SecondPartRepo;
         public SecondPartService(ISecondPartRepo _secondPartRepo)
         {
-            this.secondPartRepo = _secondPartRepo;
+            this.SecondPartRepo = _secondPartRepo;
         }
 
         private SecondPartDto ConvertToSecondPartDto(SecondPart secondPart)
@@ -23,36 +23,37 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteSecondPartById(int id)
+        public async Task<bool> DeleteSecondPartById(int id)
         {
-            secondPartRepo.DeleteSecondPartById(id);
+            return await SecondPartRepo.DeleteSecondPartById(id);
         }
 
-        public List<SecondPart> GetAllSecondParts()
+        public async Task<List<SecondPart>> GetAllSecondParts()
         {
-            return secondPartRepo.GetAllSecondParts();
+            return await SecondPartRepo.GetAllSecondParts();
         }
 
-        public List<SecondPartDto> GetAllSecondPartDtos()
+        public async Task<List<SecondPartDto>> GetAllSecondPartDtos()
         {
-            List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-            GetAllSecondParts().ForEach(x => secondPartDtos.Add(ConvertToSecondPartDto(x)));
-            return secondPartDtos;
+            List<SecondPartDto> SecondParts = new List<SecondPartDto>();
+            List<SecondPart> list = await SecondPartRepo.GetAllSecondParts();
+            list.ForEach(x => SecondParts.Add(ConvertToSecondPartDto(x)));
+            return SecondParts;
         }
 
-        public SecondPartDto GetSecondPartDtoByFirstPartId(string id)
+        public async Task<SecondPartDto> GetSecondPartDtoByFirstPartId(string id)
         {
-            return GetAllSecondPartDtos().Find(x => x.IdFirstPart.Equals(id));
+            return (await GetAllSecondPartDtos()).Find(x => x.IdFirstPart.Equals(id));
         }
 
-        public SecondPart GetSecondPartById(int id)
+        public async Task<SecondPart> GetSecondPartById(int id)
         {
-            return secondPartRepo.GetSecondPartById(id);
+            return await SecondPartRepo.GetSecondPartById(id);
         }
 
-        public void SaveSecondPart(SecondPart SecondPartToSave)
+        public async Task<bool> SaveSecondPart(SecondPart SecondPartToSave)
         {
-            secondPartRepo.SaveSecondPart(SecondPartToSave);
+            return await SecondPartRepo.SaveSecondPart(SecondPartToSave);
         }
     }
 }

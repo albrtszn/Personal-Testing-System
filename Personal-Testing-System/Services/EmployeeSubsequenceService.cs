@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class EmployeeSubsequenceService
     {
-        private IEmployeeSubsequenceRepo employeeSubsequenceRepo;
+        private IEmployeeSubsequenceRepo EmployeeSubsequenceRepo;
         public EmployeeSubsequenceService(IEmployeeSubsequenceRepo _employeeSubsequenceRepo)
         {
-            this.employeeSubsequenceRepo = _employeeSubsequenceRepo;
+            this.EmployeeSubsequenceRepo = _employeeSubsequenceRepo;
         }
 
         private EmployeeSubsequence ConvertToEmployeeSubsequence(EmployeeSubsequenceDto dto)
@@ -33,48 +33,50 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteEmployeeSubsequenceById(int id)
+        public async Task<bool> DeleteEmployeeSubsequenceById(int id)
         {
-            employeeSubsequenceRepo.DeleteEmployeeSubsequenceById(id);
+            return await EmployeeSubsequenceRepo.DeleteEmployeeSubsequenceById(id);
         }
 
-        public void DeleteEmployeeSubsequenceByResult(string idResult)
+        public async Task<bool> DeleteEmployeeSubsequenceByResult(string idResult)
         {
-            List<EmployeeSubsequence> list = GetAllEmployeeSubsequences();
+            List<EmployeeSubsequence> list = await GetAllEmployeeSubsequences();
             foreach (EmployeeSubsequence sub in list)
             {
                 if (sub.IdResult.Equals(idResult))
                 {
-                    DeleteEmployeeSubsequenceById(sub.Id);
+                    await DeleteEmployeeSubsequenceById(sub.Id);
                 }
             }
+            return true;
         }
 
-        public List<EmployeeSubsequence> GetAllEmployeeSubsequences()
+        public async Task<List<EmployeeSubsequence>> GetAllEmployeeSubsequences()
         {
-            return employeeSubsequenceRepo.GetAllEmployeeSubsequences();
+            return await EmployeeSubsequenceRepo.GetAllEmployeeSubsequences();
         }
 
-        public List<EmployeeSubsequenceDto> GetAllEmployeeSubsequenceDtos()
+        public async Task<List<EmployeeSubsequenceDto>> GetAllEmployeeSubsequenceDtos()
         {
-            List<EmployeeSubsequenceDto> list = new List<EmployeeSubsequenceDto>();
-            GetAllEmployeeSubsequences().ForEach(x => list.Add(ConvertToEmployeeSubsequenceDto(x)));
-            return list;
+            List<EmployeeSubsequenceDto> EmployeeSubsequences = new List<EmployeeSubsequenceDto>();
+            List<EmployeeSubsequence> list = await EmployeeSubsequenceRepo.GetAllEmployeeSubsequences();
+            list.ForEach(x => EmployeeSubsequences.Add(ConvertToEmployeeSubsequenceDto(x)));
+            return EmployeeSubsequences;
         }
 
-        public EmployeeSubsequence GetEmployeeSubsequenceById(int id)
+        public async Task<EmployeeSubsequence> GetEmployeeSubsequenceById(int id)
         {
-            return employeeSubsequenceRepo.GetEmployeeSubsequenceById(id);
+            return await EmployeeSubsequenceRepo.GetEmployeeSubsequenceById(id);
         }
 
-        public EmployeeSubsequenceDto GetEmployeeSubsequenceDtoById(int id)
+        public async Task<EmployeeSubsequenceDto> GetEmployeeSubsequenceDtoById(int id)
         {
-            return ConvertToEmployeeSubsequenceDto(employeeSubsequenceRepo.GetEmployeeSubsequenceById(id));
+            return ConvertToEmployeeSubsequenceDto(await EmployeeSubsequenceRepo.GetEmployeeSubsequenceById(id));
         }
 
-        public void SaveEmployeeSubsequence(EmployeeSubsequence EmployeeSubsequenceToSave)
+        public async Task<bool> SaveEmployeeSubsequence(EmployeeSubsequence EmployeeSubsequenceToSave)
         {
-            employeeSubsequenceRepo.SaveEmployeeSubsequence(EmployeeSubsequenceToSave);
+            return await EmployeeSubsequenceRepo.SaveEmployeeSubsequence(EmployeeSubsequenceToSave);
         }
     }
 }

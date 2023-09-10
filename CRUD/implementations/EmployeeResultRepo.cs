@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +18,29 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeResultById(int id)
+        public async Task<bool> DeleteEmployeeResultById(int id)
         {
-            context.EmployeeResults.Remove(GetAllEmployeeResults().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.EmployeeResults.Remove((await GetAllEmployeeResults()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<EmployeeResult> GetAllEmployeeResults()
+        public async Task<List<EmployeeResult>> GetAllEmployeeResults()
         {
-            return context.EmployeeResults.ToList();
+            return await context.EmployeeResults.ToListAsync();
         }
 
-        public EmployeeResult GetEmployeeResultById(int id)
+        public async Task<EmployeeResult> GetEmployeeResultById(int id)
         {
-            return GetAllEmployeeResults().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.EmployeeResults.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveEmployeeResult(EmployeeResult EmployeeResultToSave)
+        public async Task<bool> SaveEmployeeResult(EmployeeResult EmployeeResultToSave)
         {
-            context.EmployeeResults.Add(EmployeeResultToSave);
-            context.SaveChanges();
+            await context.EmployeeResults.AddAsync(EmployeeResultToSave);
+            await context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

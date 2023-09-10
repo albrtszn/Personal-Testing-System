@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class EmployeeAnswerService
     {
-        private IEmployeeAnswerRepo employeeAnswerRepo;
+        private IEmployeeAnswerRepo EmployeeAnswerRepo;
         public EmployeeAnswerService(IEmployeeAnswerRepo _employeeAnswerRepo)
         {
-            this.employeeAnswerRepo = _employeeAnswerRepo;
+            this.EmployeeAnswerRepo = _employeeAnswerRepo;
         }
         private EmployeeAnswer ConvertToEmployeeAnswer(EmployeeAnswerDto dto)
         {
@@ -30,48 +30,50 @@ namespace Personal_Testing_System.Services
                 IdResult = answer.IdResult
             };
         }
-        public void DeleteEmployeeAnswerById(int id)
+        public async Task<bool> DeleteEmployeeAnswerById(int id)
         {
-            employeeAnswerRepo.DeleteEmployeeAnswerById(id);
+            return await EmployeeAnswerRepo.DeleteEmployeeAnswerById(id);
         }
 
-        public void DeleteEmployeeAnswersByResult(string idResult)
+        public async Task<bool> DeleteEmployeeAnswersByResult(string idResult)
         {
-            List<EmployeeAnswerDto> list = GetAllEmployeeAnswerDtos();
+            List<EmployeeAnswerDto> list = await GetAllEmployeeAnswerDtos();
             foreach (EmployeeAnswerDto dto in list)
             {
                 if (dto.IdResult.Equals(idResult))
                 {
-                    DeleteEmployeeAnswerById(dto.Id);
+                    await DeleteEmployeeAnswerById(dto.Id);
                 }
             }
+            return true;
         }
 
-        public List<EmployeeAnswer> GetAllEmployeeAnswers()
+        public async Task<List<EmployeeAnswer>> GetAllEmployeeAnswers()
         {
-            return employeeAnswerRepo.GetAllEmployeeAnswers();
+            return await EmployeeAnswerRepo.GetAllEmployeeAnswers();
         }
 
-        public List<EmployeeAnswerDto> GetAllEmployeeAnswerDtos()
+        public async Task<List<EmployeeAnswerDto>> GetAllEmployeeAnswerDtos()
         {
-            List<EmployeeAnswerDto> list = new List<EmployeeAnswerDto>();
-            GetAllEmployeeAnswers().ForEach(x => list.Add(ConvertToEmployeeAnswerDto(x)));
-            return list;
+            List<EmployeeAnswerDto> EmployeeAnswers = new List<EmployeeAnswerDto>();
+            List<EmployeeAnswer> list = await EmployeeAnswerRepo.GetAllEmployeeAnswers();
+            list.ForEach(x => EmployeeAnswers.Add(ConvertToEmployeeAnswerDto(x)));
+            return EmployeeAnswers;
         }
 
-        public EmployeeAnswer GetEmployeeAnswerById(int id)
+        public async Task<EmployeeAnswer> GetEmployeeAnswerById(int id)
         {
-            return employeeAnswerRepo.GetEmployeeAnswerById(id);
+            return await EmployeeAnswerRepo.GetEmployeeAnswerById(id);
         }
 
-        public EmployeeAnswerDto GetEmployeeAnswerDtoById(int id)
+        public async Task<EmployeeAnswerDto> GetEmployeeAnswerDtoById(int id)
         {
-            return ConvertToEmployeeAnswerDto(employeeAnswerRepo.GetEmployeeAnswerById(id));
+            return ConvertToEmployeeAnswerDto(await EmployeeAnswerRepo.GetEmployeeAnswerById(id));
         }
 
-        public void SaveEmployeeAnswer(EmployeeAnswer EmployeeAnswerToSave)
+        public async Task<bool> SaveEmployeeAnswer(EmployeeAnswer EmployeeAnswerToSave)
         {
-            employeeAnswerRepo.SaveEmployeeAnswer(EmployeeAnswerToSave);
+            return await EmployeeAnswerRepo.SaveEmployeeAnswer(EmployeeAnswerToSave);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,34 +18,42 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteSubdivisionById(int id)
+        public async Task<bool> DeleteSubdivisionById(int id)
         {
-            context.Subdivisions.Remove(GetAllSubdivisions().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Subdivisions.Remove((await GetAllSubdivisions()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Subdivision> GetAllSubdivisions()
+        public async Task<List<Subdivision>> GetAllSubdivisions()
         {
-            return context.Subdivisions.ToList();
+            return await context.Subdivisions.ToListAsync();
         }
 
-        public Subdivision GetSubdivisionById(int id)
+        public async Task<Subdivision> GetSubdivisionById(int id)
         {
-            return GetAllSubdivisions().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Subdivisions.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveSubdivision(Subdivision SubdivisionToSave)
+        public async Task<bool> SaveSubdivision(Subdivision SubdivisionToSave)
         {
-            if (SubdivisionToSave.Id != 0 && GetSubdivisionById(SubdivisionToSave.Id) != null)
+            Subdivision? Subdivision = await GetSubdivisionById(SubdivisionToSave.Id);
+            //Subdivision? Subdivision = await context.Subdivisions.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(SubdivisionToSave.Id));
+            if (Subdivision != null && SubdivisionToSave.Id != 0)
             {
-                //context.Subdivisions.Update(SubdivisionToSave);
-                GetSubdivisionById(SubdivisionToSave.Id).Name = SubdivisionToSave.Name;
+                /*context.Subdivisions.Entry(SubdivisionToSave).State = EntityState.Detached;
+                context.Set<Subdivision>().Update(SubdivisionToSave);*/
+                Subdivision.Name = SubdivisionToSave.Name;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.Subdivisions.Add(SubdivisionToSave);
+                await context.Subdivisions.AddAsync(SubdivisionToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

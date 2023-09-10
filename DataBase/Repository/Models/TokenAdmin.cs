@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("TokenAdmin")]
-[Index("Token", Name = "UQ__TokenAdm__CA90DA7A3B5AD28C", IsUnique = true)]
+[Table("TokenAdmin", Schema = "fitpsuon_fitpsuon")]
+[Index("Token", Name = "UQ__TokenAdm__CA90DA7A4CA68350", IsUnique = true)]
 public partial class TokenAdmin
 {
     [Key]

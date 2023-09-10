@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,34 +18,43 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteCompetenceById(int id)
+        public async Task<bool> DeleteCompetenceById(int id)
         {
-            context.Competences.Remove(GetAllCompetences().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Competences.Remove((await GetAllCompetences()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Competence> GetAllCompetences()
+        public async Task<List<Competence>> GetAllCompetences()
         {
-            return context.Competences.ToList();
+            return await context.Competences.ToListAsync();
         }
 
-        public Competence GetCompetenceById(int id)
+        public async Task<Competence> GetCompetenceById(int id)
         {
-            return GetAllCompetences().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Competences.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveCompetence(Competence CompetenceToSave)
+        public async Task<bool> SaveCompetence(Competence CompetenceToSave)
         {
-            if (CompetenceToSave.Id != 0 && GetCompetenceById(CompetenceToSave.Id) != null)
+            Competence? competence = await GetCompetenceById(CompetenceToSave.Id);
+            //Competence? Competence = await context.Competences.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(CompetenceToSave.Id));
+            if (competence != null && CompetenceToSave.Id !=0)
             {
-                //context.Competences.Update(CompetenceToSave);
-                GetCompetenceById(CompetenceToSave.Id).Name = CompetenceToSave.Name;
+                /*context.Competences.Entry(CompetenceToSave).State = EntityState.Detached;
+                context.Set<Competence>().Update(CompetenceToSave);*/
+                competence.Name = CompetenceToSave.Name;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.Competences.Add(CompetenceToSave);
+                await context.Competences.AddAsync(CompetenceToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
+
     }
 }

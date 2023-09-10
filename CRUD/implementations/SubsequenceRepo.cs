@@ -1,7 +1,9 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,37 +20,44 @@ namespace CRUD.implementations
             this.context = _context;
         }
 
-        public void DeleteSubsequenceById(int id)
+        public async Task<bool> DeleteSubsequenceById(int id)
         {
-            context.Subsequences.Remove(GetAllSubSequences().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Subsequences.Remove((await GetAllSubsequences()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Subsequence> GetAllSubSequences()
+        public async Task<List<Subsequence>> GetAllSubsequences()
         {
-            return context.Subsequences.ToList();
+            return await context.Subsequences.ToListAsync();
         }
 
-        public Subsequence GetSubsequenceById(int id)
+        public async Task<Subsequence> GetSubsequenceById(int id)
         {
-            return GetAllSubSequences().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Subsequences.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveSubsequence(Subsequence SubsequenceToSave)
+        public async Task<bool> SaveSubsequence(Subsequence SubsequenceToSave)
         {
-            Subsequence? sub = GetSubsequenceById(SubsequenceToSave.Id);
-            if (sub != null && SubsequenceToSave.Id != 0)
+            Subsequence? Subsequence = await GetSubsequenceById(SubsequenceToSave.Id);
+            //Subsequence? Subsequence = await context.Subsequences.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(SubsequenceToSave.Id));
+            if (Subsequence != null && SubsequenceToSave.Id != 0)
             {
-                //context.Subsequences.Update(SubsequenceToSave);
-                sub.Text = SubsequenceToSave.Text;
-                sub.IdQuestion = SubsequenceToSave.IdQuestion;
-                sub.Number = SubsequenceToSave.Number;
+                /*context.Subsequences.Entry(SubsequenceToSave).State = EntityState.Detached;
+                context.Set<Subsequence>().Update(SubsequenceToSave);*/
+                Subsequence.Text = SubsequenceToSave.Text;
+                Subsequence.IdQuestion = SubsequenceToSave.IdQuestion;
+                Subsequence.Number = SubsequenceToSave.Number;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.Subsequences.Add(SubsequenceToSave);
+                await context.Subsequences.AddAsync(SubsequenceToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

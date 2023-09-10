@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IEmployeeAnswerRepo
     {
-        List<EmployeeAnswer> GetAllEmployeeAnswers();
-        EmployeeAnswer GetEmployeeAnswerById(int id);
-        void SaveEmployeeAnswer(EmployeeAnswer EmployeeAnswerToSave);
-        void DeleteEmployeeAnswerById(int id);
+        Task<List<EmployeeAnswer>> GetAllEmployeeAnswers();
+        Task<EmployeeAnswer> GetEmployeeAnswerById(int id);
+        Task<bool> SaveEmployeeAnswer(EmployeeAnswer EmployeeAnswerToSave);
+        Task<bool> DeleteEmployeeAnswerById(int id);
     }
 }

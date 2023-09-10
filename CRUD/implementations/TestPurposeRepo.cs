@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,36 +18,44 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteTestPurposeById(int id)
+        public async Task<bool> DeleteTestPurposeById(int id)
         {
-            context.TestPurposes.Remove(GetAllTestPurposes().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.TestPurposes.Remove((await GetAllTestPurposes()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<TestPurpose> GetAllTestPurposes()
+        public async Task<List<TestPurpose>> GetAllTestPurposes()
         {
-            return context.TestPurposes.ToList();
+            return await context.TestPurposes.ToListAsync();
         }
 
-        public TestPurpose GetTestPurposeById(int id)
+        public async Task<TestPurpose> GetTestPurposeById(int id)
         {
-            return GetAllTestPurposes().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.TestPurposes.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveTestPurpose(TestPurpose TestPurposeToSave)
+        public async Task<bool> SaveTestPurpose(TestPurpose TestPurposeToSave)
         {
-            TestPurpose? purpose = GetTestPurposeById(TestPurposeToSave.Id);
-            if (purpose != null)
+            TestPurpose? TestPurpose = await GetTestPurposeById(TestPurposeToSave.Id);
+            //TestPurpose? TestPurpose = await context.TestPurposes.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TestPurposeToSave.Id));
+            if (TestPurpose != null && TestPurposeToSave.Id != 0)
             {
-                purpose.IdEmployee = TestPurposeToSave.IdEmployee;
-                purpose.IdTest = TestPurposeToSave.IdTest;
-                purpose.DatatimePurpose = TestPurposeToSave.DatatimePurpose;
+                /*context.TestPurposes.Entry(TestPurposeToSave).State = EntityState.Detached;
+                context.Set<TestPurpose>().Update(TestPurposeToSave);*/
+                TestPurpose.IdEmployee = TestPurposeToSave.IdEmployee;
+                TestPurpose.IdTest = TestPurposeToSave.IdTest;
+                TestPurpose.DatatimePurpose = TestPurposeToSave.DatatimePurpose;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.TestPurposes.Add(TestPurposeToSave);
+                await context.TestPurposes.AddAsync(TestPurposeToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

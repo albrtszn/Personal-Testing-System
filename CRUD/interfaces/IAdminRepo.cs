@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IAdminRepo
     {
-        List<Admin> GetAllAdmins();
-        Admin GetAdminById(string id);
-        void SaveAdmin(Admin AdminToSave);
-        void DeleteAdminById(string id);
+        Task<List<Admin>> GetAllAdmins();
+        Task<Admin> GetAdminById(string id);
+        Task<bool> SaveAdmin(Admin AdminToSave);
+        Task<bool> DeleteAdminById(string id);
     }
 }

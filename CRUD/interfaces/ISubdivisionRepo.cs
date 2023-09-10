@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ISubdivisionRepo
     {
-        List<Subdivision> GetAllSubdivisions();
-        Subdivision GetSubdivisionById(int id);
-        void SaveSubdivision(Subdivision SubdivisionToSave);
-        void DeleteSubdivisionById(int id);
+        Task<List<Subdivision>> GetAllSubdivisions();
+        Task<Subdivision> GetSubdivisionById(int id);
+        Task<bool> SaveSubdivision(Subdivision SubdivisionToSave);
+        Task<bool> DeleteSubdivisionById(int id);
     }
 }

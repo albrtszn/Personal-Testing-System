@@ -8,60 +8,62 @@ namespace Personal_Testing_System.Services
 {
     public class TestService
     {
-        private ITestRepo testRepo;
+        private ITestRepo TestRepo;
         private CompetenceService competenceService;
         public TestService(ITestRepo _testRepo, CompetenceService competenceService)
         {
-            this.testRepo = _testRepo;
+            this.TestRepo = _testRepo;
             this.competenceService = competenceService;
         }
 
-        private TestGetModel ConvertToGetTestModel(Test test)
+        private async Task<TestGetModel> ConvertToGetTestModel(Test test)
         {
-            CompetenceDto competenceDto = competenceService.GetCompetenceDtoById(test.IdCompetence.Value);
+            CompetenceDto competenceDto = await competenceService.GetCompetenceDtoById(test.IdCompetence.Value);
             return new TestGetModel
             {
                 Id = test.Id,
                 Name = test.Name,
-                Competence = competenceDto
+                Competence = competenceDto,
             };
         }
 
-        public void DeleteTestById(string id)
+        public async Task<bool> DeleteTestById(string id)
         {
-            testRepo.DeleteTestById(id);
+            return await TestRepo.DeleteTestById(id);
         }
 
-        public List<Test> GetAllTests()
+        public async Task<List<Test>> GetAllTests()
         {
-            return testRepo.GetAllTests();
+            return await TestRepo.GetAllTests();
         }
 
-
-
-        public List<TestGetModel> GetAllTestGetModels()
+        public async Task<List<TestGetModel>> GetAllTestGetModels()
         {
             List<TestGetModel> list = new List<TestGetModel>();
-            testRepo.GetAllTests().ForEach(x => list.Add(ConvertToGetTestModel(x)));
+            List<Test> tests = (await TestRepo.GetAllTests());
+            foreach (Test test in tests)
+            {
+                list.Add(await ConvertToGetTestModel(test));
+            }
             return list;
         }
 
-        public Test GetTestById(string id)
+        public async Task<Test> GetTestById(string id)
         {
-            return testRepo.GetTestById(id);
+            return await TestRepo.GetTestById(id);
         }
 
 
-        public TestGetModel GetTestGetModelById(string id)
+        public async Task<TestGetModel> GetTestGetModelById(string id)
         {
-            var test = testRepo.GetTestById(id);
+            var test = await TestRepo.GetTestById(id);
             if (test == null) return null;
-            return ConvertToGetTestModel(test);
+            return await ConvertToGetTestModel(test);
         }
 
-        public void SaveTest(Test TestToSave)
+        public async Task<bool> SaveTest(Test TestToSave)
         {
-            testRepo.SaveTest(TestToSave);
+            return await TestRepo.SaveTest(TestToSave);
         }
     }
 }

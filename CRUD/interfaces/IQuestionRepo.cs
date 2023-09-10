@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IQuestionRepo
     {
-        List<Question> GetAllQuestions();
-        Question GetQuestionById(string id);
-        void SaveQuestion(Question QuestionToSave);
-        void DeleteQuestionById(string id);
+        Task<List<Question>> GetAllQuestions();
+        Task<Question> GetQuestionById(string id);
+        Task<bool> SaveQuestion(Question QuestionToSave);
+        Task<bool> DeleteQuestionById(string id);
     }
 }

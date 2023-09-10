@@ -8,11 +8,11 @@ namespace Personal_Testing_System.Services
 {
     public class EmployeeService
     {
-        private IEmployeeRepo employeeRepo;
+        private IEmployeeRepo EmployeeRepo;
         private SubdivisionService subdivisionRepo;
         public EmployeeService(IEmployeeRepo _employeeRepo, SubdivisionService _subdivisionRepo)
         {
-            this.employeeRepo = _employeeRepo;
+            this.EmployeeRepo = _employeeRepo;
             this.subdivisionRepo = _subdivisionRepo;
         }
         //DTO
@@ -45,9 +45,10 @@ namespace Personal_Testing_System.Services
             };
         }
         //Model
-        private EmployeeModel? ConvertToEmployeeModel(Employee employee)
+        private async Task<EmployeeModel?> ConvertToEmployeeModel(Employee employee)
         {
-            SubdivisionDto? subdivision = subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
+            //todo await
+            SubdivisionDto? subdivision = await subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
             return new EmployeeModel
             {
                 Id = employee.Id,
@@ -76,59 +77,60 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteEmployeeById(string id)
+        public async Task<bool> DeleteEmployeeById(string id)
         {
-            employeeRepo.DeleteEmployeeById(id);
+            return await EmployeeRepo.DeleteEmployeeById(id);
         }
 
-        public List<Employee> GetAllEmployees()
+        public async Task<List<Employee>> GetAllEmployees()
         {
-            return employeeRepo.GetAllEmployees();
+            return await EmployeeRepo.GetAllEmployees();
         }
 
-        public List<EmployeeDto> GetAllEmployeeDtos()
+        public async Task<List<EmployeeDto>> GetAllEmployeeDtos()
         {
-            List<EmployeeDto> employeeDtos = new List<EmployeeDto>();
-            GetAllEmployees().ForEach(x => employeeDtos.Add(ConvertToEmployeeDto(x)));
-            return employeeDtos;
+            List<EmployeeDto> Employees = new List<EmployeeDto>();
+            List<Employee> list = await EmployeeRepo.GetAllEmployees();
+            list.ForEach(x => Employees.Add(ConvertToEmployeeDto(x)));
+            return Employees;
         }
 
-        public List<EmployeeModel> GetAllEmployeeModels()
-        {
-            List<EmployeeModel> employeeModels = new List<EmployeeModel>();
-            GetAllEmployees().ForEach(x => employeeModels.Add(ConvertToEmployeeModel(x)));
-            return employeeModels;
+        public async Task<List<EmployeeModel>> GetAllEmployeeModels()
+        { 
+            List<EmployeeModel> Employees = new List<EmployeeModel>();
+            List<Employee> list = await EmployeeRepo.GetAllEmployees();
+            list.ForEach(async x => Employees.Add(await ConvertToEmployeeModel(x)));
+            return Employees;
         }
 
-        public Employee GetEmployeeById(string id)
+        public async Task<Employee> GetEmployeeById(string id)
         {
-            return employeeRepo.GetEmployeeById(id);
+            return await EmployeeRepo.GetEmployeeById(id);
         }
 
-        public EmployeeDto GetEmployeeDtoById(string id)
+        public async Task<EmployeeDto> GetEmployeeDtoById(string id)
         {
-            return ConvertToEmployeeDto(employeeRepo.GetEmployeeById(id));
+            return ConvertToEmployeeDto(await EmployeeRepo.GetEmployeeById(id));
         }
 
-        public EmployeeModel GetEmployeeModelById(string id)
+        public async Task<EmployeeModel> GetEmployeeModelById(string id)
         {
-            return ConvertToEmployeeModel(employeeRepo.GetEmployeeById(id));
+            return await ConvertToEmployeeModel(await EmployeeRepo.GetEmployeeById(id));
         }
 
-        public void SaveEmployee(Employee EmployeeToSave)
+        public async Task<bool> SaveEmployee(Employee EmployeeToSave)
         {
-            EmployeeToSave.Id = Guid.NewGuid().ToString();
-            employeeRepo.SaveEmployee(EmployeeToSave);
+            return await EmployeeRepo.SaveEmployee(EmployeeToSave);
         }
 
-        public void SaveEmployee(EmployeeDto EmployeeToSave)
+        public async Task<bool> SaveEmployee(EmployeeDto EmployeeDtoToSave)
         {
-            employeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
+            return await EmployeeRepo.SaveEmployee(ConvertToEmployee(EmployeeDtoToSave));
         }
 
-        public void SaveEmployee(AddEmployeeModel EmployeeToSave)
+        public async Task<bool> SaveEmployee(AddEmployeeModel EmployeeDtoToAdd)
         {
-            employeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
+            return await EmployeeRepo.SaveEmployee(ConvertToEmployee(EmployeeDtoToAdd));
         }
     }
 }

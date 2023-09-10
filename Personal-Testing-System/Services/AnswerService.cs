@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class AnswerService
     {
-        private IAnswerRepo answerRepo;
+        private IAnswerRepo AnswerRepo;
         public AnswerService(IAnswerRepo _answerRepo)
         {
-            this.answerRepo = _answerRepo;
+            this.AnswerRepo = _answerRepo;
         }
         private AnswerDto ConvertToAnswerDto(Answer answer)
         {
@@ -19,6 +19,7 @@ namespace Personal_Testing_System.Services
                 IdAnswer = answer.Id,
                 IdQuestion = answer.IdQuestion,
                 Text = answer.Text,
+                Weight = answer.Weight,
                 Number = Convert.ToInt32(answer.Number),
                 ImagePath = answer.ImagePath,
                 Correct = answer.Correct
@@ -31,53 +32,58 @@ namespace Personal_Testing_System.Services
                 Id = answerDto.IdAnswer.Value,
                 IdQuestion = answerDto.IdQuestion,
                 Text = answerDto.Text,
+                Weight= answerDto.Weight,
                 Number = Convert.ToByte(answerDto.Number),
                 ImagePath = answerDto.ImagePath,
                 Correct = answerDto.Correct
             };
         }
-        public void DeleteAnswerById(int id)
+        public async Task<bool> DeleteAnswerById(int id)
         {
-            answerRepo.DeleteAnswerById(id);
+            return await AnswerRepo.DeleteAnswerById(id);
         }
 
-        public void DeleteAnswersByQuestion(string idQuestion)
+        public async Task<bool> DeleteAnswersByQuestion(string idQuestion)
         {
-            GetAllAnswers().Where(x => x.IdQuestion.Equals(idQuestion))
-                           .ToList()
-                           .ForEach(x => DeleteAnswerById(x.Id));
+            List<Answer>list = (await GetAllAnswers()).Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
+            foreach (Answer answer in list)
+            {
+                await DeleteAnswerById(answer.Id);
+            }
+            return true;
         }
 
-        public List<Answer> GetAllAnswers()
+        public async Task<List<Answer>> GetAllAnswers()
         {
-            return answerRepo.GetAllAnswers();
+            return await AnswerRepo.GetAllAnswers();
         }
 
-        public List<Answer> GetAnswersByQuestionId(string id)
+        public async Task<List<Answer>> GetAnswersByQuestionId(string id)
         {
-            return GetAllAnswers().Where(x => x.IdQuestion.Equals(id)).ToList();
+            return (await GetAllAnswers()).Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
-        public List<AnswerDto> GetAllAnswerDtos()
+        public async Task<List<AnswerDto>> GetAllAnswerDtos()
         {
-            List<AnswerDto> answers =  new List<AnswerDto>();
-            answerRepo.GetAllAnswers().ForEach(x=>answers.Add(ConvertToAnswerDto(x)));
-            return answers;
+            List<AnswerDto> Answers = new List<AnswerDto>();
+            List<Answer> list = await AnswerRepo.GetAllAnswers();
+            list.ForEach(x => Answers.Add(ConvertToAnswerDto(x)));
+            return Answers;
         }
 
-        public List<AnswerDto> GetAnswerDtosByQuestionId(string id)
+        public async Task<List<AnswerDto>> GetAnswerDtosByQuestionId(string id)
         {
-            return GetAllAnswerDtos().Where(x => x.IdQuestion.Equals(id)).ToList();
+            return (await GetAllAnswerDtos()).Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
-        public Answer GetAnswerById(int id)
+        public async Task<Answer> GetAnswerById(int id)
         {
-            return answerRepo.GetAnswerById(id);
+            return await AnswerRepo.GetAnswerById(id);
         }
 
-        public void SaveAnswer(Answer AnswerToSave)
+        public async Task<bool> SaveAnswer(Answer AnswerToSave)
         {
-            answerRepo.SaveAnswer(AnswerToSave);
+            return await AnswerRepo.SaveAnswer(AnswerToSave);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ILogRepo
     {
-        List<Log> GetAllLogs();
-        Log GetLogById(int id);
-        void SaveLog(Log LogToSave);
-        void DeleteLogById(int id);
+        Task<List<Log>> GetAllLogs();
+        Task<Log> GetLogById(int id);
+        Task<bool> SaveLog(Log LogToSave);
+        Task<bool> DeleteLogById(int id);
     }
 }

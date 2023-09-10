@@ -8,10 +8,10 @@ namespace Personal_Testing_System.Services
 {
     public class CompetenceService
     {
-        private ICompetenceRepo competenceRepo;
+        private ICompetenceRepo CompetenceRepo;
         public CompetenceService(ICompetenceRepo _сompetenceRepo)
         {
-            this.competenceRepo = _сompetenceRepo;
+            this.CompetenceRepo = _сompetenceRepo;
         }
 
         private Competence ConvertToCompetence(CompetenceDto subDto)
@@ -32,46 +32,48 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteCompetenceById(int id)
+        public async Task<bool> DeleteCompetenceById(int id)
         {
-            competenceRepo.DeleteCompetenceById(id);
+            return await CompetenceRepo.DeleteCompetenceById(id);
         }
 
-        public List<Competence> GetAllCompetences()
+        public async Task<List<Competence>> GetAllCompetences()
         {
-            return competenceRepo.GetAllCompetences();
+            return await CompetenceRepo.GetAllCompetences();
         }
 
-        public List<CompetenceDto> GetAllCompetenceDtos()
+        public async Task<List<CompetenceDto>> GetAllCompetenceDtos()
         {
             List<CompetenceDto> Competences = new List<CompetenceDto>();
-            competenceRepo.GetAllCompetences().ForEach(x => Competences.Add(ConvertToCompetenceDto(x)));
+            List<Competence> list = await CompetenceRepo.GetAllCompetences();
+            list.ForEach(x => Competences.Add(ConvertToCompetenceDto(x)));
             return Competences;
         }
 
-        public Competence GetCompetenceById(int id)
+        public async Task<Competence> GetCompetenceById(int id)
         {
-            return competenceRepo.GetCompetenceById(id);
+            return await CompetenceRepo.GetCompetenceById(id);
         }
 
-        public CompetenceDto GetCompetenceDtoById(int id)
+        public async Task<CompetenceDto> GetCompetenceDtoById(int id)
         {
-            return ConvertToCompetenceDto(competenceRepo.GetCompetenceById(id));
+            return ConvertToCompetenceDto(await CompetenceRepo.GetCompetenceById(id));
         }
 
-        public void SaveCompetence(Competence CompetenceToSave)
+        public async Task<bool> SaveCompetence(Competence CompetenceToSave)
         {
-            competenceRepo.SaveCompetence(CompetenceToSave);
+            return await CompetenceRepo.SaveCompetence(CompetenceToSave);
         }
 
-        public void SaveCompetence(CompetenceDto CompetenceDtoToSave)
+        public async Task<bool> SaveCompetence(CompetenceDto CompetenceDtoToSave)
         {
-            competenceRepo.SaveCompetence(ConvertToCompetence(CompetenceDtoToSave));
+            return await CompetenceRepo.SaveCompetence(ConvertToCompetence(CompetenceDtoToSave));
         }
 
-        public void SaveCompetence(AddCompetenceModel CompetenceDtoToSave)
+        public async Task<bool> SaveCompetence(AddCompetenceModel CompetenceDtoToSave)
         {
-            competenceRepo.SaveCompetence(new Competence { Name = CompetenceDtoToSave.Name });
+            await CompetenceRepo.SaveCompetence(new Competence { Name = CompetenceDtoToSave.Name });
+            return true;
         }
     }
 }

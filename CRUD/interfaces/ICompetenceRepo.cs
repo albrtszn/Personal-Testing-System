@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ICompetenceRepo
     {
-        List<Competence> GetAllCompetences();
-        Competence GetCompetenceById(int id);
-        void SaveCompetence(Competence CompetenceToSave);
-        void DeleteCompetenceById(int id);
+        Task<List<Competence>> GetAllCompetences();
+        Task<Competence> GetCompetenceById(int id);
+        Task<bool> SaveCompetence(Competence CompetenceToSave);
+        Task<bool> DeleteCompetenceById(int id);
     }
 }

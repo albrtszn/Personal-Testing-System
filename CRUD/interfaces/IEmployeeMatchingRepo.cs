@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IEmployeeMatchingRepo
     {
-        List<EmployeeMatching> GetAllEmployeeMatchings();
-        EmployeeMatching GetEmployeeMatchingById(int id);
-        void SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave);
-        void DeleteEmployeeMatchingById(int id);
+        Task<List<EmployeeMatching>> GetAllEmployeeMatchings();
+        Task<EmployeeMatching> GetEmployeeMatchingById(int id);
+        Task<bool> SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave);
+        Task<bool> DeleteEmployeeMatchingById(int id);
     }
 }

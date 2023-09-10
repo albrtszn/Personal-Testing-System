@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IResultRepo
     {
-        List<Result> GetAllResults();
-        Result GetResultById(string id);
-        void SaveResult(Result ResultToSave);
-        void DeleteResultById(string id);
+        Task<List<Result>> GetAllResults();
+        Task<Result> GetResultById(string id);
+        Task<bool> SaveResult(Result ResultToSave);
+        Task<bool> DeleteResultById(string id);
     }
 }

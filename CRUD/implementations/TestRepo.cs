@@ -1,11 +1,14 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CRUD.implementations
 {
@@ -16,37 +19,44 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteTestById(string id)
+        public async Task<bool> DeleteTestById(string id)
         {
-            context.Tests.Remove(GetAllTests().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Tests.Remove((await GetAllTests()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Test> GetAllTests()
+        public async Task<List<Test>> GetAllTests()
         {
-            return context.Tests.ToList();
+            return await context.Tests.ToListAsync();
         }
 
-        public Test GetTestById(string id)
+        public async Task<Test> GetTestById(string id)
         {
-            return GetAllTests().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Tests.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveTest(Test TestToSave)
+        public async Task<bool> SaveTest(Test TestToSave)
         {
-            Test? test = GetTestById(TestToSave.Id);
-            if (test!=null && !string.IsNullOrEmpty(TestToSave.Id) )
+            Test? Test = await GetTestById(TestToSave.Id);
+            //Test? Test = await context.Tests.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TestToSave.Id));
+            if (Test != null && !TestToSave.Id.IsNullOrEmpty())
             {
-                //context.Tests.Update(TestToSave);
-                test.Name = TestToSave.Name;
-                test.IdCompetence = TestToSave.IdCompetence;
-                test.Weight = TestToSave.Weight;
+                /*context.Tests.Entry(TestToSave).State = EntityState.Detached;
+                context.Set<Test>().Update(TestToSave);*/
+                Test.Name = TestToSave.Name;
+                Test.IdCompetence = TestToSave.IdCompetence;
+                Test.Weight = TestToSave.Weight;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.Tests.Add(TestToSave);
+                await context.Tests.AddAsync(TestToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

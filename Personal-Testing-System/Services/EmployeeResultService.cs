@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
@@ -34,36 +35,41 @@ namespace Personal_Testing_System.Services
         }
 
 
-        public void DeleteEmployeeResultById(int id)
+        public async Task<bool> DeleteEmployeeResultById(int id)
         {
-            EmployeeResultRepo.DeleteEmployeeResultById(id);
+            return await EmployeeResultRepo.DeleteEmployeeResultById(id);
         }
 
-        public List<EmployeeResult> GetAllEmployeeResults()
+        public async Task<List<EmployeeResult>> GetAllEmployeeResults()
         {
-            return EmployeeResultRepo.GetAllEmployeeResults();
+            return await EmployeeResultRepo.GetAllEmployeeResults();
         }
 
-        public List<EmployeeResultDto> GetAllEmployeeResultDtos()
+        public async Task<List<EmployeeResultDto>> GetAllEmployeeResultDtos()
         {
             List<EmployeeResultDto> EmployeeResults = new List<EmployeeResultDto>();
-            EmployeeResultRepo.GetAllEmployeeResults().ForEach(x => EmployeeResults.Add(ConvertToEmployeeResultDto(x)));
+            List<EmployeeResult> list = await EmployeeResultRepo.GetAllEmployeeResults();
+            list.ForEach(x => EmployeeResults.Add(ConvertToEmployeeResultDto(x)));
             return EmployeeResults;
         }
-        
 
-        public List<EmployeeResultDto> GetEmployeeResultDtosByEmployeeId(int id)
+
+        public async Task<List<EmployeeResultDto>> GetEmployeeResultDtosByEmployeeId(int id)
         {
-            return GetAllEmployeeResultDtos().Where(x => x.IdEmployee.Equals(id)).ToList();
+            return (await GetAllEmployeeResultDtos()).Where(x => x.IdEmployee.Equals(id)).ToList();
         }
 
-        public EmployeeResult GetEmployeeResultById(int id)
+        public async Task<EmployeeResult> GetEmployeeResultById(int id)
         {
-            return EmployeeResultRepo.GetEmployeeResultById(id);
+            return await EmployeeResultRepo.GetEmployeeResultById(id);
         }
-        public void SaveEmployeeResult(EmployeeResult EmployeeResultToSave)
+        public async Task<bool> SaveEmployeeResult(EmployeeResult EmployeeResultDtoToSave)
         {
-            EmployeeResultRepo.SaveEmployeeResult(EmployeeResultToSave);
+            return await EmployeeResultRepo.SaveEmployeeResult(EmployeeResultDtoToSave);
+        }
+        public async Task<bool> SaveEmployeeResult(EmployeeResultDto EmployeeResultDtoToSave)
+        {
+            return await EmployeeResultRepo.SaveEmployeeResult(ConvertToEmployeeResult(EmployeeResultDtoToSave));
         }
     }
 }

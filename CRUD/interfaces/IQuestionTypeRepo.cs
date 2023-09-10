@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IQuestionTypeRepo
     {
-        List<QuestionType> GetAllQuestionTypes();
-        QuestionType GetQuestionTypeById(int id);
-        void SaveQuestionType(QuestionType QuestionTypeToSave);
-        void DeleteQuestionTypeById(int id);
+        Task<List<QuestionType>> GetAllQuestionTypes();
+        Task<QuestionType> GetQuestionTypeById(int id);
+        Task<bool> SaveQuestionType(QuestionType QuestionTypeToSave);
+        Task<bool> DeleteQuestionTypeById(int id);
     }
 }

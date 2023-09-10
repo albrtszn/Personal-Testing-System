@@ -1,7 +1,9 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,38 +19,45 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteTokenEmployeeById(int id)
+        public async Task<bool> DeleteTokenEmployeeById(int id)
         {
-            context.TokenEmployees.Remove(GetAllTokenEmployees().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.TokenEmployees.Remove((await GetAllTokenEmployees()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<TokenEmployee> GetAllTokenEmployees()
+        public async Task<List<TokenEmployee>> GetAllTokenEmployees()
         {
-            return context.TokenEmployees.ToList();
+            return await context.TokenEmployees.ToListAsync();
         }
 
-        public TokenEmployee? GetTokenEmployeeById(int id)
+        public async Task<TokenEmployee> GetTokenEmployeeById(int id)
         {
-            return GetAllTokenEmployees().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.TokenEmployees.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveTokenEmployee(TokenEmployee TokenEmployeeToSave)
+        public async Task<bool> SaveTokenEmployee(TokenEmployee TokenEmployeeToSave)
         {
-            TokenEmployee? TokenEmployee = GetTokenEmployeeById(TokenEmployeeToSave.Id);
+            TokenEmployee? TokenEmployee = await GetTokenEmployeeById(TokenEmployeeToSave.Id);
+            //TokenEmployee? TokenEmployee = await context.TokenEmployees.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TokenEmployeeToSave.Id));
             if (TokenEmployee != null && TokenEmployeeToSave.Id != 0)
             {
-                //context.TokenEmployees.Update(TokenEmployeeToSave);
+                /*context.TokenEmployees.Entry(TokenEmployeeToSave).State = EntityState.Detached;
+                context.Set<TokenEmployee>().Update(TokenEmployeeToSave);*/
                 TokenEmployee.IdEmployee = TokenEmployeeToSave.IdEmployee;
                 TokenEmployee.Token = TokenEmployeeToSave.Token;
                 TokenEmployee.IssuingTime = TokenEmployeeToSave.IssuingTime;
                 TokenEmployee.State = TokenEmployeeToSave.State;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.TokenEmployees.Add(TokenEmployeeToSave);
+                await context.TokenEmployees.AddAsync(TokenEmployeeToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 
@@ -6,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class QuestionService
     {
-        private IQuestionRepo questionRepo;
+        private IQuestionRepo QuestionRepo;
         public QuestionService(IQuestionRepo _questionRepo)
         {
-            this.questionRepo = _questionRepo;
+            this.QuestionRepo = _questionRepo;
         }
 
         private QuestionDto ConvertToQuestionDto(Question quest)
@@ -37,39 +38,46 @@ namespace Personal_Testing_System.Services
                 ImagePath = questDto.ImagePath
             };
         }
-
-        public void DeleteQuestionById(string id)
+        public async Task<bool> DeleteQuestionById(string id)
         {
-            questionRepo.DeleteQuestionById(id);
+            return await QuestionRepo.DeleteQuestionById(id);
         }
 
-        public List<Question> GetAllQuestions()
+        public async Task<List<Question>> GetAllQuestions()
         {
-            return questionRepo.GetAllQuestions();
+            return await QuestionRepo.GetAllQuestions();
         }
 
-        public List<Question> GetQuestionsByTest(string idTest)
+        public async Task<List<QuestionDto>> GetAllQuestionDtos()
         {
-            return GetAllQuestions().Where(x => x.IdTest.Equals(idTest)).ToList();
+            List<QuestionDto> Questions = new List<QuestionDto>();
+            List<Question> list = await QuestionRepo.GetAllQuestions();
+            list.ForEach(x => Questions.Add(ConvertToQuestionDto(x)));
+            return Questions;
         }
 
-        public List<QuestionDto> GetQuestionDtosByTest(string idTest)
+        public async Task<List<Question>> GetQuestionsByTest(string idTest)
+        {
+            return (await GetAllQuestions()).Where(x => x.IdTest.Equals(idTest)).ToList();
+        }
+
+        public async Task<List<QuestionDto>> GetQuestionDtosByTest(string idTest)
         {
             List<QuestionDto> list = new List<QuestionDto>();
-            GetAllQuestions().Where(x => x.IdTest.Equals(idTest))
+            (await GetAllQuestions()).Where(x => x.IdTest.Equals(idTest))
                 .ToList()
                 .ForEach(x=>list.Add(ConvertToQuestionDto(x)));
             return list;
         }
 
-        public Question GetQuestionById(string id)
+        public async Task<Question> GetQuestionById(string id)
         {
-            return questionRepo.GetQuestionById(id);
+            return await QuestionRepo.GetQuestionById(id);
         }
 
-        public void SaveQuestion(Question QuestionToSave)
+        public async Task<bool> SaveQuestion(Question QuestionToSave)
         {
-            questionRepo.SaveQuestion(QuestionToSave);
+            return await QuestionRepo.SaveQuestion(QuestionToSave);
         }
     }
 }

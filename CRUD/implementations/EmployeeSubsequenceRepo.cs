@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +18,28 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeSubsequenceById(int id)
+        public async Task<bool> DeleteEmployeeSubsequenceById(int id)
         {
-            context.EmployeeSubsequences.Remove(GetAllEmployeeSubsequences().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.EmployeeSubsequences.Remove((await GetAllEmployeeSubsequences()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<EmployeeSubsequence> GetAllEmployeeSubsequences()
+        public async Task<List<EmployeeSubsequence>> GetAllEmployeeSubsequences()
         {
-            return context.EmployeeSubsequences.ToList();
+            return await context.EmployeeSubsequences.ToListAsync();
         }
 
-        public EmployeeSubsequence GetEmployeeSubsequenceById(int id)
+        public async Task<EmployeeSubsequence> GetEmployeeSubsequenceById(int id)
         {
-            return GetAllEmployeeSubsequences().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.EmployeeSubsequences.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveEmployeeSubsequence(EmployeeSubsequence EmployeeSubsequenceToSave)
+        public async Task<bool> SaveEmployeeSubsequence(EmployeeSubsequence EmployeeSubsequenceToSave)
         {
-            context.EmployeeSubsequences.Add(EmployeeSubsequenceToSave);
-            context.SaveChanges();
+            await context.EmployeeSubsequences.AddAsync(EmployeeSubsequenceToSave);
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

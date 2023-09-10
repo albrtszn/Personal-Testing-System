@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ITestPurposeRepo
     {
-        List<TestPurpose> GetAllTestPurposes();
-        TestPurpose GetTestPurposeById(int id);
-        void SaveTestPurpose(TestPurpose TestPurposeToSave);
-        void DeleteTestPurposeById(int id);
+        Task<List<TestPurpose>> GetAllTestPurposes();
+        Task<TestPurpose> GetTestPurposeById(int id);
+        Task<bool> SaveTestPurpose(TestPurpose TestPurposeToSave);
+        Task<bool> DeleteTestPurposeById(int id);
     }
 }

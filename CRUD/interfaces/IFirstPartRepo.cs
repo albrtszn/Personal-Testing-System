@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface IFirstPartRepo
     {
-        List<FirstPart> GetAllFirstParts();
-        FirstPart GetFirstPartById(string id);
-        void SaveFirstPArt(FirstPart FirstPartoSave);
-        void DeleteFirstPartById(string id);
+        Task<List<FirstPart>> GetAllFirstParts();
+        Task<FirstPart> GetFirstPartById(string id);
+        Task<bool> SaveFirstPart(FirstPart FirstPartToSave);
+        Task<bool> DeleteFirstPartById(string id);
     }
 }

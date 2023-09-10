@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ISecondPartRepo
     {
-        List<SecondPart> GetAllSecondParts();
-        SecondPart GetSecondPartById(int id);
-        void SaveSecondPart(SecondPart SecondPartToSave);
-        void DeleteSecondPartById(int id);
+        Task<List<SecondPart>> GetAllSecondParts();
+        Task<SecondPart> GetSecondPartById(int id);
+        Task<bool> SaveSecondPart(SecondPart SecondPartToSave);
+        Task<bool> DeleteSecondPartById(int id);
     }
 }

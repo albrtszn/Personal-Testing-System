@@ -1,4 +1,5 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Personal_Testing_System.DTOs;
@@ -7,10 +8,10 @@ namespace Personal_Testing_System.Services
 {
     public class SubsequenceService
     {
-        private ISubsequenceRepo subsequenceRepo;
+        private ISubsequenceRepo SubsequenceRepo;
         public SubsequenceService(ISubsequenceRepo _subsequenceRepo)
         {
-            this.subsequenceRepo = _subsequenceRepo;
+            this.SubsequenceRepo = _subsequenceRepo;
         }
 
         private SubsequenceDto ConvertToSubsequenceDto(Subsequence subsequence)
@@ -35,46 +36,50 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteSubsequenceById(int id)
+        public async Task<bool> DeleteSubsequenceById(int id)
         {
-            subsequenceRepo.DeleteSubsequenceById(id);
+            return await SubsequenceRepo.DeleteSubsequenceById(id);
         }
 
-        public void DeleteSubsequencesByQuestion(string idQuestion)
+        public async Task<bool> DeleteSubsequencesByQuestion(string idQuestion)
         {
-            var list = GetAllSubsequences().Where(x => x.IdQuestion.Equals(idQuestion))
-                                .ToList();
+            var list = (await GetAllSubsequences()).Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
             if (list.Count > 0)
             {
-                list.ForEach(x => DeleteSubsequenceById(x.Id));
+                foreach (var subsequence in list)
+                {
+                    await DeleteSubsequenceById(subsequence.Id);
+                }
             }
+            return true;
         }
 
-        public List<Subsequence> GetAllSubsequences()
+        public async Task<List<Subsequence>> GetAllSubsequences()
         {
-            return subsequenceRepo.GetAllSubSequences();
+            return await SubsequenceRepo.GetAllSubsequences();
         }
 
-        public List<SubsequenceDto> GetAllSubsequenceDtos()
+        public async Task<List<SubsequenceDto>> GetAllSubsequenceDtos()
         {
-            List<SubsequenceDto> subsequences =  new List<SubsequenceDto>();
-            GetAllSubsequences().ForEach(x=> subsequences.Add(ConvertToSubsequenceDto(x)));
-            return subsequences;
+            List<SubsequenceDto> Subsequences = new List<SubsequenceDto>();
+            List<Subsequence> list = await SubsequenceRepo.GetAllSubsequences();
+            list.ForEach(x => Subsequences.Add(ConvertToSubsequenceDto(x)));
+            return Subsequences;
         }
 
-        public List<SubsequenceDto> GetSubsequenceDtosByQuestionId(string id)
+        public async Task<List<SubsequenceDto>> GetSubsequenceDtosByQuestionId(string id)
         {
-            return GetAllSubsequenceDtos().Where(x => x.IdQuestion.Equals(id)).ToList();
+            return (await GetAllSubsequenceDtos()).Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
-        public Subsequence GetSubsequenceById(int id)
+        public async Task<Subsequence> GetSubsequenceById(int id)
         {
-            return subsequenceRepo.GetSubsequenceById(id);
+            return await SubsequenceRepo.GetSubsequenceById(id);
         }
 
-        public void SaveSubsequence(Subsequence SubsequenceToSave)
+        public async Task<bool> SaveSubsequence(Subsequence SubsequenceToSave)
         {
-            subsequenceRepo.SaveSubsequence(SubsequenceToSave);
+            return await SubsequenceRepo.SaveSubsequence(SubsequenceToSave);
         }
     }
 }

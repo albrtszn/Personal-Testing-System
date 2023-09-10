@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class FirstPartService
     {
-        private IFirstPartRepo firstPartRepo;
+        private IFirstPartRepo FirstPartRepo;
         public FirstPartService(IFirstPartRepo _firstPartRepo)
         {
-            this.firstPartRepo = _firstPartRepo;
+            this.FirstPartRepo = _firstPartRepo;
         }
 
         private FirstPartDto ConvertToFirstPartDto(FirstPart firstPart)
@@ -23,43 +23,47 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteFirstPartById(string id)
+        public async Task<bool> DeleteFirstPartById(string id)
         {
-            firstPartRepo.DeleteFirstPartById(id);
+            return await FirstPartRepo.DeleteFirstPartById(id);
         }
 
-        public void DeleteFirstPartsByQuestion(string idQuestion)
+        public async Task<bool> DeleteFirstPartsByQuestion(string idQuestion)
         {
-            GetAllFirstParts().Where(x => x.IdQuestion.Equals(idQuestion))
-                              .ToList()
-                              .ForEach(x => DeleteFirstPartById(x.Id));
+            List<FirstPart> list = (await GetAllFirstParts()).Where(x => x.IdQuestion.Equals(idQuestion)).ToList();
+            foreach (FirstPart firstPart in list)
+            {
+                await DeleteFirstPartById(firstPart.Id);
+            }
+            return true;
         }
 
-        public List<FirstPart> GetAllFirstParts()
+        public async Task<List<FirstPart>> GetAllFirstParts()
         {
-            return firstPartRepo.GetAllFirstParts();
+            return await FirstPartRepo.GetAllFirstParts();
         }
 
-        public List<FirstPartDto> GetFirstPartDtos()
+        public async Task<List<FirstPartDto>> GetFirstPartDtos()
         {
-            List<FirstPartDto> firstParts = new List<FirstPartDto>();
-            GetAllFirstParts().ForEach(x => firstParts.Add(ConvertToFirstPartDto(x)));
-            return firstParts;
+            List<FirstPartDto> FirstParts = new List<FirstPartDto>();
+            List<FirstPart> list = await FirstPartRepo.GetAllFirstParts();
+            list.ForEach(x => FirstParts.Add(ConvertToFirstPartDto(x)));
+            return FirstParts;
         }
 
-        public List<FirstPartDto> GetAllFirstPartDtosByQuestionId(string id)
+        public async Task<List<FirstPartDto>> GetAllFirstPartDtosByQuestionId(string id)
         {
-            return GetFirstPartDtos().Where(x => x.IdQuestion == id).ToList();
+            return (await GetFirstPartDtos()).Where(x => x.IdQuestion.Equals(id)).ToList();
         }
 
-        public FirstPart GetFirstPartById(string id)
+        public async Task<FirstPart> GetFirstPartById(string id)
         {
-            return firstPartRepo.GetFirstPartById(id);
+            return await FirstPartRepo.GetFirstPartById(id);
         }
 
-        public void SaveFirstPart(FirstPart FirstPartToSave)
+        public async Task<bool> SaveFirstPart(FirstPart FirstPartToSave)
         {
-            firstPartRepo.SaveFirstPArt(FirstPartToSave);
+            return await FirstPartRepo.SaveFirstPart(FirstPartToSave);
         }
     }
 }

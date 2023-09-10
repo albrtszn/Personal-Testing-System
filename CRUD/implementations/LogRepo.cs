@@ -1,6 +1,7 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +17,28 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteLogById(int id)
+        public async Task<bool> DeleteLogById(int id)
         {
-            context.Logs.Remove(GetAllLogs().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Logs.Remove((await GetAllLogs()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Log> GetAllLogs()
+        public async Task<List<Log>> GetAllLogs()
         {
-            return context.Logs.ToList();
+            return await context.Logs.ToListAsync();
         }
 
-        public Log GetLogById(int id)
+        public async Task<Log> GetLogById(int id)
         {
-            return GetAllLogs().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Logs.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveLog(Log LogToSave)
+        public async Task<bool> SaveLog(Log LogToSave)
         {
-            context.Logs.Add(LogToSave);
-            context.SaveChanges();
+            await context.Logs.AddAsync(LogToSave);
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

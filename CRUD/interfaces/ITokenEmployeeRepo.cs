@@ -9,9 +9,9 @@ namespace CRUD.interfaces
 {
     public interface ITokenEmployeeRepo
     {
-        List<TokenEmployee> GetAllTokenEmployees();
-        TokenEmployee GetTokenEmployeeById(int id);
-        void SaveTokenEmployee(TokenEmployee TokenEmployeeToSave);
-        void DeleteTokenEmployeeById(int id);
+        Task<List<TokenEmployee>> GetAllTokenEmployees();
+        Task<TokenEmployee> GetTokenEmployeeById(int id);
+        Task<bool> SaveTokenEmployee(TokenEmployee TokenEmployeeToSave);
+        Task<bool> DeleteTokenEmployeeById(int id);
     }
 }

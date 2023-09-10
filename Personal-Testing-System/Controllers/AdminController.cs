@@ -1,8 +1,6 @@
 ﻿using DataBase;
-using DataBase.Repository;
 using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,8 +9,10 @@ using PdfSharpCore.Pdf;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
-using System.Net;
+using System.Drawing;
 using TheArtOfDev.HtmlRenderer.PdfSharp;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -50,21 +50,22 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("InitDB")]
         public async Task<IActionResult> InitDB()
         {
-            if (!ms.Subdivision.GetAllSubdivisions().Any())
+            if (!(await ms.Subdivision.GetAllSubdivisions()).Any())
             {
-                ms.Subdivision.SaveSubdivision(new Subdivision
+                await ms.Subdivision.SaveSubdivision(new Subdivision
                 {
                     Name = "Отдел кадров"
                 });
 
-                ms.Subdivision.SaveSubdivision(new Subdivision
+                await ms.Subdivision.SaveSubdivision(new Subdivision
                 {
                     Name = "Инженерный цех"
                 });
             }
-            if (!ms.Admin.GetAllAdmins().Any())
+            await ms.Admin.GetAllAdmins();
+            if (!(await ms.Admin.GetAllAdmins()).Any())
             {
-                ms.Admin.SaveAdmin(new Admin
+                await ms.Admin.SaveAdmin(new Admin
                 {
                     Id = Guid.NewGuid().ToString(),
                     FirstName = "Евгений",
@@ -73,42 +74,43 @@ namespace Personal_Testing_System.Controllers
                     Login = "admin",
                     Password = "password",
                     //DateOfBirth = DateOnly.Parse("01.01.2000"),
-                    IdSubdivision = ms.Subdivision.GetAllSubdivisions().Find(x => x.Name.Equals("Отдел кадров")).Id
+                    IdSubdivision = (await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals("Отдел кадров")).Id
                 });
             }
 
-            if (!ms.TestType.GetAllCompetences().Any())
+            if (!(await ms.TestType.GetAllCompetences()).Any())
             {
-                ms.TestType.SaveCompetence(new Competence
+                await ms.TestType.SaveCompetence(new Competence
                 {
                     Name = "Оценка имеющихся компетенций"
                 });
             }
 
-            if (!ms.QuestionType.GetAllQuestionTypes().Any())
+            if (!(await ms.QuestionType.GetAllQuestionTypes()).Any())
             {
-                ms.QuestionType.SaveQuestionType(new QuestionType
+                await ms.QuestionType.SaveQuestionType(new QuestionType
                 {
                     Name = "Выбор одного варианта ответа"
                 });
 
-                ms.QuestionType.SaveQuestionType(new QuestionType
+                await ms.QuestionType.SaveQuestionType(new QuestionType
                 {
                     Name = "Выбор нескольких вариантов ответа"
                 });
 
-                ms.QuestionType.SaveQuestionType(new QuestionType
+                await ms.QuestionType.SaveQuestionType(new QuestionType
                 {
                     Name = "Установка соответствия"
                 });
 
-                ms.QuestionType.SaveQuestionType(new QuestionType
+                await ms.QuestionType.SaveQuestionType(new QuestionType
                 {
                     Name = "Расстановка в нужном порядке"
                 });
             }
             return Ok();
         }
+
         [HttpGet("TestGetAdmins")]
         public async Task<IActionResult> TestGetAdmins()
         {
@@ -123,8 +125,8 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteEmployeeTokens")]
         public async Task<IActionResult> DeleteEmployeeTokens()
         {
-            ms.TokenAdmin.GetAllTokenAdmins().ForEach(x => ms.TokenAdmin.DeleteTokenAdminById(x.Id));
-            if (!ms.TokenAdmin.GetAllTokenAdmins().Any())
+            (await ms.TokenAdmin.GetAllTokenAdmins()).ForEach(async x => await ms.TokenAdmin.DeleteTokenAdminById(x.Id));
+            if (!(await ms.TokenAdmin.GetAllTokenAdmins()).Any())
             {
                 return Ok(new { messsage = "Токены удалены" });
             }
@@ -142,7 +144,7 @@ namespace Personal_Testing_System.Controllers
                 return BadRequest(new { message = "Одно из полей пустое" });
             }
             logger.LogInformation($"/admin-api/Login : login={loginModel.Login}, Password={loginModel.Password} ");
-            ms.Log.SaveLog(new Log
+            await ms.Log.SaveLog(new Log
             {
                 UrlPath = "admin-api/Login",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -150,7 +152,7 @@ namespace Personal_Testing_System.Controllers
                 Params = $"логин={loginModel.Login}, пароль={loginModel.Password}"
             });
 
-            AdminDto? adminDto = ms.Admin.GetAllAdminDtos()
+            AdminDto? adminDto = (await ms.Admin.GetAllAdminDtos())
                                   .Find(x => x.Login.Equals(loginModel.Login));
 
             if (adminDto == null)
@@ -161,8 +163,8 @@ namespace Personal_Testing_System.Controllers
             {
                 if (loginModel.Password.Equals(adminDto.Password))
                 {
-                    TokenAdmin? tokenAdmin = ms.TokenAdmin.GetTokenEmployeeByAdminId(adminDto.Id);
-                    if (tokenAdmin != null && !ms.IsTokenAdminExpired(tokenAdmin))
+                    TokenAdmin? tokenAdmin = await ms.TokenAdmin.GetTokenAdminByAdminId(adminDto.Id);
+                    if (tokenAdmin != null && !await ms.IsTokenAdminExpired(tokenAdmin))
                     {
                         return Ok(new
                         {
@@ -173,7 +175,7 @@ namespace Personal_Testing_System.Controllers
                     else
                     {
                         string token = Guid.NewGuid().ToString();
-                        ms.TokenAdmin.SaveTokenAdmin(new TokenAdmin
+                        await ms.TokenAdmin.SaveTokenAdmin(new TokenAdmin
                         {
                             IdAdmin = adminDto.Id,
                             Token = token,
@@ -199,15 +201,15 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/admin-api/LogOut : AuthHeader={Authorization}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "admin-api/LogOut",
                         UserId = token.IdAdmin,
@@ -215,7 +217,7 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                         Params = $"Id администратора={token.IdAdmin}"
                     });
-                    ms.TokenAdmin.DeleteTokenAdminById(token.Id);
+                    await ms.TokenAdmin.DeleteTokenAdminById(token.Id);
                     return Ok(new { message = "Выполнен выход из системы" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -232,22 +234,22 @@ namespace Personal_Testing_System.Controllers
             logger.LogInformation($"/admin-api/GetSubdivisions");
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/admin-api/GetSubdivisions : AuthHeader={Authorization}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "admin-api/GetSubdivisions",
                         UserId = token.IdAdmin,
                         UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                         DataTime = DateTime.Now,
                     });
-                    return Ok(ms.Subdivision.GetAllSubdivisionDtos());
+                    return Ok(await ms.Subdivision.GetAllSubdivisionDtos());
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -259,21 +261,21 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                    if (ms.Subdivision.GetAllSubdivisions().Find(x => x.Name.Equals(sub.Name)) != null)
+                    if ((await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals(sub.Name)) != null)
                     {
                         return BadRequest(new { message = "Ошибка. Такой отдел уже есть" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/AddSubdivision :name={sub.Name}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddSubdivision",
                             UserId = token.IdAdmin,
@@ -281,7 +283,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Имя Отдела={sub.Name}"
                         });
-                        ms.Subdivision.SaveSubdivision(sub);
+                        await ms.Subdivision.SaveSubdivision(sub);
                         return Ok(new { message = "Отдел добавлен" });
                     }
                 }
@@ -295,21 +297,21 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                    if (ms.Subdivision.GetSubdivisionById(sub.Id.Value) == null)
+                    if (await ms.Subdivision.GetSubdivisionById(sub.Id.Value) == null)
                     {
                         return BadRequest(new { message = "Ошибка. Такого отдела нет" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/UpdateSubdivision :id={sub.Id}, name={sub.Name}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/UpdateSubdivision",
                             UserId = token.IdAdmin,
@@ -317,7 +319,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id отдела={sub.Id}, Имя Отдела={sub.Name}"
                         });
-                        ms.Subdivision.SaveSubdivision(sub);
+                        await ms.Subdivision.SaveSubdivision(sub);
                         return Ok(new { message = "Отдел обновлен" });
                     }
                 }
@@ -331,10 +333,10 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
@@ -342,7 +344,7 @@ namespace Personal_Testing_System.Controllers
                     {
                         if (ms.Subdivision.GetSubdivisionById(id.Id.Value) != null)
                         {
-                            ms.Log.SaveLog(new Log
+                            await ms.Log.SaveLog(new Log
                             {
                                 UrlPath = "admin-api/DeleteSubdivision",
                                 UserId = token.IdAdmin,
@@ -371,17 +373,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetEmployees ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetEmployees",
                             UserId = token.IdAdmin,
@@ -401,10 +403,10 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
@@ -412,7 +414,7 @@ namespace Personal_Testing_System.Controllers
                     {
                         logger.LogInformation($"/admin-api/GetEmployee :id={id.Id}");
 
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetEmployee",
                             UserId = token.IdAdmin,
@@ -422,7 +424,7 @@ namespace Personal_Testing_System.Controllers
                         });
                         if (ms.Employee.GetEmployeeById(id.Id) != null)
                         {
-                            EmployeeModel? model = ms.Employee.GetEmployeeModelById(id.Id);
+                            EmployeeModel? model = await ms.Employee.GetEmployeeModelById(id.Id);
                             return Ok(model);
                         }
                         return NotFound(new { message = "Сотрудник не найден" });
@@ -443,10 +445,10 @@ namespace Personal_Testing_System.Controllers
                 employee.IdSubdivision.HasValue && employee.IdSubdivision != 0 && 
                 ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
@@ -454,7 +456,7 @@ namespace Personal_Testing_System.Controllers
                     {
                         logger.LogInformation($"/admin-api/AddEmployee :fn={employee.FirstName}, sn={employee.SecondName}, " +
                                                $" ln={employee.LastName}, idSubdivision={employee.IdSubdivision}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddEmployee",
                             UserId = token.IdAdmin,
@@ -480,18 +482,18 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue &&
                 ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
-                        if (ms.Employee.GetEmployeeById(employee.Id) != null)
+                        if (await ms.Employee.GetEmployeeById(employee.Id) != null)
                         {
-                            ms.Log.SaveLog(new Log
+                            await ms.Log.SaveLog(new Log
                             {
                                 UrlPath = "admin-api/AddEmployee",
                                 UserId = token.IdAdmin,
@@ -499,7 +501,7 @@ namespace Personal_Testing_System.Controllers
                                 DataTime = DateTime.Now,
                                 Params = $"Id сотрудника={employee.Id}, Имя сотрудника ={employee.FirstName}, фамилия={employee.SecondName}, отчество={employee.LastName}"
                             });
-                            ms.Employee.SaveEmployee(employee);
+                            await ms.Employee.SaveEmployee(employee);
                             return Ok(new { message = "Сотрудник обновлен" });
                         }
                         else
@@ -518,17 +520,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteEmployee :id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteEmployee",
                             UserId = token.IdAdmin,
@@ -536,9 +538,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Сотрудника={id.Id}"
                         });
-                        if (ms.Employee.GetEmployeeById(id.Id) != null)
+                        if (await ms.Employee.GetEmployeeById(id.Id) != null)
                         {
-                            ms.Employee.DeleteEmployeeById(id.Id);
+                            await ms.Employee.DeleteEmployeeById(id.Id);
                             return Ok(new { message = "Сотрудник удален" });
                         }
                         return NotFound(new { message = "Ошибка. Пользователь не найден" });
@@ -556,24 +558,24 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetAdmins ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetAdmins",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(ms.Admin.GetAllAdminDtos());
+                        return Ok(await ms.Admin.GetAllAdminDtos());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -582,22 +584,22 @@ namespace Personal_Testing_System.Controllers
         }
 
                  
-        [HttpPost("GetAdmins")]
+        [HttpPost("GetAdmin")]
         public async Task<IActionResult> GetAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetAdmin ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetAdmin",
                             UserId = token.IdAdmin,
@@ -605,8 +607,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Администратора={id.Id}"
                         });
-                        if (ms.Admin.GetAdminById(id.Id) != null)
-                            return Ok(ms.Admin.GetAdminDtoById(id.Id));
+                        if (await ms.Admin.GetAdminById(id.Id) != null)
+                            return Ok(await ms.Admin.GetAdminDtoById(id.Id));
+                        return NotFound(new { message = "Ошибка. Такого администратора нет" });
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -621,17 +624,17 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
                 !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0 )
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/UpdateAdmin ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/UpdateAdmin",
                             UserId = token.IdAdmin,
@@ -639,9 +642,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Администратора={admin.Id}"
                         });
-                        if (ms.Admin.GetAdminById(admin.Id) != null)
+                        if (await ms.Admin.GetAdminById(admin.Id) != null)
                         {
-                            ms.Admin.SaveAdmin(admin);
+                            await ms.Admin.SaveAdmin(admin);
                             return Ok(new { message = "Администратор добавлен" });
                         }else
                         {
@@ -662,17 +665,17 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
                 !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/AddAdmin ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddAdmin",
                             UserId = token.IdAdmin,
@@ -680,7 +683,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Логин Администратора={admin.Login}"
                         });
-                        ms.Admin.SaveAdmin(admin);
+                        await ms.Admin.SaveAdmin(admin);
                         return Ok(new { message = "Администратор добавлен" });
                     }
                 }
@@ -695,17 +698,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteAdmin ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteAdmin",
                             UserId = token.IdAdmin,
@@ -717,11 +720,11 @@ namespace Personal_Testing_System.Controllers
                         if (id.Id.Equals(token.IdAdmin))
                             return BadRequest(new { message = "Ошибка. Вы не можете удалить свою учетную запись" });
 
-                        Admin? adminToDelete = ms.Admin.GetAdminById(id.Id);
+                        Admin? adminToDelete = await ms.Admin.GetAdminById(id.Id);
                         if (adminToDelete == null)
                             return NotFound(new { message = "Администратор не найден" });
 
-                        ms.Admin.DeleteAdminById(adminToDelete.Id);
+                        await ms.Admin.DeleteAdminById(adminToDelete.Id);
                         return Ok(new { message = "Администратор удален" });
                     }
                 }
@@ -737,24 +740,24 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetCompetences");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetCompetences",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
                         });
-                        return Ok(ms.TestType.GetAllCompetenceDtos());
+                        return Ok(await ms.TestType.GetAllCompetenceDtos());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -767,17 +770,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetCompetence :Id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetCompetence",
                             UserId = token.IdAdmin,
@@ -785,9 +788,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id компетенции теста={id.Id}"
                         });
-                        if (ms.TestType.GetCompetenceById(id.Id.Value) != null)
+                        if (await ms.TestType.GetCompetenceById(id.Id.Value) != null)
                         {
-                            CompetenceDto? competenceDto = ms.TestType.GetCompetenceDtoById(id.Id.Value);
+                            CompetenceDto? competenceDto = await ms.TestType.GetCompetenceDtoById(id.Id.Value);
                             return Ok(competenceDto);
                         }
                         return NotFound(new { message = "Ошибка. Компетенция не найдена" });
@@ -804,17 +807,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && !competence.Name.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/AddCompetence :Name={competence.Name}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddCompetence",
                             UserId = token.IdAdmin,
@@ -822,7 +825,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Название компетенции теста={competence.Name}"
                         });
-                        ms.TestType.SaveCompetence(competence);
+                        await ms.TestType.SaveCompetence(competence);
                         return Ok(new { message = "Компетенция добавлена" });
                     }
                 }
@@ -837,17 +840,17 @@ namespace Personal_Testing_System.Controllers
             if (!Authorization.IsNullOrEmpty() && competence != null &&
                 competence.Id.HasValue && !competence.Name.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/UpdateCompetence :Id={competence.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/UpdateCompetence",
                             UserId = token.IdAdmin,
@@ -855,9 +858,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id компетенции теста={competence.Id}, Название={competence.Name}"
                         });
-                        if (ms.TestType.GetCompetenceById(competence.Id.Value) != null)
+                        if (await ms.TestType.GetCompetenceById(competence.Id.Value) != null)
                         {
-                            ms.TestType.SaveCompetence(competence);
+                            await ms.TestType.SaveCompetence(competence);
                             return Ok(new { message = "Компетенция обновлена" });
                         }
                         return NotFound(new { message = "Ошибка. Компетенция не найдена" });
@@ -873,17 +876,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null )
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteCompetence :competenceId={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteCompetence",
                             UserId = token.IdAdmin,
@@ -891,9 +894,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id компетенции теста={id.Id}"
                         });
-                        if (id.Id.HasValue && id.Id != 0 && ms.TestType.GetCompetenceById(id.Id.Value) != null)
+                        if (id.Id.HasValue && id.Id != 0 && await ms.TestType.GetCompetenceById(id.Id.Value) != null)
                         {
-                            ms.TestType.DeleteCompetenceById(id.Id.Value);
+                            await ms.TestType.DeleteCompetenceById(id.Id.Value);
                             return Ok(new { message = "Компетенция удалена" });
                         }
                         return NotFound(new { message = "Ошибка. Компетенция не найдена" });
@@ -911,24 +914,24 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetTests ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetTests",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(ms.Test.GetAllTestGetModels());
+                        return Ok(await ms.Test.GetAllTestGetModels());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -941,17 +944,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetTest :id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetTest",
                             UserId = token.IdAdmin,
@@ -961,9 +964,9 @@ namespace Personal_Testing_System.Controllers
                         });
                         if (!string.IsNullOrEmpty(id.Id))
                         {
-                            Test? test = ms.Test.GetTestById(id.Id);
+                            Test? test = await ms.Test.GetTestById(id.Id);
                             if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
-                            List<Question> questions = ms.Question.GetAllQuestions()
+                            List<Question> questions = (await ms.Question.GetAllQuestions())
                                 .Where(x => x.IdTest.Equals(id.Id)).ToList();
 
                             TestModel testDto = new TestModel
@@ -973,7 +976,7 @@ namespace Personal_Testing_System.Controllers
                                 Weight = test.Weight,
                                 Instruction = test.Instruction,
                                 Description = test.Description,
-                                Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                                Competence = await ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
                                 Questions = new List<QuestionModel>()
                             };
 
@@ -998,9 +1001,9 @@ namespace Personal_Testing_System.Controllers
                                     }
                                 }
 
-                                if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                                if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                                 {
-                                    List<Answer> list = ms.Answer.GetAnswersByQuestionId(quest.Id);
+                                    List<Answer> list = await ms.Answer.GetAnswersByQuestionId(quest.Id);
                                     foreach (Answer answer in list)
                                     {
                                         AnswerModel model = new AnswerModel
@@ -1025,18 +1028,18 @@ namespace Personal_Testing_System.Controllers
                                         createQuestionDto.Answers.Add(model);
                                     }
                                 }
-                                if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                                if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
                                 {
-                                    createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                                    createQuestionDto.Answers.AddRange(await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
                                 }
-                                if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                                if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                                 {
-                                    createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+                                    createQuestionDto.Answers.AddRange(await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
 
                                     List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                                    foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                                    foreach (var firstPart in await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
                                     {
-                                        secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                        secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                                     }
                                     createQuestionDto.Answers.AddRange(secondPartDtos);
                                 }
@@ -1056,17 +1059,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetPdfTest",
                             UserId = token.IdAdmin,
@@ -1075,11 +1078,11 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id теста ={id.Id}"
                         });
 
-                        Test? test = ms.Test.GetTestById(id.Id);
+                        Test? test = await ms.Test.GetTestById(id.Id);
                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
                         string html = "<h1 style=\"text-align: left;\">Название Теста: " + test.Name + "</h1> " +
-                                      "<h2 style=\"text-align: left;\">Компетенция: " + ms.TestType.GetCompetenceById(test.IdCompetence.Value).Name + "</h2><hr>";
-                        List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
+                                      "<h2 style=\"text-align: left;\">Компетенция: " + (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name + "</h2><hr>";
+                        List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
                             //.Where(x => x.IdTest.Equals(id)).ToList();
 
                         //!var Renderer = new IronPdf.ChromePdfRenderer();
@@ -1110,18 +1113,18 @@ namespace Personal_Testing_System.Controllers
                                     //html += "<style>\r\n  img.logo { \r\n   width:auto;\r\n   height:200px;\r\n   content: url(\"data:image/png;charset=utf-8;base64, " + base64 +"\");\r\n    }\r\n</style>";
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                                     html += $"<p><img style=\"width:300px; height:auto;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
                             }
                             else
                             {
-                                html += "<p>Вопрос:" + quest.Text + "</p><p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                                html += "<p>Вопрос:" + quest.Text + "</p><p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                             }
 
-                            if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                foreach (AnswerDto answer in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
                                 {
                                     if (!answer.ImagePath.IsNullOrEmpty())
                                     {
@@ -1141,16 +1144,16 @@ namespace Personal_Testing_System.Controllers
                                     html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Text}</span>";
                                 }
                             }
-                            if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                foreach (SubsequenceDto sub in ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
                                 {
                                     html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{sub.Text}</span>";
                                 }
                             }
-                            if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                List<FirstSecondPartDto> list = ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
                                 string[,] array = new string[2, list.Count];
                                 int position = 0;
                                 foreach (FirstSecondPartDto dto in list)
@@ -1195,17 +1198,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetPdfCorerectTest :id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetPdfCorerectTest",
                             UserId = token.IdAdmin,
@@ -1214,12 +1217,12 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id теста ={id.Id}"
                         });
 
-                        Test? test = ms.Test.GetTestById(id.Id);
+                        Test? test = await ms.Test.GetTestById(id.Id);
                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
                         string html = "";
                         html += "<div><h1 style=\"text-align: left;\">Название Теста: " + test.Name + "</h1>\r\n " +
-                                      "<h2 style=\"text-align: left;\">Компетенция: " + ms.TestType.GetCompetenceById(test.IdCompetence.Value).Name + "</h2>\r\n<hr>";
-                        List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
+                                      "<h2 style=\"text-align: left;\">Компетенция: " + (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name + "</h2>\r\n<hr>";
+                        List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
 
                         var doc = new PdfDocument();
 
@@ -1231,17 +1234,17 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                                     html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
                             }
                             else
                             {
-                                html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" + ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value).Name + "</p>";
+                                html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" +(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                             }
-                            if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                foreach (AnswerDto answer in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
                                 {
                                     if (!answer.ImagePath.IsNullOrEmpty())
                                     {
@@ -1262,17 +1265,17 @@ namespace Personal_Testing_System.Controllers
                                     }
                                 }
                             }
-                            if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                foreach (SubsequenceDto sub in ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
                                 {
                                     html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\">{sub.Number}</span>{sub.Text}</span>";
                                     //html += "<p> "+sub.Number + " " + sub.Text + "</p>";
                                 }
                             }
-                            if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                List<FirstSecondPartDto> list = ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
                                 string[,] array = new string[2, list.Count];
                                 int position = 0;
                                 foreach (FirstSecondPartDto dto in list)
@@ -1300,6 +1303,129 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+       [HttpPost("GetWordTest")]
+        public async Task<IActionResult> GetWordTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetPdfTest",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id теста ={id.Id}"
+                        });
+
+                        MemoryStream stream = new MemoryStream();
+                        DocX doc = DocX.Create(stream);
+
+                        Test? test = await ms.Test.GetTestById(id.Id);
+                        if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        Paragraph par1 = doc.InsertParagraph();
+                        par1.Append($"Название: {test.Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                        Paragraph par2 = doc.InsertParagraph();
+                        // todo await
+                        par2.Append($"Категория теста: { (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                        Paragraph par3 = doc.InsertParagraph();
+                        par3.Append($"Кол-во баллов: {test.Weight}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                        Paragraph par4 = doc.InsertParagraph();
+                        par4.Append($"Описание: {test.Description}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                        Paragraph par5 = doc.InsertParagraph();
+                        par5.Append($"инструкция: {test.Instruction}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                        List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+
+                        foreach (var quest in questions)
+                        {
+                            Paragraph par6 = doc.InsertParagraph();
+                            par6.Append($"{quest.Number}. {quest.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                            Paragraph par7 = doc.InsertParagraph();
+                            //todo await
+                            par7.Append($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    Xceed.Document.NET.Image image1 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath.ToString());
+                                }
+                            }
+
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                {
+                                    Paragraph par8 = doc.InsertParagraph();
+                                    par8.Append($"⬜{answer.Number}. {answer.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                    if (!answer.ImagePath.IsNullOrEmpty())
+                                    {
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                        {
+
+                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
+                                            string base64 = Convert.ToBase64String(array);
+                                            Xceed.Document.NET.Image image2 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath.ToString());
+                                        }
+                                    }
+                                }
+                            }
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                {
+                                    Paragraph par8 = doc.InsertParagraph();
+                                    par8.Append($"⬜{sub.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                }
+                            }
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                string[,] array = new string[2, list.Count];
+                                int position = 0;
+                                foreach (FirstSecondPartDto dto in list)
+                                {
+                                    array[0, position] = dto.FirstPartText;
+                                    array[1, position] = dto.SecondPartText;
+                                    position++;
+                                }
+                                Random rnd = new Random();
+                                //array = array.OrderBy(x => rnd.Next()).ToArray();
+
+                                for (int i = 0; i < array.GetLength(0); i++)
+                                {
+                                    Paragraph par8 = doc.InsertParagraph();
+                                    par8.Append($"{array[0, i]}     {array[1, i]}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                }
+                            }
+                        }
+                        Paragraph par9 = doc.InsertParagraph();
+                        par9.Append($"Дата прохождения теста:______________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                        Paragraph par10 = doc.InsertParagraph();
+                        par10.Append($"ФИО:_________________________________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                        doc.Save();
+                        return File(stream.ToArray(), "application/octet-stream", $"{test.Name}.docx");
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("AddTest")]
         public async Task<IActionResult> AddTest([FromHeader] string Authorization, [FromForm] AddPostTestModel? postModel)
         {
@@ -1308,12 +1434,12 @@ namespace Personal_Testing_System.Controllers
                 AddTestModel? test = JsonConvert.DeserializeObject<AddTestModel>(postModel.Test);
                 if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions!=null && test.Questions.Count != 0 &&
-                    test.CompetenceId != 0 && ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
+                    test.CompetenceId != 0 && await ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
                 {
-                    TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                    TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
                     {
-                        if (ms.IsTokenAdminExpired(token))
+                        if (await ms.IsTokenAdminExpired(token))
                         {
                             return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                         }
@@ -1321,7 +1447,7 @@ namespace Personal_Testing_System.Controllers
                         {
                             logger.LogInformation($"/admin-api/AddTest test: name={test.Name}, idCompetence={test.CompetenceId}," +
                                                   $"countOfQuestions={test.Questions.Count}");
-                            ms.Log.SaveLog(new Log
+                            await ms.Log.SaveLog(new Log
                             {
                                 UrlPath = "admin-api/AddTest",
                                 UserId = token.IdAdmin,
@@ -1330,7 +1456,7 @@ namespace Personal_Testing_System.Controllers
                                 Params= $"Название теста={test.Name}, Id компетенции={test.CompetenceId}"
                             });
                             string idTest = Guid.NewGuid().ToString();
-                            ms.Test.SaveTest(new Test
+                            await ms.Test.SaveTest(new Test
                             {
                                 Id = idTest,
                                 Name = test.Name,
@@ -1357,7 +1483,7 @@ namespace Personal_Testing_System.Controllers
                                             {
                                                 await file.CopyToAsync(upload);
                                             }
-                                            ms.Question.SaveQuestion(new Question
+                                            await ms.Question.SaveQuestion(new Question
                                             {
                                                 Id = idQuestion,
                                                 Text = quest.Text,
@@ -1375,7 +1501,7 @@ namespace Personal_Testing_System.Controllers
                                             {
                                                 await file.CopyToAsync(upload);
                                             }
-                                            ms.Question.SaveQuestion(new Question
+                                            await ms.Question.SaveQuestion(new Question
                                             {
                                                 Id = idQuestion,
                                                 Text = quest.Text,
@@ -1389,7 +1515,7 @@ namespace Personal_Testing_System.Controllers
                                 }
                                 else
                                 {
-                                    ms.Question.SaveQuestion(new Question
+                                    await ms.Question.SaveQuestion(new Question
                                     {
                                         Id = idQuestion,
                                         Text = quest.Text,
@@ -1430,7 +1556,7 @@ namespace Personal_Testing_System.Controllers
                                                         await file.CopyToAsync(upload);
                                                     }
 
-                                                    ms.Answer.SaveAnswer(new Answer
+                                                    await ms.Answer.SaveAnswer(new Answer
                                                     {
                                                         Text = answerDto.Text,
                                                         IdQuestion = idQuestion,
@@ -1449,7 +1575,7 @@ namespace Personal_Testing_System.Controllers
                                                         await file.CopyToAsync(upload);
                                                     }
 
-                                                    ms.Answer.SaveAnswer(new Answer
+                                                    await ms.Answer.SaveAnswer(new Answer
                                                     {
                                                         Text = answerDto.Text,
                                                         IdQuestion = idQuestion,
@@ -1463,7 +1589,7 @@ namespace Personal_Testing_System.Controllers
                                         }
                                         else
                                         {
-                                            ms.Answer.SaveAnswer(new Answer
+                                            await ms.Answer.SaveAnswer(new Answer
                                             {
                                                 Text = answerDto.Text,
                                                 IdQuestion = idQuestion,
@@ -1477,7 +1603,7 @@ namespace Personal_Testing_System.Controllers
                                     if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                                     {
                                         logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                                        ms.Subsequence.SaveSubsequence(new Subsequence
+                                        await ms.Subsequence.SaveSubsequence(new Subsequence
                                         {
                                             Text = subsequenceDto.Text,
                                             Number = subsequenceDto.Number,
@@ -1489,13 +1615,13 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
                                         string firstPartId = Guid.NewGuid().ToString();
-                                        ms.FirstPart.SaveFirstPart(new FirstPart
+                                        await ms.FirstPart.SaveFirstPart(new FirstPart
                                         {
                                             Id = firstPartId,
                                             Text = firstSecondPartDto.FirstPartText,
                                             IdQuestion = idQuestion
                                         });
-                                        ms.SecondPart.SaveSecondPart(new SecondPart
+                                        await ms.SecondPart.SaveSecondPart(new SecondPart
                                         {
                                             Text = firstSecondPartDto.SecondPartText,
                                             IdFirstPart = firstPartId
@@ -1522,10 +1648,10 @@ namespace Personal_Testing_System.Controllers
                     test.CompetenceId.HasValue && test.Questions != null && test.Questions.Count != 0 &&
                     test.CompetenceId != 0 && ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
                 {
-                    TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                    TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
                     {
-                        if (ms.IsTokenAdminExpired(token))
+                        if (await ms.IsTokenAdminExpired(token))
                         {
                             return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                         }
@@ -1533,7 +1659,7 @@ namespace Personal_Testing_System.Controllers
                         {
                             logger.LogInformation($"/admin-api/UpdateTest test: id={test.Id} name={test.Name}, idCompetence={test.CompetenceId}," +
                                       $"countOfQuestions={test.Questions.Count}");
-                            ms.Log.SaveLog(new Log
+                            await ms.Log.SaveLog(new Log
                             {
                                 UrlPath = "admin-api/UpdateTest",
                                 UserId = token.IdAdmin,
@@ -1542,10 +1668,10 @@ namespace Personal_Testing_System.Controllers
                                 Params = $"Id Теста={test.Id}, Название Теста={test.Name}, Кол-во вопросов={test.Questions.Count}"
                             });
 
-                            if (ms.Test.GetTestById(test.Id) == null)
+                            if (await ms.Test.GetTestById(test.Id) == null)
                                 return BadRequest(new { message = "Ошибка. Такого теста не существует" });
 
-                            ms.Test.SaveTest(new Test
+                            await ms.Test.SaveTest(new Test
                             {
                                 Id = test.Id,
                                 Name = test.Name,
@@ -1555,7 +1681,7 @@ namespace Personal_Testing_System.Controllers
                                 Description = test.Description
                             });
 
-                            List<QuestionDto> currentQuestions = ms.Question.GetQuestionDtosByTest(test.Id);
+                            List<QuestionDto> currentQuestions = await ms.Question.GetQuestionDtosByTest(test.Id);
                             foreach (QuestionModel quest in test.Questions)
                             {
                                 logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
@@ -1579,7 +1705,7 @@ namespace Personal_Testing_System.Controllers
                                 if (quest.Id.IsNullOrEmpty())
                                 {
                                     quest.Id = Guid.NewGuid().ToString();
-                                    ms.Question.SaveQuestion(new Question
+                                    await ms.Question.SaveQuestion(new Question
                                     {
                                         Id = quest.Id,
                                         Text = quest.Text,
@@ -1596,7 +1722,7 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         currentQuestions.Remove(questToDelete);
                                     }
-                                    ms.Question.SaveQuestion(new Question
+                                    await ms.Question.SaveQuestion(new Question
                                     {
                                         Id = quest.Id,
                                         Text = quest.Text,
@@ -1637,7 +1763,7 @@ namespace Personal_Testing_System.Controllers
                                         }
                                         if (answerDto.IdAnswer.HasValue)
                                         {
-                                            ms.Answer.SaveAnswer(new Answer
+                                            await ms.Answer.SaveAnswer(new Answer
                                             {
                                                 Id = answerDto.IdAnswer.Value,
                                                 Text = answerDto.Text,
@@ -1649,7 +1775,7 @@ namespace Personal_Testing_System.Controllers
                                         }
                                         else
                                         {
-                                            ms.Answer.SaveAnswer(new Answer
+                                            await ms.Answer.SaveAnswer(new Answer
                                             {
                                                 Text = answerDto.Text,
                                                 IdQuestion = quest.Id,
@@ -1662,7 +1788,7 @@ namespace Personal_Testing_System.Controllers
                                     if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                                     {
                                         logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                                        ms.Subsequence.SaveSubsequence(new Subsequence
+                                        await ms.Subsequence.SaveSubsequence(new Subsequence
                                         {
                                             Id = subsequenceDto.IdSubsequence,
                                             Text = subsequenceDto.Text,
@@ -1674,7 +1800,7 @@ namespace Personal_Testing_System.Controllers
                                         !string.IsNullOrEmpty(firstPartDto.Text))
                                     {
                                         logger.LogInformation($"firstPartDto -> Id={firstPartDto.IdFirstPart}, Text={firstPartDto.Text}");
-                                        ms.FirstPart.SaveFirstPart(new FirstPart
+                                        await ms.FirstPart.SaveFirstPart(new FirstPart
                                         {
                                             Id = firstPartDto.IdFirstPart,
                                             Text = firstPartDto.Text,
@@ -1685,7 +1811,7 @@ namespace Personal_Testing_System.Controllers
                                         !secondPartDto.Text.IsNullOrEmpty() && !secondPartDto.IdFirstPart.IsNullOrEmpty())
                                     {
                                         logger.LogInformation($"secondPatDto -> Id={secondPartDto.IdFirstPart}, text={firstPartDto.Text}, IdFirstPart={secondPartDto.IdFirstPart}");
-                                        ms.SecondPart.SaveSecondPart(new SecondPart
+                                        await ms.SecondPart.SaveSecondPart(new SecondPart
                                         {
                                             Id = secondPartDto.IdSecondPart.Value,
                                             Text = secondPartDto.Text,
@@ -1697,13 +1823,13 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
                                         string firstPartId = Guid.NewGuid().ToString();
-                                        ms.FirstPart.SaveFirstPart(new FirstPart
+                                        await ms.FirstPart.SaveFirstPart(new FirstPart
                                         {
                                             Id = firstPartId,
                                             Text = firstSecondPartDto.FirstPartText,
                                             IdQuestion = quest.Id
                                         });
-                                        ms.SecondPart.SaveSecondPart(new SecondPart
+                                        await ms.SecondPart.SaveSecondPart(new SecondPart
                                         {
                                             Text = firstSecondPartDto.SecondPartText,
                                             IdFirstPart = firstPartId
@@ -1720,7 +1846,7 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         System.IO.File.Delete(questFilePath);
                                     }
-                                    List<Answer> answers = ms.Answer.GetAnswersByQuestionId(questionToDelete.Id);
+                                    List<Answer> answers = await ms.Answer.GetAnswersByQuestionId(questionToDelete.Id);
                                     foreach (Answer answer in answers)
                                     {
                                         string answerFilePath = environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath;
@@ -1728,13 +1854,13 @@ namespace Personal_Testing_System.Controllers
                                         {
                                             System.IO.File.Delete(answerFilePath);
                                         }
-                                        ms.Answer.DeleteAnswerById(answer.Id);
+                                        await ms.Answer.DeleteAnswerById(answer.Id);
                                     }
 
-                                    ms.Subsequence.DeleteSubsequencesByQuestion(questionToDelete.Id);
-                                    ms.DeleteFirstAndSecondPartsByQuestion(questionToDelete.Id);
+                                    await ms.Subsequence.DeleteSubsequencesByQuestion(questionToDelete.Id);
+                                    await ms.DeleteFirstAndSecondPartsByQuestion(questionToDelete.Id);
 
-                                    ms.Question.DeleteQuestionById(questionToDelete.Id);
+                                    await ms.Question.DeleteQuestionById(questionToDelete.Id);
                                 }
                             }
                             return Ok(new { message = "Обновление теста успешно" });
@@ -1751,17 +1877,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteTest testId={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteTest",
                             UserId = token.IdAdmin,
@@ -1769,9 +1895,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Теста={id.Id}"
                         });
-                        if (ms.Test.GetTestById(id.Id) != null)
+                        if (await ms.Test.GetTestById(id.Id) != null)
                         {
-                            ms.DeleteTestById(id.Id, environment);
+                            await ms.DeleteTestById(id.Id, environment);
                             return Ok(new { message = "Тест удален успешно" });
                         }
                         return NotFound(new { message = "Ошибка. Тест не найден" });
@@ -1789,24 +1915,24 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetPurposess ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetPurposess",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(ms.TestPurpose.GetAllPurposeAdminModels());
+                        return Ok(await ms.TestPurpose.GetAllPurposeAdminModels());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -1819,17 +1945,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetPurposessByEmployeeId id={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetPurposesByEmployeeId",
                             UserId = $"",
@@ -1838,7 +1964,7 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id Сотрудника={id.Id}"
                         });
 
-                        List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
+                        List<TestPurposeDto> purposes = (await ms.TestPurpose.GetAllTestPurposeDtos())
                                          .Where(x => x.IdEmployee.Equals(id.Id)).ToList();
 
                         if (purposes.Count == 0)
@@ -1854,7 +1980,7 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     Id = purpose.Id,
                                     IdEmployee = id.Id,
-                                    Test = ms.Test.GetTestGetModelById(purpose.IdTest),
+                                    Test = await ms.Test.GetTestGetModelById(purpose.IdTest),
                                     DatatimePurpose = purpose.DatatimePurpose
                                 };
 
@@ -1875,26 +2001,26 @@ namespace Personal_Testing_System.Controllers
             if (!Authorization.IsNullOrEmpty() && purpose != null && !purpose.IdTest.IsNullOrEmpty() &&
                 !purpose.IdEmployee.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
-                        if (ms.Test.GetTestById(purpose.IdTest) == null)
+                        if (await ms.Test.GetTestById(purpose.IdTest) == null)
                                 return BadRequest(new { message = "Ошибка. Пользователя с эти Id нет" });
 
-                        if (ms.Employee.GetEmployeeById(purpose.IdEmployee) == null)
+                        if (await ms.Employee.GetEmployeeById(purpose.IdEmployee) == null)
                             return BadRequest(new { message = "Ошибка. Теста с этим Id нет" });
 
-                        if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(purpose.IdTest,purpose.IdEmployee) != null)
+                        if (await ms.TestPurpose.GetTestPurposeByEmployeeTestId(purpose.IdTest,purpose.IdEmployee) != null)
                                 return BadRequest(new { message = "Ошибка. Этот тест уже назначен этому пользованелю" });
 
                         logger.LogInformation($"/admin-api/AddPurpose employeeId={purpose.IdEmployee}, testId={purpose.IdTest}, datatime={purpose.DatatimePurpose}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddPurpose",
                             UserId = token.IdAdmin,
@@ -1902,7 +2028,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Сотрудника={purpose.IdEmployee}, Id теста={purpose.IdTest}"
                         });
-                        ms.TestPurpose.SaveTestPurpose(purpose);
+                        await ms.TestPurpose.SaveTestPurpose(purpose);
                         return Ok(new { message = "Тест назначен" });
                     }
                 }
@@ -1916,17 +2042,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && !testId.IsNullOrEmpty() && idSubdivision.HasValue && !time.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/AddPurposesBySubdivision testId={testId}, idSubdivision={idSubdivision}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddPurpose",
                             UserId = token.IdAdmin,
@@ -1934,7 +2060,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Отдела={idSubdivision}, Id теста={testId}, Дата сдачи={time}"
                         });
-                        ms.TestPurpose.SavePurposeBySubdivisionId(testId, idSubdivision.Value, DateTime.Parse(time));
+                        await ms.TestPurpose.SavePurposeBySubdivisionId(testId, idSubdivision.Value, DateTime.Parse(time));
                         return Ok(new { message = "Тесты назначены" });
                     }
                 }
@@ -1970,19 +2096,19 @@ namespace Personal_Testing_System.Controllers
             if (!Authorization.IsNullOrEmpty() && purpose != null && purpose.Id.HasValue &&
                 !purpose.IdTest.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
-                        if (ms.TestPurpose.GetTestPurposeById(purpose.Id.Value) != null)
+                        if (await ms.TestPurpose.GetTestPurposeById(purpose.Id.Value) != null)
                         {
                             logger.LogInformation($"/admin-api/UpdatePurpose purposeId={purpose.Id}");
-                            ms.Log.SaveLog(new Log
+                            await ms.Log.SaveLog(new Log
                             {
                                 UrlPath = "admin-api/UpdatePurpose",
                                 UserId = token.IdAdmin,
@@ -1990,7 +2116,7 @@ namespace Personal_Testing_System.Controllers
                                 DataTime = DateTime.Now,
                                 Params = $"Id Сотрудника={purpose.IdEmployee}, Id теста={purpose.IdTest}, Дата сдачи={purpose.DatatimePurpose}"
                             });
-                            ms.TestPurpose.SaveTestPurpose(purpose);
+                            await ms.TestPurpose.SaveTestPurpose(purpose);
                             return Ok(new { message = "Назначение обновлено" });
                         }
                         return NotFound(new { message = "Ошибка. Такого назначения не существует" });
@@ -2006,17 +2132,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeletePurpose purposeId={id.Id}");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeletePurpose",
                             UserId = token.IdAdmin,
@@ -2024,9 +2150,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Назначения={id.Id}"
                         });
-                        if (ms.TestPurpose.GetTestPurposeById(id.Id.Value) != null)
+                        if (await ms.TestPurpose.GetTestPurposeById(id.Id.Value) != null)
                         {
-                            ms.TestPurpose.DeleteTestPurposeById(id.Id.Value);
+                            await ms.TestPurpose.DeleteTestPurposeById(id.Id.Value);
                             return Ok(new { message = "Назначение удалено" });
                         }
                         return NotFound(new { message = "Ошибка. Такого назначения не существует" });
@@ -2045,17 +2171,17 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/GetResults ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/GetResults",
                             UserId = token.IdAdmin,
@@ -2063,7 +2189,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
 
-                        List<EmployeeResultModel> list = ms.GetAllEmployeeResultModels();
+                        List<EmployeeResultModel> list = await ms.GetAllEmployeeResultModels();
                         if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
                         {
                             list = list.Where(x => x.Employee.Subdivision.Id == query.IdSubdivision).ToList();
@@ -2131,31 +2257,31 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteResults");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "user-api/DeletePurpose",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
                         });
-                        List<EmployeeResultDto> employeeResults = ms.EmployeeResult.GetAllEmployeeResultDtos();
+                        List<EmployeeResultDto> employeeResults = await ms.EmployeeResult.GetAllEmployeeResultDtos();
                         foreach (EmployeeResultDto result in employeeResults)
                         {
-                            ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(result.IdResult);
-                            ms.EmployeeMatching.DeleteEmployeeMatchingByResult(result.IdResult);
-                            ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(result.IdResult);
-                            ms.Result.DeleteResultById(result.IdResult);
-                            ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
+                            await ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(result.IdResult);
+                            await ms.EmployeeMatching.DeleteEmployeeMatchingByResult(result.IdResult);
+                            await ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(result.IdResult);
+                            await ms.Result.DeleteResultById(result.IdResult);
+                            await ms.EmployeeResult.DeleteEmployeeResultById(result.Id.Value);
                         }
                         return Ok(new { message = "Результаты удалены" });
                     }
@@ -2170,31 +2296,31 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/DeleteResult ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/DeleteResult",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        EmployeeResult? employeeResults = ms.EmployeeResult.GetEmployeeResultById(resultId.Id.Value);
+                        EmployeeResult? employeeResults = await ms.EmployeeResult.GetEmployeeResultById(resultId.Id.Value);
                         if (employeeResults != null)
                         {
-                            ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(employeeResults.IdResult);
-                            ms.EmployeeMatching.DeleteEmployeeMatchingByResult(employeeResults.IdResult);
-                            ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(employeeResults.IdResult);
-                            ms.Result.DeleteResultById(employeeResults.IdResult);
-                            ms.EmployeeResult.DeleteEmployeeResultById(resultId.Id.Value);
+                            await ms.EmployeeAnswer.DeleteEmployeeAnswersByResult(employeeResults.IdResult);
+                            await ms.EmployeeMatching.DeleteEmployeeMatchingByResult(employeeResults.IdResult);
+                            await ms.EmployeeSubsequence.DeleteEmployeeSubsequenceByResult(employeeResults.IdResult);
+                            await ms.Result.DeleteResultById(employeeResults.IdResult);
+                            await ms.EmployeeResult.DeleteEmployeeResultById(resultId.Id.Value);
                             return Ok(new { message = "Результаты удалены" });
                         }
                         return BadRequest(new { message = "Ошибка. Такого результата нет" });
@@ -2210,24 +2336,24 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenAdmin? token = ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenAdminExpired(token))
+                    if (await ms.IsTokenAdminExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     else
                     {
                         logger.LogInformation($"/admin-api/Getlogs ");
-                        ms.Log.SaveLog(new Log
+                        await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/Getlogs",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(ms.Log.GetAllLogDtos());
+                        return Ok(await ms.Log.GetAllLogDtos());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });

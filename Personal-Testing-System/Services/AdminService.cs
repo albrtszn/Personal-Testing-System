@@ -2,6 +2,7 @@
 using DataBase.Repository.Models;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
+using System.Collections.Generic;
 
 namespace Personal_Testing_System.Services
 {
@@ -51,46 +52,47 @@ namespace Personal_Testing_System.Services
                 IdSubdivision = admin.IdSubdivision
             };
         }
-        public void DeleteAdminById(string id)
+        public async Task<bool> DeleteAdminById(string id)
         {
-            AdminRepo.DeleteAdminById(id);
+            return await AdminRepo.DeleteAdminById(id);
         }
 
-        public List<Admin> GetAllAdmins()
+        public async Task<List<Admin>> GetAllAdmins()
         {
-            return AdminRepo.GetAllAdmins();
+            return await AdminRepo.GetAllAdmins();
         }
 
-        public List<AdminDto> GetAllAdminDtos()
+        public async Task<List<AdminDto>> GetAllAdminDtos()
         {
             List<AdminDto> Admins = new List<AdminDto>();
-            AdminRepo.GetAllAdmins().ForEach(x => Admins.Add(ConvertToAdminDto(x)));
+            List<Admin> list = await AdminRepo.GetAllAdmins();
+            list.ForEach(x => Admins.Add(ConvertToAdminDto(x)));
             return Admins;
         }
 
-        public Admin GetAdminById(string id)
+        public async Task<Admin> GetAdminById(string id)
         {
-            return AdminRepo.GetAdminById(id);
+            return await AdminRepo.GetAdminById(id);
         }
 
-        public AdminDto GetAdminDtoById(string id)
+        public async Task<AdminDto> GetAdminDtoById(string id)
         {
-            return ConvertToAdminDto(AdminRepo.GetAdminById(id));
+            return ConvertToAdminDto(await AdminRepo.GetAdminById(id));
         }
 
-        public void SaveAdmin(Admin AdminToSave)
+        public async Task<bool> SaveAdmin(Admin AdminToSave)
         {
-            AdminRepo.SaveAdmin(AdminToSave);
+            return await AdminRepo.SaveAdmin(AdminToSave);
         }
 
-        public void SaveAdmin(AdminDto AdminDtoToSave)
+        public async Task<bool> SaveAdmin(AdminDto AdminDtoToSave)
         {
-            AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToSave));
+            return await AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToSave));
         }
 
-        public void SaveAdmin(AddAdminModel AdminDtoToAdd)
+        public async Task<bool> SaveAdmin(AddAdminModel AdminDtoToAdd)
         {
-            AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToAdd));
+            return await AdminRepo.SaveAdmin(ConvertToAdmin(AdminDtoToAdd));
         }
     }
 }

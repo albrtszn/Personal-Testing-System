@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +18,28 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeById(string id)
+        public async Task<bool> DeleteEmployeeById(string id)
         {
-            context.Employees.Remove(GetAllEmployees().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.Employees.Remove((await GetAllEmployees()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<Employee> GetAllEmployees()
+        public async Task<List<Employee>> GetAllEmployees()
         {
-            return context.Employees.ToList();
+            return await context.Employees.ToListAsync();
         }
 
-        public Employee GetEmployeeById(string id)
+        public async Task<Employee> GetEmployeeById(string id)
         {
-            return GetAllEmployees().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.Employees.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveEmployee(Employee EmployeeToSave)
+        public async Task<bool> SaveEmployee(Employee EmployeeToSave)
         {
-            Employee? employee = GetEmployeeById(EmployeeToSave.Id);
-            if (employee != null)
+            Employee? employee = await GetEmployeeById(EmployeeToSave.Id);
+            //Employee? Employee = await context.Employees.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(EmployeeToSave.Id));
+            if (employee != null && !EmployeeToSave.Id.IsNullOrEmpty())
             {
                 //context.Employees.Update(EmployeeToSave);
                 employee.Id = EmployeeToSave.Id;
@@ -46,12 +50,16 @@ namespace CRUD.implementations
                 employee.Password = EmployeeToSave.Password;
                 employee.DateOfBirth = EmployeeToSave.DateOfBirth;
                 employee.IdSubdivision = EmployeeToSave.IdSubdivision;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.Employees.Add(EmployeeToSave);
+                await context.Employees.AddAsync(EmployeeToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

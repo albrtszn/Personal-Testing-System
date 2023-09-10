@@ -9,10 +9,10 @@ namespace Personal_Testing_System.Services
 {
     public class SubdivisionService
     {
-        private ISubdivisionRepo subdivisionRepo;
+        private ISubdivisionRepo SubdivisionRepo;
         public SubdivisionService(ISubdivisionRepo _subdivisionRepo)
         {
-            this.subdivisionRepo = _subdivisionRepo;
+            this.SubdivisionRepo = _subdivisionRepo;
         }
 
         private Subdivision ConvertToSubdivision(SubdivisionDto subDto)
@@ -33,58 +33,62 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteSubdivisionById(int id)
+        public async Task<bool> DeleteSubdivisionById(int id)
         {
-            subdivisionRepo.DeleteSubdivisionById(id);
+            return await SubdivisionRepo.DeleteSubdivisionById(id);
         }
 
-        public List<Subdivision> GetAllSubdivisions()
+        public async Task<List<Subdivision>> GetAllSubdivisions()
         {
-            return subdivisionRepo.GetAllSubdivisions();
+            return await SubdivisionRepo.GetAllSubdivisions();
         }
 
-        public List<SubdivisionDto> GetAllSubdivisionDtos()
+        public async Task<List<SubdivisionDto>> GetAllSubdivisionDtos()
         {
             List<SubdivisionDto> Subdivisions = new List<SubdivisionDto>();
-            subdivisionRepo.GetAllSubdivisions().ForEach(x => Subdivisions.Add(ConvertToSubdivisionDto(x)));
+            List<Subdivision> list = await SubdivisionRepo.GetAllSubdivisions();
+            list.ForEach(x => Subdivisions.Add(ConvertToSubdivisionDto(x)));
             return Subdivisions;
         }
 
-        public Subdivision GetSubdivisionById(int id)
+        public async Task<Subdivision> GetSubdivisionById(int id)
         {
-            return subdivisionRepo.GetSubdivisionById(id);
+            return await SubdivisionRepo.GetSubdivisionById(id);
         }
 
-        public SubdivisionDto? GetSubdivisionDtoById(int id)
+        public async Task<SubdivisionDto> GetSubdivisionDtoById(int id)
         {
-            return ConvertToSubdivisionDto(subdivisionRepo.GetSubdivisionById(id));
+            return ConvertToSubdivisionDto(await SubdivisionRepo.GetSubdivisionById(id));
         }
 
-        public void SaveSubdivision(Subdivision SubdivisionToSave)
+        public async Task<bool> SaveSubdivision(Subdivision SubdivisionToSave)
         {
-            subdivisionRepo.SaveSubdivision(SubdivisionToSave);
+            return await SubdivisionRepo.SaveSubdivision(SubdivisionToSave);
         }
 
-        public void SaveSubdivision(SubdivisionDto SubdivisionToSave)
+        public async Task<bool> SaveSubdivision(SubdivisionDto SubdivisionDtoToSave)
         {
-            subdivisionRepo.SaveSubdivision(ConvertToSubdivision(SubdivisionToSave));
+            return await SubdivisionRepo.SaveSubdivision(ConvertToSubdivision(SubdivisionDtoToSave));
         }
 
-        public void SaveSubdivision(AddSubdivisionModel SubdivisionToSave)
+        public async Task<bool> SaveSubdivision(AddSubdivisionModel SubdivisionToSave)
         {
-            subdivisionRepo.SaveSubdivision(new Subdivision
+            await SubdivisionRepo.SaveSubdivision(new Subdivision
             {
                 Id=SubdivisionToSave.Id.Value,
                 Name = SubdivisionToSave.Name
             });
+            return true;
         }
 
-        public void SaveSubdivision(SubdivisionModel SubdivisionToSave)
+        public async Task<bool> SaveSubdivision(SubdivisionModel SubdivisionToSave)
         {
-            subdivisionRepo.SaveSubdivision(new Subdivision
+            await SubdivisionRepo.SaveSubdivision(new Subdivision
             {
                 Name = SubdivisionToSave.Name
             });
+            return true;
+
         }
     }
 }

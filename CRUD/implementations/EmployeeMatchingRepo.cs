@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +18,28 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteEmployeeMatchingById(int id)
+        public async Task<bool> DeleteEmployeeMatchingById(int id)
         {
-            context.EmployeeMatchings.Remove(GetAllEmployeeMatchings().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.EmployeeMatchings.Remove((await GetAllEmployeeMatchings()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<EmployeeMatching> GetAllEmployeeMatchings()
+        public async Task<List<EmployeeMatching>> GetAllEmployeeMatchings()
         {
-            return context.EmployeeMatchings.ToList();
+            return await context.EmployeeMatchings.ToListAsync();
         }
 
-        public EmployeeMatching GetEmployeeMatchingById(int id)
+        public async Task<EmployeeMatching> GetEmployeeMatchingById(int id)
         {
-            return GetAllEmployeeMatchings().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.EmployeeMatchings.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave)
+        public async Task<bool> SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave)
         {
-            context.EmployeeMatchings.Add(EmployeeMatchingToSave);
-            context.SaveChanges();
+            await context.EmployeeMatchings.AddAsync(EmployeeMatchingToSave);
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

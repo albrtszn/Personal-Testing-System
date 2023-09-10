@@ -43,14 +43,14 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("TestGetEmployees")]
         public async Task<IActionResult> TestGetEmployees()
         {
-            return Ok(ms.Employee.GetAllEmployeeDtos());
+            return Ok(await ms.Employee.GetAllEmployeeDtos());
         }
 
         [HttpDelete("DeleteEmployeeTokens")]
         public async Task<IActionResult> DeleteEmployeeTokens()
         {
-            ms.TokenEmployee.GetAllTokenEmployees().ForEach(x => ms.TokenEmployee.DeleteTokenEmployeeById(x.Id));
-            if (!ms.TokenEmployee.GetAllTokenEmployees().Any())
+            (await ms.TokenEmployee.GetAllTokenEmployees()).ForEach(async x => await ms.TokenEmployee.DeleteTokenEmployeeById(x.Id));
+            if (!(await ms.TokenEmployee.GetAllTokenEmployees()).Any())
             {
                 return Ok(new { messsage = "Токены удалены" });
             }
@@ -71,7 +71,7 @@ namespace Personal_Testing_System.Controllers
                 return BadRequest(new { message = "Одно из полей пустое" });
             }
             logger.LogInformation($"/user-api/Login : login={loginModel.Login}, Password={loginModel.Password} ");
-            ms.Log.SaveLog(new Log
+            await ms.Log.SaveLog(new Log
             {
                 UrlPath = "user-api/Login",
                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -79,7 +79,7 @@ namespace Personal_Testing_System.Controllers
                 Params = $"логин={loginModel.Login}, пароль={loginModel.Password}"
             });
 
-            EmployeeDto? employeeDto = ms.Employee.GetAllEmployeeDtos()
+            EmployeeDto? employeeDto = (await ms.Employee.GetAllEmployeeDtos())
                                   .Find(x => x.Login.Equals(loginModel.Login));
 
             if (employeeDto == null)
@@ -90,8 +90,8 @@ namespace Personal_Testing_System.Controllers
             {
                 if (loginModel.Password.Equals(employeeDto.Password))
                 {
-                    TokenEmployee? tokenEmployee = ms.TokenEmployee.GetTokenEmployeeByEmployeeId(employeeDto.Id);
-                    if (tokenEmployee != null && !ms.IsTokenEmployeeExpired(tokenEmployee))
+                    TokenEmployee? tokenEmployee = await ms.TokenEmployee.GetTokenEmployeeByEmployeeId(employeeDto.Id);
+                    if (tokenEmployee != null && !await ms.IsTokenEmployeeExpired(tokenEmployee))
                     {
                         return Ok(new
                         {
@@ -102,7 +102,7 @@ namespace Personal_Testing_System.Controllers
                     else
                     {
                         string token = Guid.NewGuid().ToString();
-                        ms.TokenEmployee.SaveTokenEmployee(new TokenEmployee
+                        await ms.TokenEmployee.SaveTokenEmployee(new TokenEmployee
                         {
                             IdEmployee = employeeDto.Id,
                             Token = token,
@@ -128,15 +128,15 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty())
             {
-                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenEmployeeExpired(token))
+                    if (await ms.IsTokenEmployeeExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/user-api/LogOut : AuthHeader={Authorization}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "user-api/LoOut",
                         UserId = token.IdEmployee,
@@ -144,7 +144,7 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                         Params = $"Id сотрудника={token.IdEmployee}"
                     });
-                    ms.TokenEmployee.DeleteTokenEmployeeById(token.Id);
+                    await ms.TokenEmployee.DeleteTokenEmployeeById(token.Id);
                     return Ok(new { message = "Выполнен выход из системы" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -157,15 +157,15 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenEmployeeExpired(token))
+                    if (await ms.IsTokenEmployeeExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
 
-                    List<TestPurposeDto> purposes = ms.TestPurpose.GetAllTestPurposeDtos()
+                    List<TestPurposeDto> purposes = (await ms.TestPurpose.GetAllTestPurposeDtos())
                                      .Where(x => x.IdEmployee.Equals(id.Id)).ToList();
 
                     if (purposes.Count == 0)
@@ -181,7 +181,7 @@ namespace Personal_Testing_System.Controllers
                             {
                                 Id = purpose.Id,
                                 IdEmployee = id.Id,
-                                Test = ms.Test.GetTestGetModelById(purpose.IdTest),
+                                Test = await ms.Test.GetTestGetModelById(purpose.IdTest),
                                 DatatimePurpose = purpose.DatatimePurpose
                             };
 
@@ -200,15 +200,15 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenEmployeeExpired(token))
+                    if (await ms.IsTokenEmployeeExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/user-api/GetTest testId={id.Id}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "user-api/GetTest",
                         UserId = $"{token.IdEmployee}",
@@ -217,10 +217,10 @@ namespace Personal_Testing_System.Controllers
                         Params = $"TestId={id.Id}"
                     });
 
-                    Test? test = ms.Test.GetTestById(id.Id);
+                    Test? test = await ms.Test.GetTestById(id.Id);
                     if (test != null)
                     {
-                        List<Question> questions = ms.Question.GetQuestionsByTest(id.Id);
+                        List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
 
                         TestModel testDto = new TestModel
                         {
@@ -229,7 +229,7 @@ namespace Personal_Testing_System.Controllers
                             Weight = test.Weight,
                             Description = test.Description,
                             Instruction = test.Instruction,
-                            Competence = ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                            Competence = await ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
                             Questions = new List<QuestionModel>()
                         };
 
@@ -254,10 +254,10 @@ namespace Personal_Testing_System.Controllers
                                 }
                             }
 
-                            if (ms.Answer.GetAnswerDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                             {
                                 //createQuestionDto.Answers.AddRange(ms.Answer.GetAnswerDtosByQuestionId(quest.Id));
-                                foreach (AnswerDto answerDto in ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                foreach (AnswerDto answerDto in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
                                 {
                                     AnswerModel model = new AnswerModel
                                     {
@@ -281,18 +281,18 @@ namespace Personal_Testing_System.Controllers
                                     createQuestionDto.Answers.Add(model);
                                 }
                             }
-                            if (ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                createQuestionDto.Answers.AddRange(ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                                createQuestionDto.Answers.AddRange(await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
                             }
-                            if (ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id).Count != 0)
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                createQuestionDto.Answers.AddRange(ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+                                createQuestionDto.Answers.AddRange(await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
 
                                 List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                                foreach (var firstPart in ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+                                foreach (var firstPart in await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
                                 {
-                                    secondPartDtos.Add(ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                    secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                                 }
                                 createQuestionDto.Answers.AddRange(secondPartDtos);
                             }
@@ -322,15 +322,15 @@ namespace Personal_Testing_System.Controllers
                 !testResultModel.StartDate.IsNullOrEmpty() && !testResultModel.StartTime.IsNullOrEmpty() &&
                 !testResultModel.EndTime.IsNullOrEmpty() && testResultModel.Questions.Count != 0))
             {
-                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenEmployeeExpired(token))
+                    if (await ms.IsTokenEmployeeExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "user-api/PushTest",
                         UserId = $"{token.IdEmployee}",
@@ -338,11 +338,11 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                         Params = $"TestId={testResultModel.TestId}"
                     });
-                    if (ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
+                    if (await ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
                         return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
 
                     logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "user-api/GetTestResultsByEmployee",
                         UserId = $"{testResultModel.EmployeeId}",
@@ -352,7 +352,7 @@ namespace Personal_Testing_System.Controllers
                     });
 
                     string resultId = Guid.NewGuid().ToString();
-                    ms.Result.SaveResult(new Result
+                    await ms.Result.SaveResult(new Result
                     {
                         Id = resultId,
                         IdTest = testResultModel.TestId,
@@ -380,12 +380,12 @@ namespace Personal_Testing_System.Controllers
                             {
                                 logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
 
-                                if (ms.Answer.GetAnswerById(answerModel.AnswerId.Value).Correct.Value)
+                                if ((await ms.Answer.GetAnswerById(answerModel.AnswerId.Value)).Correct.Value)
                                 {
                                     countOfCorrectAnswer++;
                                 }
 
-                                ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                                await ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
                                 {
                                     IdResult = resultId,
                                     IdAnswer = answerModel.AnswerId
@@ -395,12 +395,12 @@ namespace Personal_Testing_System.Controllers
                             {
                                 logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
 
-                                if (ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value).Number == (subsequenceModel.Number.Value))
+                                if ((await ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value)).Number == (subsequenceModel.Number.Value))
                                 {
                                     countOfCorrectAnswer++;
                                 }
 
-                                ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                                await ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
                                 {
                                     IdSubsequence = subsequenceModel.SubsequenceId.Value,
                                     IdResult = resultId,
@@ -411,12 +411,12 @@ namespace Personal_Testing_System.Controllers
                             {
                                 logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
 
-                                if (ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value).IdFirstPart.Equals(fsPartModel.FirstPartId))
+                                if ((await ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value)).IdFirstPart.Equals(fsPartModel.FirstPartId))
                                 {
                                     countOfCorrectAnswer++;
                                 }
 
-                                ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                                await ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
                                 {
                                     IdFirstPart = fsPartModel.FirstPartId,
                                     IdSecondPart = fsPartModel.SecondPartId,
@@ -429,7 +429,7 @@ namespace Personal_Testing_System.Controllers
                             score++;
                         }
                     }
-                    ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
+                    await ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
                     {
                         IdResult = resultId,
                         IdEmployee = testResultModel.EmployeeId,
@@ -437,7 +437,7 @@ namespace Personal_Testing_System.Controllers
                         ScoreTo = testResultModel.Questions.Count
                     });
 
-                    ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+                    await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
 
                     return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
                 }
@@ -454,15 +454,15 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
-                TokenEmployee? token = ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
                 if (token != null)
                 {
-                    if (ms.IsTokenEmployeeExpired(token))
+                    if (await ms.IsTokenEmployeeExpired(token))
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
                     logger.LogInformation($"/user-api/GetTestResultsByEmployee testId={id.Id}");
-                    ms.Log.SaveLog(new Log
+                    await ms.Log.SaveLog(new Log
                     {
                         UrlPath = "user-api/GetTestResultsByEmployee",
                         UserId = $"{token.IdEmployee}",
@@ -471,7 +471,7 @@ namespace Personal_Testing_System.Controllers
                         Params = $"EmployeeId={id.Id}"
                     });
 
-                    List<EmployeeResultModel>? results = ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+                    List<EmployeeResultModel>? results = await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
                     if (results != null && results.Count != 0)
                     {
                         return Ok(results);

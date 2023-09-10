@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Test")]
+[Table("Test", Schema = "fitpsuon_fitpsuon")]
 public partial class Test
 {
     [Key]

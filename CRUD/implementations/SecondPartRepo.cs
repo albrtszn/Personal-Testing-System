@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,36 +18,43 @@ namespace CRUD.implementations
         {
             this.context = _context;
         }
-        public void DeleteSecondPartById(int id)
+        public async Task<bool> DeleteSecondPartById(int id)
         {
-            context.SecondParts.Remove(GetAllSecondParts().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.SecondParts.Remove((await GetAllSecondParts()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<SecondPart> GetAllSecondParts()
+        public async Task<List<SecondPart>> GetAllSecondParts()
         {
-            return context.SecondParts.ToList();
+            return await context.SecondParts.ToListAsync();
         }
 
-        public SecondPart GetSecondPartById(int id)
+        public async Task<SecondPart> GetSecondPartById(int id)
         {
-            return GetAllSecondParts().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.SecondParts.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveSecondPart(SecondPart SecondPartToSave)
+        public async Task<bool> SaveSecondPart(SecondPart SecondPartToSave)
         {
-            SecondPart? sp = GetSecondPartById(SecondPartToSave.Id);
+            SecondPart? sp = await GetSecondPartById(SecondPartToSave.Id);
+            //SecondPart? SecondPart = await context.SecondParts.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(SecondPartToSave.Id));
             if (sp != null && SecondPartToSave.Id != 0)
             {
-                //context.SecondParts.Update(SecondPartToSave);
+                /*context.SecondParts.Entry(SecondPartToSave).State = EntityState.Detached;
+                context.Set<SecondPart>().Update(SecondPartToSave);*/
                 sp.Text = SecondPartToSave.Text;
                 sp.IdFirstPart = SecondPartToSave.IdFirstPart;
+
+                await context.SaveChangesAsync();
             }
             else
             {
-                context.SecondParts.Add(SecondPartToSave);
+                await context.SecondParts.AddAsync(SecondPartToSave);
+                await context.SaveChangesAsync();
+                return false;
             }
-            context.SaveChanges();
+            return true;
         }
     }
 }

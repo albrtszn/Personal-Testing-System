@@ -1,33 +1,34 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
 
 namespace Personal_Testing_System.Services
 {
     public class QuestionTypeService
     {
-        private IQuestionTypeRepo questionTypeRepo;
+        private IQuestionTypeRepo QuestionTypeRepo;
         public QuestionTypeService(IQuestionTypeRepo _questionTypeRepo)
         {
-            this.questionTypeRepo = _questionTypeRepo;
+            this.QuestionTypeRepo = _questionTypeRepo;
         }
-        public void DeleteQuestionTypeById(int id)
+        public async Task<bool> DeleteQuestionTypeById(int id)
         {
-            questionTypeRepo.DeleteQuestionTypeById(id);
-        }
-
-        public List<QuestionType> GetAllQuestionTypes()
-        {
-            return questionTypeRepo.GetAllQuestionTypes();
+            return await QuestionTypeRepo.DeleteQuestionTypeById(id);
         }
 
-        public QuestionType GetQuestionTypeById(int id)
+        public async Task<List<QuestionType>> GetAllQuestionTypes()
         {
-            return questionTypeRepo.GetQuestionTypeById(id);
+            return await QuestionTypeRepo.GetAllQuestionTypes();
         }
 
-        public void SaveQuestionType(QuestionType QuestionTypeToSave)
+        public async Task<QuestionType> GetQuestionTypeById(int id)
         {
-            questionTypeRepo.SaveQuestionType(QuestionTypeToSave);
+            return await QuestionTypeRepo.GetQuestionTypeById(id);
+        }
+
+        public async Task<bool> SaveQuestionType(QuestionType QuestionTypeToSave)
+        {
+            return await QuestionTypeRepo.SaveQuestionType(QuestionTypeToSave);
         }
     }
 }

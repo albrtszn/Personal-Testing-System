@@ -7,10 +7,10 @@ namespace Personal_Testing_System.Services
 {
     public class EmployeeMatchingService
     {
-        private IEmployeeMatchingRepo employeeMatchingRepo;
+        private IEmployeeMatchingRepo EmployeeMatchingRepo;
         public EmployeeMatchingService(IEmployeeMatchingRepo _employeeMatchingRepo)
         {
-            this.employeeMatchingRepo = _employeeMatchingRepo;
+            this.EmployeeMatchingRepo = _employeeMatchingRepo;
         }
 
         public EmployeeMatching ConvertToEmployeeMatching(EmployeeMatchingDto dto)
@@ -35,48 +35,50 @@ namespace Personal_Testing_System.Services
             };
         }
 
-        public void DeleteEmployeeMatchingById(int id)
+        public async Task<bool> DeleteEmployeeMatchingById(int id)
         {
-            employeeMatchingRepo.DeleteEmployeeMatchingById(id);
+            return await EmployeeMatchingRepo.DeleteEmployeeMatchingById(id);
         }
 
-        public void DeleteEmployeeMatchingByResult(string idResult)
+        public async Task<bool> DeleteEmployeeMatchingByResult(string idResult)
         {
-            List<EmployeeMatching> list = GetAllEmployeeMatchings();
+            List<EmployeeMatching> list = await GetAllEmployeeMatchings();
             foreach (EmployeeMatching match in list)
             {
                 if (match.IdResult.Equals(idResult))
                 {
-                    DeleteEmployeeMatchingById(match.Id);
+                    await DeleteEmployeeMatchingById(match.Id);
                 }
             }
+            return true;
         }
 
-        public List<EmployeeMatching> GetAllEmployeeMatchings()
+        public async Task<List<EmployeeMatching>> GetAllEmployeeMatchings()
         {
-            return employeeMatchingRepo.GetAllEmployeeMatchings();
+            return await EmployeeMatchingRepo.GetAllEmployeeMatchings();
         }
 
-        public List<EmployeeMatchingDto> GetAllEmployeeMatchingDtos()
+        public async Task<List<EmployeeMatchingDto>> GetAllEmployeeMatchingDtos()
         {
-            List<EmployeeMatchingDto> list = new List<EmployeeMatchingDto>();
-            GetAllEmployeeMatchings().ForEach(x => list.Add(ConvertToEmployeeMatchingDto(x)));
-            return list;
+            List<EmployeeMatchingDto> EmployeeMatchings = new List<EmployeeMatchingDto>();
+            List<EmployeeMatching> list = await EmployeeMatchingRepo.GetAllEmployeeMatchings();
+            list.ForEach(x => EmployeeMatchings.Add(ConvertToEmployeeMatchingDto(x)));
+            return EmployeeMatchings;
         }
 
-        public EmployeeMatching GetEmployeeMatchingById(int id)
+        public async Task<EmployeeMatching> GetEmployeeMatchingById(int id)
         {
-            return employeeMatchingRepo.GetEmployeeMatchingById(id);
+            return await EmployeeMatchingRepo.GetEmployeeMatchingById(id);
         }
 
-        public EmployeeMatchingDto GetEmployeeMatchingDtoById(int id)
+        public async Task<EmployeeMatchingDto> GetEmployeeMatchingDtoById(int id)
         {
-            return ConvertToEmployeeMatchingDto(employeeMatchingRepo.GetEmployeeMatchingById(id));
+            return ConvertToEmployeeMatchingDto(await EmployeeMatchingRepo.GetEmployeeMatchingById(id));
         }
 
-        public void SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave)
+        public async Task<bool> SaveEmployeeMatching(EmployeeMatching EmployeeMatchingToSave)
         {
-            employeeMatchingRepo.SaveEmployeeMatching(EmployeeMatchingToSave);
+            return await EmployeeMatchingRepo.SaveEmployeeMatching(EmployeeMatchingToSave);
         }
     }
 }

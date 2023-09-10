@@ -1,6 +1,8 @@
 ﻿using CRUD.interfaces;
 using DataBase.Repository;
 using DataBase.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,26 +19,28 @@ namespace CRUD.implementations
             this.context = _context;
         }
 
-        public void DeleteQuestionTypeById(int id)
+        public async Task<bool> DeleteQuestionTypeById(int id)
         {
-            context.QuestionTypes.Remove(GetAllQuestionTypes().FirstOrDefault(x => x.Id.Equals(id)));
-            context.SaveChanges();
+            context.QuestionTypes.Remove((await GetAllQuestionTypes()).FirstOrDefault(x => x.Id.Equals(id)));
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public List<QuestionType> GetAllQuestionTypes()
+        public async Task<List<QuestionType>> GetAllQuestionTypes()
         {
-            return context.QuestionTypes.ToList();
+            return await context.QuestionTypes.ToListAsync();
         }
 
-        public QuestionType GetQuestionTypeById(int id)
+        public async Task<QuestionType> GetQuestionTypeById(int id)
         {
-            return GetAllQuestionTypes().FirstOrDefault(x => x.Id.Equals(id));
+            return await context.QuestionTypes.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public void SaveQuestionType(QuestionType QuestionTypeToSave)
+        public async Task<bool> SaveQuestionType(QuestionType QuestionTypeToSave)
         {
-            context.QuestionTypes.Add(QuestionTypeToSave);
-            context.SaveChanges();
+            await context.QuestionTypes.AddAsync(QuestionTypeToSave);
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

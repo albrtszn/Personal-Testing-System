@@ -672,7 +672,113 @@ Authorization(header): xxxxxxxxxxxxx
 - Request <- FormData contains files ans [AddTestPostModel](Personal-Testing-System/Models/AddPostTestModel.cs):
 ```
 files    /D:/Wallpapers/16220688790371.jpg
-Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
+Test
+{
+  "Name": "sample Test",
+  "Weight" : 22,
+  "CompetenceId" : 1,
+  "Description" : "sample Description",
+  "Instruction" : "sample Instruction",
+  "IdTestType": 1,
+  "Questions": [
+    {
+      "Text": "sample Question1",
+      "IdQuestionType": 1,
+      "Answers": [
+        {
+            "Text" : "Example answer1.1",
+			"Weight" : 5,
+            "Correct" : true
+        },
+        {
+            "Text" : "Example answer1.2",
+			"Weight" : 5,
+            "Correct" : false
+        },
+        {
+            "Text" : "Example answer1.3",
+			"Weight" : 5,
+            "Correct" : false
+        },
+        {
+            "Text" : "Example answer1.4",
+			"Weight" : 5,
+            "Correct" : false
+        }
+      ]
+    },
+    {
+      "Text": "Example question2?",
+      "IdQuestionType": 2,
+      "Answers": [
+        {
+            "Text" : "Example answer2.1",
+			"Weight" : 5,
+            "Correct" : true
+        },
+        {
+            "Text" : "Example answer2.2",
+			"Weight" : 5,
+            "Correct" : true
+        },
+        {
+            "Text" : "Example answer2.3",
+			"Weight" : 5,
+            "Correct" : true
+        },
+        {
+            "Text" : "Example answer2.4",
+			"Weight" : 5,
+            "Correct" : true
+        }
+      ]
+    },
+    {
+      "Text": "Example question3?",
+      "IdQuestionType": 3,
+      "Answers": [
+        {
+            "FirstPartText" : "Example answer3.1.1",
+            "SecondPartText" : "Example answer3.1.2"
+        },
+        {
+            "FirstPartText" : "Example answer3.2.1",
+            "SecondPartText" : "Example answer3.2.2"
+        },
+        {
+            "FirstPartText" : "Example answer3.3.1",
+            "SecondPartText" : "Example answer3.3.2"
+        },
+        {
+            "FirstPartText" : "Example answer3.4.1",
+            "SecondPartText" : "Example answer3.4.2"
+        }
+      ]
+    },
+    {
+      "Text": "Example question4?",
+      "IdQuestionType": 4,
+      "Answers": [
+        {
+            "Text" : "Example first",
+            "Number" : 1
+        },
+        {
+            "Text" : "Example second",
+            "Number" : 3
+        },
+        {
+            "Text" : "Example third",
+            "Number" : 4
+        },
+        {
+            "Text" : "Example fourth",
+            "Number" : 2
+        }
+      ]
+    }
+  ]
+}
 ```
 - Response -> status message.
 19. Post https://localhost:7273/admin-api/GetPdfTest.

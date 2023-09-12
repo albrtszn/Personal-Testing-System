@@ -802,7 +802,112 @@ Test
 - Request <- FormData contains files and [UpdateTestPostModel](Personal-Testing-System/Models/UpdateTestPostModel.cs):
 ```
 files    /D:/Wallpapers/16220688790371.jpg
-Test    { "Name": "Image Test", "CompetenceId" : 1, "IdTestType": 1, "Questions": [ { "Text": "Example Question1", "IdQuestionType": 1, "ImagePath" : "16220688790371.jpg", "Answers": [ { "Text" : "Example answer1.1", "Correct" : true }, { "Text" : "Example answer1.2", "Correct" : false } ] }, { "Text": "Example question2", "IdQuestionType": 2, "Answers": [ { "Text" : "Example answer2.1", "Correct" : true }, { "Text" : "Example answer2.2", "Correct" : true } ] }, { "Text": "Example question3", "IdQuestionType": 3, "Answers": [ { "FirstPartText" : "Example answer3.1", "SecondPartText" : "Example answer3.1" }, { "FirstPartText" : "Example answer3.2", "SecondPartText" : "Example answer3.2" } ] }, { "Text": "Example question4", "IdQuestionType": 4, "Answers": [ { "Text" : "Example first", "Number" : 1 }, { "Text" : "Example second", "Number" : 2 }, { "Text" : "Example third", "Number" : 3 } ] } ] }
+Test    
+{
+    "Id": "a736b797-19a6-4828-8a7c-e01ca0133be1",
+    "Name": "First Test",
+    "CompetenceId": 1,
+    "Questions": [
+        {
+            "Id": "73bd8680-5ac9-44a9-92b8-f3469fc224a1",
+            "Text": "Example question2?",
+            "ImagePath": null,
+            "IdQuestionType": 2,
+            "Answers": [
+                {
+                    "IdAnswer": 11,
+                    "Text": "Example answer2.1",
+                    "IdQuestion": "73bd8680-5ac9-44a9-92b8-f3469fc224a1",
+                    "Correct": true,
+                    "ImagePath": null
+                },
+                {
+                    "IdAnswer": 12,
+                    "Text": "Example answer2.2",
+                    "IdQuestion": "73bd8680-5ac9-44a9-92b8-f3469fc224a1",
+                    "Correct": true,
+                    "ImagePath": null
+                }
+            ]
+        },
+        {
+            "Id": "7f8ece2e-8c0a-477b-b62d-bff61a097282",
+            "Text": "Example question4?",
+            "ImagePath": null,
+            "IdQuestionType": 4,
+            "Answers": [
+                {
+                    "IdSubsequence": 7,
+                    "Text": "Example first",
+                    "IdQuestion": "7f8ece2e-8c0a-477b-b62d-bff61a097282",
+                    "Number": 1
+                },
+                {
+                    "IdSubsequence": 8,
+                    "Text": "Example second",
+                    "IdQuestion": "7f8ece2e-8c0a-477b-b62d-bff61a097282",
+                    "Number": 2
+                },
+                {
+                    "IdSubsequence": 9,
+                    "Text": "Example third",
+                    "IdQuestion": "7f8ece2e-8c0a-477b-b62d-bff61a097282",
+                    "Number": 3
+                }
+            ]
+        },
+        {
+            "Id": "a252feaa-1ae7-4004-995b-44b95ed86c24",
+            "Text": "Example question3?",
+            "ImagePath": null,
+            "IdQuestionType": 3,
+            "Answers": [
+                {
+                    "IdFirstPart": "2602287c-1abf-46a4-bbd8-583ea30ff588",
+                    "Text": "Example answer3.1",
+                    "IdQuestion": "a252feaa-1ae7-4004-995b-44b95ed86c24"
+                },
+                {
+                    "IdFirstPart": "334cbf82-ddbe-479e-8166-a6934a91e7f0",
+                    "Text": "Example answer3.2",
+                    "IdQuestion": "a252feaa-1ae7-4004-995b-44b95ed86c24"
+                },
+                {
+                    "IdSecondPart": 5,
+                    "Text": "Example answer3.1",
+                    "IdFirstPart": "2602287c-1abf-46a4-bbd8-583ea30ff588"
+                },
+                {
+                    "IdSecondPart": 6,
+                    "Text": "Example answer3.2",
+                    "IdFirstPart": "334cbf82-ddbe-479e-8166-a6934a91e7f0"
+                }
+            ]
+        },
+        {
+            "Id": "d4c6b3d8-89e3-47ab-b03d-4711a632bcff",
+            "Text": "Example Question1?",
+            "ImagePath": "97356a1b-d341-4c07-bfed-206ca3e659e4.jpg",
+            "IdQuestionType": 1,
+            "Answers": [
+                {
+                    "IdAnswer": 9,
+                    "Text": "Example answer1.1",
+                    "IdQuestion": "d4c6b3d8-89e3-47ab-b03d-4711a632bcff",
+                    "Correct": true,
+                    "ImagePath": "60289b36-4269-4d00-b8c2-39f8dc436d38.jpg"
+                },
+                {
+                    "IdAnswer": 10,
+                    "Text": "Example answer1.2",
+                    "IdQuestion": "d4c6b3d8-89e3-47ab-b03d-4711a632bcff",
+                    "Correct": false,
+                    "ImagePath": "91847a30-10c2-4d9e-a7dd-e9457e42f0d2.jpg"
+                }
+            ]
+        }
+    ]
+}
 ```
 - Response -> :
 ```

@@ -19,7 +19,7 @@ namespace Personal_Testing_System.Services
             return new Competence
             {
                 Id = subDto.Id.Value,
-                Name = subDto.Name
+                Name = subDto.Name,
             };
         }
 

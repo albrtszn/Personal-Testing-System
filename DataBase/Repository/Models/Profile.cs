@@ -6,17 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("QuestionType")]
-public partial class QuestionType
+[Table("Profile")]
+public partial class Profile
 {
     [Key]
     [Column("id")]
     public int Id { get; set; }
 
     [Column("name")]
-    [StringLength(100)]
+    [StringLength(50)]
     public string? Name { get; set; }
 
-    [InverseProperty("IdQuestionTypeNavigation")]
-    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+    [InverseProperty("IdProfileNavigation")]
+    public virtual ICollection<GroupPosition> GroupPositions { get; set; } = new List<GroupPosition>();
 }

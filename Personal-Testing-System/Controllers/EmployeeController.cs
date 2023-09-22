@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Personal_Testing_System.Services;
 using Newtonsoft.Json;
 using Personal_Testing_System.DTOs;
@@ -60,7 +59,7 @@ namespace Personal_Testing_System.Controllers
         [HttpGet("TestGetEmployeeTokens")]
         public async Task<IActionResult> TestGetEmployeeTokens()
         {
-            return Ok(ms.TokenEmployee.GetAllTokenEmployees());
+            return Ok(await ms.TokenEmployee.GetAllTokenEmployees());
         }
 
         [HttpPost("Login")]
@@ -221,6 +220,8 @@ namespace Personal_Testing_System.Controllers
                     if (test != null)
                     {
                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                        questions.OrderBy(x => x.Number);
+
 
                         TestModel testDto = new TestModel
                         {
@@ -229,7 +230,7 @@ namespace Personal_Testing_System.Controllers
                             Weight = test.Weight,
                             Description = test.Description,
                             Instruction = test.Instruction,
-                            Competence = await ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                            CompetenceId = test.IdCompetence.Value,
                             Questions = new List<QuestionModel>()
                         };
 
@@ -241,6 +242,8 @@ namespace Personal_Testing_System.Controllers
                                 IdQuestionType = quest.IdQuestionType,
                                 Text = quest.Text,
                                 Number = Convert.ToInt32(quest.Number),
+                                //todo quest weight
+                                //Weight = quest.Weight,
                                 Answers = new List<object>() { }
                             };
                             if (!quest.ImagePath.IsNullOrEmpty())
@@ -266,7 +269,8 @@ namespace Personal_Testing_System.Controllers
                                         Number = answerDto.Number,
                                         IdQuestion = answerDto.IdQuestion,
                                         Correct = answerDto.Correct,
-                                        Weight = answerDto.Weight
+                                        //todo quest.weight
+                                        //Weight = answerDto.Weight
                                     };
                                     if (!answerDto.ImagePath.IsNullOrEmpty())
                                     {
@@ -338,18 +342,17 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                         Params = $"TestId={testResultModel.TestId}"
                     });
-                    if (await ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId) == null)
+                    TestPurpose? purpose = await ms.TestPurpose.GetTestPurposeByEmployeeTestId(testResultModel.TestId, testResultModel.EmployeeId);
+                    //todo datetime purpose 
+                    /*if ( DateOnly.FromDateTime(purpose.DatatimePurpose.Value) < DateOnly.Parse(testResultModel.StartTime) )
+                        return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });*/
+
+                    if (purpose == null )
                         return BadRequest(new { message = "Ошибка. Тест уже выполнен или не назначен" });
 
-                    logger.LogInformation($"/user-api/PushTest testId={testResultModel.TestId} emmployeeId={testResultModel.EmployeeId}");
-                    await ms.Log.SaveLog(new Log
-                    {
-                        UrlPath = "user-api/GetTestResultsByEmployee",
-                        UserId = $"{testResultModel.EmployeeId}",
-                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                        DataTime = DateTime.Now,
-                        Params = $"TestId={testResultModel.TestId}, StartTime={testResultModel.StartTime}, EndTime={testResultModel.EndTime}"
-                    });
+                    Test? testCheck = await ms.Test.GetTestById(testResultModel.TestId);
+                    if (testCheck == null)
+                        return NotFound(new { message = "Ошибка. Такого теста нет"});
 
                     string resultId = Guid.NewGuid().ToString();
                     await ms.Result.SaveResult(new Result
@@ -365,76 +368,75 @@ namespace Personal_Testing_System.Controllers
                     int score = 0;
                     foreach (QuestionResultModel question in testResultModel.Questions)
                     {
-                        int countOfAnswers = 0;
-                        int countOfCorrectAnswer = 0;
-
-                        foreach (JsonElement answer in question.Answers)
+                        //todo question score
+                        Question? quest= await ms.Question.GetQuestionById(question.QuestionId);
+                        if (quest != null)
                         {
-                            countOfAnswers++;
-
-                            AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
-                            SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
-                            FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
-
-                            if (answerModel != null && answerModel.AnswerId.HasValue)
+                            foreach (JsonElement answer in question.Answers)
                             {
-                                logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
+                                AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
+                                SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
+                                FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
 
-                                if ((await ms.Answer.GetAnswerById(answerModel.AnswerId.Value)).Correct.Value)
+                                if (answerModel != null && answerModel.AnswerId.HasValue)
                                 {
-                                    countOfCorrectAnswer++;
+                                    logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
+
+                                    Answer answerCheck = await ms.Answer.GetAnswerById(answerModel.AnswerId.Value);
+                                    if (answerCheck.Correct.Value)
+                                    {
+                                        score += answerCheck.Weight.Value;
+                                    }
+
+                                    await ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                                    {
+                                        IdResult = resultId,
+                                        IdAnswer = answerModel.AnswerId
+                                    });
                                 }
-
-                                await ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
+                                if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
                                 {
-                                    IdResult = resultId,
-                                    IdAnswer = answerModel.AnswerId
-                                });
-                            }
-                            if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
-                            {
-                                logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
+                                    logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
 
-                                if ((await ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value)).Number == (subsequenceModel.Number.Value))
-                                {
-                                    countOfCorrectAnswer++;
+                                    if ((await ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value)).Number == (subsequenceModel.Number.Value))
+                                    {
+                                        //todo quest dcore
+                                        //score += quest.Weight.Value;
+                                    }
+
+                                    await ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                                    {
+                                        IdSubsequence = subsequenceModel.SubsequenceId.Value,
+                                        IdResult = resultId,
+                                        Number = subsequenceModel.Number.Value,
+                                    });
                                 }
-
-                                await ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
+                                if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
                                 {
-                                    IdSubsequence = subsequenceModel.SubsequenceId.Value,
-                                    IdResult = resultId,
-                                    Number = subsequenceModel.Number.Value,
-                                });
-                            }
-                            if (!string.IsNullOrEmpty(fsPartModel.FirstPartId) && fsPartModel.SecondPartId.HasValue && fsPartModel != null)
-                            {
-                                logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
+                                    logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
 
-                                if ((await ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value)).IdFirstPart.Equals(fsPartModel.FirstPartId))
-                                {
-                                    countOfCorrectAnswer++;
+                                    if ((await ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value)).IdFirstPart.Equals(fsPartModel.FirstPartId))
+                                    {
+                                        //todo quest score
+                                       //score += quest.Weight.Value;
+                                    }
+
+                                    await ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
+                                    {
+                                        IdFirstPart = fsPartModel.FirstPartId,
+                                        IdSecondPart = fsPartModel.SecondPartId,
+                                        IdResult = resultId
+                                    });
                                 }
-
-                                await ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
-                                {
-                                    IdFirstPart = fsPartModel.FirstPartId,
-                                    IdSecondPart = fsPartModel.SecondPartId,
-                                    IdResult = resultId
-                                });
                             }
-                        }
-                        if (countOfAnswers == countOfCorrectAnswer)
-                        {
-                            score++;
                         }
                     }
                     await ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
                     {
                         IdResult = resultId,
                         IdEmployee = testResultModel.EmployeeId,
-                        ScoreFrom = score, //???
-                        ScoreTo = testResultModel.Questions.Count
+                        ScoreFrom = score, 
+                        ScoreTo = testCheck.Weight.Value
                     });
 
                     await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);

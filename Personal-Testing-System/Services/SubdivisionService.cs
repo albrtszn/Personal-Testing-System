@@ -20,7 +20,8 @@ namespace Personal_Testing_System.Services
             return new Subdivision
             {
                 Id = subDto.Id.Value,
-                Name = subDto.Name
+                Name = subDto.Name,
+                IdGroupPositions = subDto.IdGroupPositions.Value
             };
         }
 
@@ -29,7 +30,8 @@ namespace Personal_Testing_System.Services
             return new SubdivisionDto
             {
                 Id = sub.Id,
-                Name = sub.Name
+                Name = sub.Name,
+                IdGroupPositions = sub.IdGroupPositions.Value
             };
         }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Test", Schema = "fitpsuon_fitpsuon")]
+[Table("Test")]
 public partial class Test
 {
     [Key]
@@ -21,16 +21,19 @@ public partial class Test
     [Column("weight")]
     public int? Weight { get; set; }
 
+    [Column("idCompetence")]
+    public int? IdCompetence { get; set; }
+
     [Column("description")]
-    [StringLength(500)]
+    [StringLength(600)]
     public string? Description { get; set; }
 
     [Column("instruction")]
     [StringLength(500)]
     public string? Instruction { get; set; }
 
-    [Column("idCompetence")]
-    public int? IdCompetence { get; set; }
+    [InverseProperty("IdTestNavigation")]
+    public virtual ICollection<CompetenciesForGroup> CompetenciesForGroups { get; set; } = new List<CompetenciesForGroup>();
 
     [ForeignKey("IdCompetence")]
     [InverseProperty("Tests")]

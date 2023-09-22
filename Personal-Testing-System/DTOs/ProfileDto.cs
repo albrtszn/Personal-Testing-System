@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Personal_Testing_System.DTOs
 {
-    public class SubdivisionDto
+    public class ProfileDto
     {
         public int? Id { get; set; }
         public string? Name { get; set; }
-        public int? IdGroupPositions { get; set; }
     }
 }

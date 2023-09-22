@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DataBase.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SixLabors.ImageSharp;
 
 namespace DataBase.Repository;
 
@@ -28,6 +27,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<Competence> Competences { get; set; }
 
+    public virtual DbSet<CompetenciesForGroup> CompetenciesForGroups { get; set; }
+
     public virtual DbSet<Employee> Employees { get; set; }
 
     public virtual DbSet<EmployeeAnswer> EmployeeAnswers { get; set; }
@@ -40,7 +41,11 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<FirstPart> FirstParts { get; set; }
 
+    public virtual DbSet<GroupPosition> GroupPositions { get; set; }
+
     public virtual DbSet<Log> Logs { get; set; }
+
+    public virtual DbSet<Profile> Profiles { get; set; }
 
     public virtual DbSet<Question> Questions { get; set; }
 
@@ -68,197 +73,227 @@ public partial class EFDbContext : DbContext
             builder => builder.EnableRetryOnFailure(5,
                 TimeSpan.FromSeconds(5), null)
             );
-    //=> optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PersonalTestingSystemBD;User ID=test;Password=password;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasDefaultSchema("fitpsuon_fitpsuon");
+            .HasDefaultSchema("fitpsuon_fitpsuon")
+            .UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
         modelBuilder.Entity<Admin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Admin__3213E83F4098F84F");
+            entity.HasKey(e => e.Id).HasName("PK__Admin__3213E83F6201C4DF");
 
             entity.HasOne(d => d.IdSubdivisionNavigation).WithMany(p => p.Admins)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__Admin__idSubdivi__5EBF139D");
+                .HasConstraintName("FK__Admin__idSubdivi__2610A626");
         });
 
         modelBuilder.Entity<Answer>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Answer__3213E83FB3CAEF19");
+            entity.HasKey(e => e.Id).HasName("PK__Answer__3213E83FB82710A7");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.Answers)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__Answer__idQuesti__5FB337D6");
+                .HasConstraintName("FK__Answer__idQuesti__14E61A24");
         });
 
         modelBuilder.Entity<Competence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83FBED90199");
+            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F7021A3A8");
+        });
+
+        modelBuilder.Entity<CompetenciesForGroup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F9D003187");
+
+            entity.HasOne(d => d.IdGroupPositionsNavigation).WithMany(p => p.CompetenciesForGroups)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__Competenc__idGro__6501FCD8");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.CompetenciesForGroups)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__Competenc__idTes__640DD89F");
         });
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F91588648");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F898AAB26");
 
             entity.HasOne(d => d.IdSubdivisionNavigation).WithMany(p => p.Employees)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__Employee__idSubd__60A75C0F");
+                .HasConstraintName("FK__Employee__idSubd__2334397B");
         });
 
         modelBuilder.Entity<EmployeeAnswer>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F7CD98780");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F196BECC9");
 
             entity.HasOne(d => d.IdAnswerNavigation).WithMany(p => p.EmployeeAnswers)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeA__idAns__619B8048");
+                .HasConstraintName("FK__EmployeeA__idAns__2F9A1060");
 
             entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeAnswers)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeA__idRes__628FA481");
+                .HasConstraintName("FK__EmployeeA__idRes__308E3499");
         });
 
         modelBuilder.Entity<EmployeeMatching>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FCC18829C");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F9284DFCB");
 
-            entity.HasOne(d => d.IdFirstPartNavigation).WithMany(p => p.EmployeeMatchings).HasConstraintName("FK__EmployeeM__idFir__6383C8BA");
+            entity.HasOne(d => d.IdFirstPartNavigation).WithMany(p => p.EmployeeMatchings).HasConstraintName("FK__EmployeeM__idFir__373B3228");
 
             entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeMatchings)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeM__idRes__6477ECF3");
+                .HasConstraintName("FK__EmployeeM__idRes__39237A9A");
 
             entity.HasOne(d => d.IdSecondPartNavigation).WithMany(p => p.EmployeeMatchings)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeM__idSec__656C112C");
+                .HasConstraintName("FK__EmployeeM__idSec__382F5661");
         });
 
         modelBuilder.Entity<EmployeeResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FDDEABBF1");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FC5E5B15B");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.EmployeeResults)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeR__idEmp__66603565");
+                .HasConstraintName("FK__EmployeeR__idEmp__53D770D6");
 
-            entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeResults).HasConstraintName("FK__EmployeeR__idRes__6754599E");
+            entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeResults).HasConstraintName("FK__EmployeeR__idRes__2BC97F7C");
         });
 
         modelBuilder.Entity<EmployeeSubsequence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83FCE7729C1");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F6BCDE496");
 
             entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.EmployeeSubsequences)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeS__idRes__68487DD7");
+                .HasConstraintName("FK__EmployeeS__idRes__345EC57D");
 
             entity.HasOne(d => d.IdSubsequenceNavigation).WithMany(p => p.EmployeeSubsequences)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__EmployeeS__idSub__693CA210");
+                .HasConstraintName("FK__EmployeeS__idSub__336AA144");
         });
 
         modelBuilder.Entity<FirstPart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__FirstPar__3213E83F7323025D");
+            entity.HasKey(e => e.Id).HasName("PK__FirstPar__3213E83F4F4BC206");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.FirstParts)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__FirstPart__idQue__6A30C649");
+                .HasConstraintName("FK__FirstPart__idQue__1A9EF37A");
+        });
+
+        modelBuilder.Entity<GroupPosition>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__GroupPos__3213E83FA42EB5C7");
+
+            entity.HasOne(d => d.IdProfileNavigation).WithMany(p => p.GroupPositions)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__GroupPosi__idPro__61316BF4");
         });
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Log__3213E83F4014BCC2");
+            entity.HasKey(e => e.Id).HasName("PK__Log__3213E83F84029BA4");
+        });
+
+        modelBuilder.Entity<Profile>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Profile__3213E83F54074B93");
         });
 
         modelBuilder.Entity<Question>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83F0539FF14");
+            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83F5E20152F");
 
             entity.HasOne(d => d.IdQuestionTypeNavigation).WithMany(p => p.Questions)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__Question__idQues__6B24EA82");
+                .HasConstraintName("FK__Question__idQues__11158940");
 
-            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.Questions).HasConstraintName("FK__Question__idTest__6C190EBB");
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.Questions).HasConstraintName("FK__Question__idTest__1209AD79");
         });
 
         modelBuilder.Entity<QuestionType>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83FFC77F92C");
+            entity.HasKey(e => e.Id).HasName("PK__Question__3213E83F68F35AEE");
         });
 
         modelBuilder.Entity<Result>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Result__3213E83FF962CA6F");
+            entity.HasKey(e => e.Id).HasName("PK__Result__3213E83F80B7C161");
 
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.Results)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__Result__idTest__6D0D32F4");
+                .HasConstraintName("FK__Result__idTest__52E34C9D");
         });
 
         modelBuilder.Entity<SecondPart>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__SecondPa__3213E83F9AB60D6F");
+            entity.HasKey(e => e.Id).HasName("PK__SecondPa__3213E83FB06FDA90");
 
             entity.HasOne(d => d.IdFirstPartNavigation).WithOne(p => p.SecondPart)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__SecondPar__idFir__6E01572D");
+                .HasConstraintName("FK__SecondPar__idFir__1E6F845E");
         });
 
         modelBuilder.Entity<Subdivision>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subdivis__3213E83F372D2E6F");
+            entity.HasKey(e => e.Id).HasName("PK__Subdivis__3213E83F4561AB6A");
+
+            entity.HasOne(d => d.IdGroupPositionsNavigation).WithMany(p => p.Subdivisions)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__Subdivisi__idGro__65F62111");
         });
 
         modelBuilder.Entity<Subsequence>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Subseque__3213E83FDD0E27FF");
+            entity.HasKey(e => e.Id).HasName("PK__Subseque__3213E83F6F5146E1");
 
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.Subsequences)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__Subsequen__idQue__6EF57B66");
+                .HasConstraintName("FK__Subsequen__idQue__17C286CF");
         });
 
         modelBuilder.Entity<Test>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Test__3213E83FB7A9A9E4");
+            entity.HasKey(e => e.Id).HasName("PK__Test__3213E83FA04FFFD0");
 
             entity.HasOne(d => d.IdCompetenceNavigation).WithMany(p => p.Tests)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__Test__idCompeten__6FE99F9F");
+                .HasConstraintName("FK__Test__idCompeten__0C50D423");
         });
 
         modelBuilder.Entity<TestPurpose>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TestPurp__3213E83F63BC33F5");
+            entity.HasKey(e => e.Id).HasName("PK__TestPurp__3213E83FBF4C816B");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TestPurposes)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__TestPurpo__idEmp__70DDC3D8");
+                .HasConstraintName("FK__TestPurpo__idEmp__3BFFE745");
 
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.TestPurposes)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__TestPurpo__idTes__71D1E811");
+                .HasConstraintName("FK__TestPurpo__idTes__3CF40B7E");
         });
 
         modelBuilder.Entity<TokenAdmin>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TokenAdm__3213E83FFC3C432A");
+            entity.HasKey(e => e.Id).HasName("PK__TokenAdm__3213E83F583A25D1");
 
             entity.HasOne(d => d.IdAdminNavigation).WithMany(p => p.TokenAdmins)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__TokenAdmi__idAdm__72C60C4A");
+                .HasConstraintName("FK__TokenAdmi__idAdm__40C49C62");
         });
 
         modelBuilder.Entity<TokenEmployee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TokenEmp__3213E83F3DC75482");
+            entity.HasKey(e => e.Id).HasName("PK__TokenEmp__3213E83FC9ED6F4B");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TokenEmployees)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK__TokenEmpl__idEmp__73BA3083");
+                .HasConstraintName("FK__TokenEmpl__idEmp__44952D46");
         });
 
         OnModelCreatingPartial(modelBuilder);

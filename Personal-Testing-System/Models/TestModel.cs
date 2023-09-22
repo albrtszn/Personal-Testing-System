@@ -10,7 +10,7 @@ namespace Personal_Testing_System.Models
         public int? Weight { get; set; }
         public string? Description { get; set; }
         public string? Instruction { get; set; }
-        public CompetenceDto? Competence { get; set; }
+        public int? CompetenceId { get; set; }
         public List<QuestionModel>? Questions { get; set; }
     }
 }

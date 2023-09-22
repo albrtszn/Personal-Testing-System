@@ -34,6 +34,9 @@ namespace Personal_Testing_System.Services
         private LogService logService;
         private TokenEmployeeService tokenEmployeeService;
         private TokenAdminService tokenAdminService;
+        private ProfileService profileService;
+        private GroupPositionService groupPositionService;
+        private CompetenciesForGroupService competenciesForGroupService;
         
         private IConfiguration config;
 
@@ -46,7 +49,7 @@ namespace Personal_Testing_System.Services
                        CompetenceService _competenceService, AdminService _adminService,
                        ResultService _resultService, EmployeeResultService _employeeResultService,
                        LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService,
-                       IConfiguration _config)
+                       ProfileService _profileService, GroupPositionService _groupPositionService, CompetenciesForGroupService _competenciesForGroupService, IConfiguration _config)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -68,6 +71,9 @@ namespace Personal_Testing_System.Services
             logService = _logService;
             tokenEmployeeService = _tokenEmployeeService;
             tokenAdminService = _tokenAdminService;
+            profileService = _profileService;
+            groupPositionService = _groupPositionService;
+            competenciesForGroupService = _competenciesForGroupService;
 
             config = _config;
         }
@@ -93,6 +99,9 @@ namespace Personal_Testing_System.Services
         public LogService Log { get { return logService; } }
         public TokenEmployeeService TokenEmployee { get { return tokenEmployeeService; } }
         public TokenAdminService TokenAdmin { get { return tokenAdminService; } }
+        public ProfileService Profile { get { return profileService; } }
+        public GroupPositionService GroupPosition { get { return groupPositionService; } }
+        public CompetenciesForGroupService CompetenciesForGroup { get { return competenciesForGroupService; } }
         /*
          *  Logic
          */

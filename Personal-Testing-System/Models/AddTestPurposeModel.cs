@@ -4,6 +4,6 @@
     {
         public string? IdEmployee { get; set; }
         public string? IdTest { get; set; }
-        public string? DatatimePurpose { get; set; }
+        //public string? DatatimePurpose { get; set; }
     }
 }

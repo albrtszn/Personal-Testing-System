@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("TokenAdmin", Schema = "fitpsuon_fitpsuon")]
-[Index("Token", Name = "UQ__TokenAdm__CA90DA7A4CA68350", IsUnique = true)]
+[Table("TokenAdmin")]
+[Index("Token", Name = "UQ__TokenAdm__CA90DA7AFF2E6790", IsUnique = true)]
 public partial class TokenAdmin
 {
     [Key]
@@ -22,11 +22,11 @@ public partial class TokenAdmin
     [StringLength(50)]
     public string? Token { get; set; }
 
-    [Column("issuingTime", TypeName = "datetime")]
-    public DateTime? IssuingTime { get; set; }
-
     [Column("state")]
     public bool? State { get; set; }
+
+    [Column("issuingTime", TypeName = "datetime")]
+    public DateTime? IssuingTime { get; set; }
 
     [ForeignKey("IdAdmin")]
     [InverseProperty("TokenAdmins")]

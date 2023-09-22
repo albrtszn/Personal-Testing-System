@@ -13,5 +13,6 @@ namespace CRUD.interfaces
         Task<Question> GetQuestionById(string id);
         Task<bool> SaveQuestion(Question QuestionToSave);
         Task<bool> DeleteQuestionById(string id);
+        Task<List<Question>> GetAllQuestionsByTestId(string testId);
     }
 }

@@ -6,29 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("TestPurpose")]
-public partial class TestPurpose
+[Table("CompetenciesForGroup")]
+public partial class CompetenciesForGroup
 {
     [Key]
     [Column("id")]
     public int Id { get; set; }
 
-    [Column("idEmployee")]
-    [StringLength(50)]
-    public string? IdEmployee { get; set; }
-
     [Column("idTest")]
     [StringLength(50)]
     public string? IdTest { get; set; }
 
-    [Column("datatimePurpose", TypeName = "datetime")]
-    public DateTime? DatatimePurpose { get; set; }
+    [Column("idGroupPositions")]
+    public int? IdGroupPositions { get; set; }
 
-    [ForeignKey("IdEmployee")]
-    [InverseProperty("TestPurposes")]
-    public virtual Employee? IdEmployeeNavigation { get; set; }
+    [ForeignKey("IdGroupPositions")]
+    [InverseProperty("CompetenciesForGroups")]
+    public virtual GroupPosition? IdGroupPositionsNavigation { get; set; }
 
     [ForeignKey("IdTest")]
-    [InverseProperty("TestPurposes")]
+    [InverseProperty("CompetenciesForGroups")]
     public virtual Test? IdTestNavigation { get; set; }
 }

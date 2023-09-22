@@ -12,7 +12,7 @@ namespace Personal_Testing_System.Services
         private EmployeeService employeeService;
         private TestService testService;
         public TestPurposeService(ITestPurposeRepo _testPurposeRepo, EmployeeService employeeService,
-                                  TestService testSercice)
+                                  TestService testService)
         {
             this.TestPurposeRepo = _testPurposeRepo;
             this.employeeService = employeeService;
@@ -125,7 +125,8 @@ namespace Personal_Testing_System.Services
             {
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
-                DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
+                DatatimePurpose = DateTime.Now
+                //DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
             return true;
         }
@@ -137,7 +138,8 @@ namespace Personal_Testing_System.Services
                 Id = purpose.Id.Value,
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
-                DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
+                DatatimePurpose = DateTime.Now
+                //DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
             return true;
         }

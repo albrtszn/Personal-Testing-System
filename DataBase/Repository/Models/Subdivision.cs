@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Subdivision", Schema = "fitpsuon_fitpsuon")]
+[Table("Subdivision")]
 public partial class Subdivision
 {
     [Key]
@@ -14,12 +14,19 @@ public partial class Subdivision
     public int Id { get; set; }
 
     [Column("name")]
-    [StringLength(100)]
+    [StringLength(120)]
     public string? Name { get; set; }
+
+    [Column("idGroupPositions")]
+    public int? IdGroupPositions { get; set; }
 
     [InverseProperty("IdSubdivisionNavigation")]
     public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
 
     [InverseProperty("IdSubdivisionNavigation")]
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+
+    [ForeignKey("IdGroupPositions")]
+    [InverseProperty("Subdivisions")]
+    public virtual GroupPosition? IdGroupPositionsNavigation { get; set; }
 }

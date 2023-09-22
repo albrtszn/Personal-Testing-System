@@ -1,6 +1,8 @@
 ﻿using DataBase;
 using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,9 +12,15 @@ using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using TheArtOfDev.HtmlRenderer.PdfSharp;
-using Xceed.Document.NET;
+using Wordroller;
+using Wordroller.Content.Images;
+using Wordroller.Content.Text;
 using Xceed.Words.NET;
+using static System.Collections.Specialized.BitVector32;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -47,44 +55,31 @@ namespace Personal_Testing_System.Controllers
         /*
          *  TEST METHODS
          */
-        [HttpPost("InitDB")]
-        public async Task<IActionResult> InitDB()
+        [HttpPost("InitAdminDB")]
+        public async Task<IActionResult> InitAdminDB()
         {
-            if (!(await ms.Subdivision.GetAllSubdivisions()).Any())
-            {
-                await ms.Subdivision.SaveSubdivision(new Subdivision
-                {
-                    Name = "Отдел кадров"
-                });
-
-                await ms.Subdivision.SaveSubdivision(new Subdivision
-                {
-                    Name = "Инженерный цех"
-                });
-            }
-            await ms.Admin.GetAllAdmins();
             if (!(await ms.Admin.GetAllAdmins()).Any())
             {
                 await ms.Admin.SaveAdmin(new Admin
                 {
                     Id = Guid.NewGuid().ToString(),
-                    FirstName = "Евгений",
-                    SecondName = "Жма",
-                    LastName = "Дворцов",
+                    FirstName = "Иван",
+                    SecondName = "Иванов",
+                    LastName = "Иванович",
                     Login = "admin",
                     Password = "password",
                     //DateOfBirth = DateOnly.Parse("01.01.2000"),
-                    IdSubdivision = (await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals("Отдел кадров")).Id
+                    //IdSubdivision = (await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals("Отдел кадров")).Id
                 });
             }
 
-            if (!(await ms.TestType.GetAllCompetences()).Any())
+            /*if (!(await ms.TestType.GetAllCompetences()).Any())
             {
                 await ms.TestType.SaveCompetence(new Competence
                 {
                     Name = "Оценка имеющихся компетенций"
                 });
-            }
+            }*/
 
             if (!(await ms.QuestionType.GetAllQuestionTypes()).Any())
             {
@@ -111,15 +106,44 @@ namespace Personal_Testing_System.Controllers
             return Ok();
         }
 
+        /*[HttpGet("TestGetWord")]
+        public async Task<IActionResult> TestGetWord()
+        {
+
+
+            WordDocument doc = new WordDocument(CultureInfo.GetCultureInfo("ru-ru"));
+            doc.Styles.DocumentDefaults.RunProperties.Font.Ascii = "Times New Roman";
+            doc.Styles.DocumentDefaults.RunProperties.Font.HighAnsi = "Times New Roman";
+
+            var section = doc.Body.Sections.First();
+            var paragraph = section.AppendParagraph();
+            paragraph.AppendText("sample text");
+            paragraph.AppendText("\n");
+
+            FileStream file = new FileStream("D:\\trash_collection\\2.jpg",FileMode.Open);
+            var image = doc.AddImage(file,KnownImageContentTypes.Jpg);
+            var picture = section.WrapImageIntoInlinePicture(image, "wordroller","",200,100);
+            paragraph.AppendPicture(picture);
+
+            byte[] res = null;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                doc.Save(ms);
+                res = ms.ToArray();
+            }
+
+            return File(res, "application/octet-stream", "sample.docx"); 
+        }*/
+
         [HttpGet("TestGetAdmins")]
         public async Task<IActionResult> TestGetAdmins()
         {
-            return Ok(ms.Admin.GetAllAdminDtos());
+            return Ok(await ms.Admin.GetAllAdminDtos());
         }
         [HttpGet("TestGetAdminTokens")]
         public async Task<IActionResult> TestGetAdminTokens()
         {
-            return Ok(ms.TokenAdmin.GetAllTokenAdmins());
+            return Ok(await ms.TokenAdmin.GetAllTokenAdmins());
         }
 
         [HttpPost("DeleteEmployeeTokens")]
@@ -224,6 +248,288 @@ namespace Personal_Testing_System.Controllers
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
+        /*
+        *  Profile
+        */
+        [HttpGet("GetProfiles")]
+        public async Task<IActionResult> GetProfiles([FromHeader] string Authorization)
+        {
+            logger.LogInformation($"/admin-api/GetProfiles");
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetProfiles : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetProfiles",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.Profile.GetAllProfileDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("AddProfile")]
+        public async Task<IActionResult> AddProfile([FromHeader] string Authorization, [FromBody] AddProfileModel? profile)
+        {
+            if (!Authorization.IsNullOrEmpty() && profile != null && !string.IsNullOrEmpty(profile.Name) )
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    if ((await ms.Profile.GetAllProfileDtos()).Find(x => x.Name.Equals(profile.Name)) != null)
+                    {
+                        return BadRequest(new { message = "Ошибка. Такой профиль уже есть" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddProfile :name={profile.Name}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddProfile",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Имя group={profile.Name}"
+                        });
+                        await ms.Profile.SaveProfile(profile);
+                        return Ok(new { message = "Профиль добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile([FromHeader] string Authorization, [FromBody] ProfileDto? profile)
+        {
+            if (!Authorization.IsNullOrEmpty() && profile != null && profile.Id != 0 &&
+                !string.IsNullOrEmpty(profile.Name))
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    if (await ms.Profile.GetProfileById(profile.Id.Value) == null)
+                    {
+                        return BadRequest(new { message = "Ошибка. Такой группы нет" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateProfile :id={profile.Id}, name={profile.Name}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateProfile",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id профиля={profile.Id}, названия профиля={profile.Name}"
+                        });
+                        await ms.Profile.SaveProfile(profile);
+                        return Ok(new { message = "Профиль обновлен" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("DeleteProfile")]
+        public async Task<IActionResult> DeleteProfile([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if ((await ms.Profile.GetProfileById(id.Id.Value)) != null)
+                        {
+                            await ms.Log.SaveLog(new Log
+                            {
+                                UrlPath = "admin-api/DeleteProfile",
+                                UserId = token.IdAdmin,
+                                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                                DataTime = DateTime.Now,
+                                Params = $"Id профиля={id.Id}"
+                            });
+                            await ms.Profile.DeleteProfileById(id.Id.Value);
+                            return Ok(new { message = "Профиль удалена" });
+                        }
+                        else
+                        {
+                            return NotFound(new { message = "Ошибка. Такого профиля не существует" });
+                        }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
+         *  GroupPosition
+         */
+        [HttpGet("GetGroupPositions")]
+        public async Task<IActionResult> GetGroupPositions([FromHeader] string Authorization)
+        {
+            logger.LogInformation($"/admin-api/GetGroupPositions");
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetGroupPositions : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetGroupPositions",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.GroupPosition.GetAllGroupPositionDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("AddGroupPosition")]
+        public async Task<IActionResult> AddGroupPosition([FromHeader] string Authorization, [FromBody] AddGroupPositionModel? groupPos)
+        {
+            if (!Authorization.IsNullOrEmpty() && groupPos != null && !string.IsNullOrEmpty(groupPos.Name) && groupPos.IdProfile.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    if ((await ms.GroupPosition.GetAllGroupPositionDtos()).Find(x => x.Name.Equals(groupPos.Name)) != null)
+                    {
+                        return BadRequest(new { message = "Ошибка. Такая группа уже есть" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddGroupPositions :name={groupPos.Name}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddGroupPositions",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Имя group={groupPos.Name}"
+                        });
+                        await ms.GroupPosition.SaveGroupPosition(groupPos);
+                        return Ok(new { message = "Группа добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateGroupPosition")]
+        public async Task<IActionResult> UpdateGroupPositions([FromHeader] string Authorization, [FromBody] GroupPositionDto? groupPos)
+        {
+            if (!Authorization.IsNullOrEmpty() && groupPos != null && groupPos.Id != 0 && 
+                !string.IsNullOrEmpty(groupPos.Name) && groupPos.IdProfile!=0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    if (await ms.GroupPosition.GetGroupPositionById(groupPos.Id.Value) == null)
+                    {
+                        return BadRequest(new { message = "Ошибка. Такой группы нет" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateGroupPositions :id={groupPos.Id}, name={groupPos.Name}, Id={groupPos.IdProfile}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateGroupPositions",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id группы={groupPos.Id}, id профиля={groupPos.IdProfile}"
+                        });
+                        await ms.GroupPosition.SaveGroupPosition(groupPos);
+                        return Ok(new { message = "Группа обновлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("DeleteGroupPosition")]
+        public async Task<IActionResult> DeleteGroupPosition([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if (await ms.GroupPosition.GetGroupPositionById(id.Id.Value) != null)
+                        {
+                            await ms.Log.SaveLog(new Log
+                            {
+                                UrlPath = "admin-api/DeleteGroupPosition",
+                                UserId = token.IdAdmin,
+                                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                                DataTime = DateTime.Now,
+                                Params = $"Id отдела={id.Id}"
+                            });
+                            await ms.GroupPosition.DeleteGroupPositionById(id.Id.Value);
+                            return Ok(new { message = "Группа удалена" });
+                        }
+                        else
+                        {
+                            return NotFound(new { message = "Ошибка. Такой группы не существует" });
+                        }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
 
         /*
          *  Subdivision
@@ -259,7 +565,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("AddSubdivision")]
         public async Task<IActionResult> AddSubdivision([FromHeader] string Authorization, [FromBody]SubdivisionModel? sub)
         {
-            if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name))
+            if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name) && sub.IdGroupPositions!=0)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -268,24 +574,28 @@ namespace Personal_Testing_System.Controllers
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                    if ((await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals(sub.Name)) != null)
+                    /*if ((await ms.Subdivision.GetAllSubdivisions()).Find(x => x.Name.Equals(sub.Name)) != null)
                     {
                         return BadRequest(new { message = "Ошибка. Такой отдел уже есть" });
                     }
                     else
+                    {*/
+                    if(await ms.GroupPosition.GetGroupPositionDtoById(sub.IdGroupPositions.Value) == null)
                     {
-                        logger.LogInformation($"/admin-api/AddSubdivision :name={sub.Name}");
-                        await ms.Log.SaveLog(new Log
-                        {
-                            UrlPath = "admin-api/AddSubdivision",
-                            UserId = token.IdAdmin,
-                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                            DataTime = DateTime.Now,
-                            Params = $"Имя Отдела={sub.Name}"
-                        });
-                        await ms.Subdivision.SaveSubdivision(sub);
-                        return Ok(new { message = "Отдел добавлен" });
+                        return NotFound(new { message = "Ошибка. Такой группы нет" });
                     }
+
+                    logger.LogInformation($"/admin-api/AddSubdivision :name={sub.Name}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/AddSubdivision",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"Имя Отдела={sub.Name}, id группы={sub.IdGroupPositions}"
+                    });
+                    await ms.Subdivision.SaveSubdivision(sub);
+                    return Ok(new { message = "Отдел добавлен" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -295,7 +605,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("UpdateSubdivision")]
         public async Task<IActionResult> UpdateSubdivision([FromHeader] string Authorization, [FromBody]AddSubdivisionModel? sub)
         {
-            if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name))
+            if (!Authorization.IsNullOrEmpty() && sub != null && !string.IsNullOrEmpty(sub.Name) && sub.IdGroupPositions != 0)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -308,6 +618,10 @@ namespace Personal_Testing_System.Controllers
                     {
                         return BadRequest(new { message = "Ошибка. Такого отдела нет" });
                     }
+                    if (await ms.GroupPosition.GetGroupPositionDtoById(sub.IdGroupPositions.Value) == null)
+                    {
+                        return NotFound(new { message = "Ошибка. Такой группы нет" });
+                    }
                     else
                     {
                         logger.LogInformation($"/admin-api/UpdateSubdivision :id={sub.Id}, name={sub.Name}");
@@ -317,7 +631,7 @@ namespace Personal_Testing_System.Controllers
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
-                            Params = $"Id отдела={sub.Id}, Имя Отдела={sub.Name}"
+                            Params = $"Id отдела={sub.Id}, Имя Отдела={sub.Name}, Id группы={sub.IdGroupPositions}"
                         });
                         await ms.Subdivision.SaveSubdivision(sub);
                         return Ok(new { message = "Отдел обновлен" });
@@ -342,7 +656,7 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
-                        if (ms.Subdivision.GetSubdivisionById(id.Id.Value) != null)
+                        if (await ms.Subdivision.GetSubdivisionById(id.Id.Value) != null)
                         {
                             await ms.Log.SaveLog(new Log
                             {
@@ -352,7 +666,7 @@ namespace Personal_Testing_System.Controllers
                                 DataTime = DateTime.Now,
                                 Params = $"Id отдела={id.Id}"
                             });
-                            ms.Subdivision.DeleteSubdivisionById(id.Id.Value);
+                            await ms.Subdivision.DeleteSubdivisionById(id.Id.Value);
                             return Ok(new { message = "Отдел удален" });
                         }
                         else
@@ -368,6 +682,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Employee
          */
+
         [HttpGet("GetEmployees")]
         public async Task<IActionResult> GetEmployees([FromHeader] string Authorization)
         {
@@ -390,7 +705,7 @@ namespace Personal_Testing_System.Controllers
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(ms.Employee.GetAllEmployeeModels());
+                        return Ok(await ms.Employee.GetAllEmployeeDtos());
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -422,9 +737,9 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Сотрудника={id.Id}"
                         });
-                        if (ms.Employee.GetEmployeeById(id.Id) != null)
+                        EmployeeDto? model = await ms.Employee.GetEmployeeDtoById(id.Id); ;
+                        if (model != null)
                         {
-                            EmployeeModel? model = await ms.Employee.GetEmployeeModelById(id.Id);
                             return Ok(model);
                         }
                         return NotFound(new { message = "Сотрудник не найден" });
@@ -443,7 +758,7 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(employee.SecondName) && !string.IsNullOrEmpty(employee.LastName) &&
                 !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) &&
                 employee.IdSubdivision.HasValue && employee.IdSubdivision != 0 && 
-                ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null)
+                await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -464,7 +779,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Имя сотрудника ={employee.FirstName}, фамилия={employee.SecondName}, отчество={employee.LastName}"
                         });
-                        ms.Employee.SaveEmployee(employee);
+                        await ms.Employee.SaveEmployee(employee);
                         return Ok(new { message = "Сотрудник добавлен" });
                     }
                 }
@@ -907,6 +1222,188 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
+         *  CompetenciesForGroup
+         */
+        [HttpGet("GetCompetenciesForGroups")]
+        public async Task<IActionResult> GetCompetenciesForGroups([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenciesForGroups");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenciesForGroups",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.CompetenciesForGroup.GetAllCompetenciesForGroupDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("GetCompetenciesForGroup")]
+        public async Task<IActionResult> GetCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenciesForGroup :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenciesForGroup",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id компетенции теста={id.Id}"
+                        });
+                        if (await ms.CompetenciesForGroup.GetCompetenciesForGroupDtoById(id.Id.Value) != null)
+                        {
+                            CompetenciesForGroupDto? dto = (await ms.CompetenciesForGroup.GetCompetenciesForGroupDtoById(id.Id.Value));
+                            return Ok(dto);
+                        }
+                        return NotFound(new { message = "Ошибка. Компетенция для группы не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [HttpPost("AddCompetenciesForGroup")]
+        public async Task<IActionResult> AddCompetenciesForGroup([FromHeader] string Authorization, [FromBody] AddCompetenciesForGroupModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && !string.IsNullOrEmpty(model.IdTest) && model.IdGroupPositions != 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if((await ms.CompetenciesForGroup.GetAllCompetenciesForGroups()).Find(x=>x.IdTest.Equals(model.IdTest) && x.IdGroupPositions.Equals(model.IdGroupPositions.Value)) != null)
+                        {
+                            return NotFound(new { message = "Ошибка. Тест уже назначен этой группе" });
+                        }
+                        logger.LogInformation($"/admin-api/AddCompetenciesForGroup :Name={model.IdTest}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddCompetenciesForGroup",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"id теста={model.IdTest}"
+                        });
+                        await ms.CompetenciesForGroup.SaveCompetenciesForGroup(model);
+                        return Ok(new { message = "Компетенция добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateCompetenciesForGroup")]
+        public async Task<IActionResult> UpdateCompetenciesForGroup([FromHeader] string Authorization, [FromBody] CompetenciesForGroupDto? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null &&
+                model.Id.HasValue && !model.IdTest.IsNullOrEmpty() && model.IdGroupPositions != 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if ((await ms.CompetenciesForGroup.GetAllCompetenciesForGroups()).Find(x => x.IdTest.Equals(model.IdTest) && x.IdGroupPositions.Equals(model.IdGroupPositions.Value)) != null)
+                        {
+                            return BadRequest(new { message = "Ошибка. Тест уже назначен этой группе" });
+                        }
+                        logger.LogInformation($"/admin-api/UpdateCompetenciesForGroup :Id={model.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateCompetenciesForGroup",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id теста={model.IdTest}, id группы={model.IdGroupPositions}"
+                        });
+                        if (await ms.CompetenciesForGroup.GetCompetenciesForGroupById(model.Id.Value) != null)
+                        {
+                            await ms.CompetenciesForGroup.SaveCompetenciesForGroup(model);
+                            return Ok(new { message = "Компетенция для группы обновлена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Компетенция для группы не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("DeleteCompetenciesForGroup")]
+        public async Task<IActionResult> DeleteCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteCompetenciesForGroup :competenceId={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteCompetenciesForGroup",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id компетенциидля группы теста={id.Id}"
+                        });
+                        if (id.Id.HasValue && id.Id != 0 && await ms.CompetenciesForGroup.DeleteCompetenciesForGroupById(id.Id.Value) != null)
+                        {
+                            await ms.CompetenciesForGroup.DeleteCompetenciesForGroupById(id.Id.Value);
+                            return Ok(new { message = "Компетенция для группы удалена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Компетенция для группы не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
          *  Test
          */
         [HttpGet("GetTests")]
@@ -968,6 +1465,7 @@ namespace Personal_Testing_System.Controllers
                             if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
                             List<Question> questions = (await ms.Question.GetAllQuestions())
                                 .Where(x => x.IdTest.Equals(id.Id)).ToList();
+                            questions = questions.OrderBy(x => x.Number).ToList();
 
                             TestModel testDto = new TestModel
                             {
@@ -976,12 +1474,13 @@ namespace Personal_Testing_System.Controllers
                                 Weight = test.Weight,
                                 Instruction = test.Instruction,
                                 Description = test.Description,
-                                Competence = await ms.TestType.GetCompetenceDtoById(test.IdCompetence.Value),
+                                CompetenceId = test.IdCompetence.Value,
                                 Questions = new List<QuestionModel>()
                             };
 
                             foreach (var quest in questions)
                             {
+                                //todo quest.weight
                                 QuestionModel createQuestionDto = new QuestionModel
                                 {
                                     Id = quest.Id,
@@ -989,6 +1488,7 @@ namespace Personal_Testing_System.Controllers
                                     Text = quest.Text,
                                     ImagePath = quest.ImagePath,
                                     Number = Convert.ToInt32(quest.Number),
+                                    //Weight = Convert.ToInt32(quest.Number),
                                     Answers = new List<object>() { }
                                 };
                                 if (!quest.ImagePath.IsNullOrEmpty())
@@ -1034,17 +1534,24 @@ namespace Personal_Testing_System.Controllers
                                 }
                                 if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                                 {
-                                    createQuestionDto.Answers.AddRange(await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
-
+                                    List<FirstPartDto> firstPartDtos = await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id);
                                     List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
-                                    foreach (var firstPart in await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
+
+                                    foreach (var firstPart in firstPartDtos)
                                     {
                                         secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                                     }
+
+                                    Random rand = new Random();
+                                    firstPartDtos = firstPartDtos.OrderBy(x=> rand.Next()).ToList();
+                                    secondPartDtos = secondPartDtos.OrderBy(x=> rand.Next()).ToList();
+
+                                    createQuestionDto.Answers.AddRange(firstPartDtos);
                                     createQuestionDto.Answers.AddRange(secondPartDtos);
                                 }
                                 testDto.Questions.Add(createQuestionDto);
                             }
+                            testDto.Questions.OrderBy(x=>x.Number);
                             return Ok(testDto);
                         }
                     }
@@ -1082,14 +1589,21 @@ namespace Personal_Testing_System.Controllers
                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
                         string html = "<h1 style=\"text-align: left;\">Название Теста: " + test.Name + "</h1> " +
                                       "<h2 style=\"text-align: left;\">Компетенция: " + (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name + "</h2><hr>";
+                        html += $"<p>Кол-во баллов: {test.Weight}</p>";
+                        html += $"<p>Описание: {test.Description}</p>";
+                        html += $"<p>Инструкция: {test.Instruction}</p>";
                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
-                            //.Where(x => x.IdTest.Equals(id)).ToList();
+                        questions = questions.OrderBy(x => x.Number).ToList();
+
+                        //.Where(x => x.IdTest.Equals(id)).ToList();
 
                         //!var Renderer = new IronPdf.ChromePdfRenderer();
                         var doc = new PdfDocument();
 
                         foreach (var quest in questions)
                         {
+                            html += $"<p>{Convert.ToInt32(quest.Number)}. " + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
+
                             if (!quest.ImagePath.IsNullOrEmpty())
                             {
                                 /*byte[] imageBytes = System.IO.File.ReadAllBytes(Path.Combine(environment.WebRootPath)+ "\\images\\" + quest.ImagePath);
@@ -1113,13 +1627,8 @@ namespace Personal_Testing_System.Controllers
                                     //html += "<style>\r\n  img.logo { \r\n   width:auto;\r\n   height:200px;\r\n   content: url(\"data:image/png;charset=utf-8;base64, " + base64 +"\");\r\n    }\r\n</style>";
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                                     html += $"<p><img style=\"width:300px; height:auto;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
-                            }
-                            else
-                            {
-                                html += "<p>Вопрос:" + quest.Text + "</p><p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                             }
 
                             if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
@@ -1141,7 +1650,7 @@ namespace Personal_Testing_System.Controllers
                                             html += $"<p><img style=\"width:200px; height:auto;\" src='data:image/png;base64,{base64}'/></p>";
                                         }
                                     }
-                                    html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Text}</span>";
+                                    html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Number}. {answer.Text}</span>";
                                 }
                             }
                             if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
@@ -1154,20 +1663,20 @@ namespace Personal_Testing_System.Controllers
                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
                                 List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
-                                string[,] array = new string[2, list.Count];
-                                int position = 0;
+                                List<string> fpText = new List<string>();
+                                List<string> spText = new List<string>();
                                 foreach (FirstSecondPartDto dto in list)
                                 {
-                                    array[0, position] = dto.FirstPartText;
-                                    array[1, position] = dto.SecondPartText;
-                                    position++;
+                                    fpText.Add(dto.FirstPartText);
+                                    spText.Add(dto.SecondPartText);
                                 }
                                 Random rnd = new Random();
-                                //array = array.OrderBy(x => rnd.Next()).ToArray();
+                                fpText = fpText.OrderBy(x => rnd.Next()).ToList();
+                                spText = spText.OrderBy(x => rnd.Next()).ToList();
 
-                                for (int i = 0; i < array.GetLength(0); i++)
+                                for (int i=0;i<fpText.Count;i++)
                                 {
-                                    html += "<p style=\"white-space: pre;\">" + array[0, i] + "                          " + array[1, i] + "</p>";
+                                    html += "<p style=\"white-space: pre;\">" + fpText[i] + "               " + spText[i] + "</p>";
                                 }
                             }
                         }
@@ -1222,25 +1731,26 @@ namespace Personal_Testing_System.Controllers
                         string html = "";
                         html += "<div><h1 style=\"text-align: left;\">Название Теста: " + test.Name + "</h1>\r\n " +
                                       "<h2 style=\"text-align: left;\">Компетенция: " + (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name + "</h2>\r\n<hr>";
+                        html += $"<p>Кол-во баллов: {test.Weight}</p>";
+                        html += $"<p>Описание: {test.Description}</p>";
+                        html += $"<p>Инструкция: {test.Instruction}</p>";
                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                        questions = questions.OrderBy(x => x.Number).ToList();
 
                         var doc = new PdfDocument();
 
                         foreach (var quest in questions)
                         {
+                            html += $"<p>{Convert.ToInt32(quest.Number)}. " + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
+
                             if (!quest.ImagePath.IsNullOrEmpty())
                             {
                                 if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
                                 {
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    html += "<p>Вопрос:" + quest.Text + "\r\n<p>Тип вопроса:" + (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                                     html += $"<p><img style=\"width:auto; height:150px;\" src='data:image/jpg;base64,{base64}'/></p>";
                                 }
-                            }
-                            else
-                            {
-                                html += "<p>Вопрос:" + quest.Text + "</p>\r\n<p>Тип вопроса:" +(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name + "</p>";
                             }
                             if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                             {
@@ -1257,11 +1767,11 @@ namespace Personal_Testing_System.Controllers
                                     }
                                     if (answer.Correct.Value)
                                     {
-                                        html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\">X</span>{answer.Text}</span>";
+                                        html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\">X</span>{answer.Number}. {answer.Text}</span>";
                                     }
                                     else
                                     {
-                                        html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Text}</span>";
+                                        html += $"<span style=\"display: block; margin: 0px 0px 0px 0px;\"><span style=\" content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 5px; border: 1px solid black;\"></span>{answer.Number}. {answer.Text}</span>";
                                     }
                                 }
                             }
@@ -1276,8 +1786,6 @@ namespace Personal_Testing_System.Controllers
                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
                                 List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
-                                string[,] array = new string[2, list.Count];
-                                int position = 0;
                                 foreach (FirstSecondPartDto dto in list)
                                 {
                                     html += "<p>" + dto.FirstPartText + " - " + dto.SecondPartText + "</p>";
@@ -1303,7 +1811,249 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-       [HttpPost("GetWordTest")]
+        /*[HttpPost("GetWordTest")]
+         public async Task<IActionResult> GetWordTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+         {
+             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
+             {
+                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                 if (token != null)
+                 {
+                     if (await ms.IsTokenAdminExpired(token))
+                     {
+                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                     }
+                     else
+                     {
+                         logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                         await ms.Log.SaveLog(new Log
+                         {
+                             UrlPath = "admin-api/GetPdfTest",
+                             UserId = token.IdAdmin,
+                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                             DataTime = DateTime.Now,
+                             Params = $"Id теста ={id.Id}"
+                         });
+
+                         MemoryStream stream = new MemoryStream();
+                         DocX doc = DocX.Create(stream);
+
+                         Test? test = await ms.Test.GetTestById(id.Id);
+                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                         Paragraph par1 = doc.InsertParagraph();
+                         par1.Append($"Название: {test.Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                         Paragraph par2 = doc.InsertParagraph();
+                         par2.Append($"Категория теста: { (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                         Paragraph par3 = doc.InsertParagraph();
+                         par3.Append($"Кол-во баллов: {test.Weight}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par4 = doc.InsertParagraph();
+                         par4.Append($"Описание: {test.Description}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par5 = doc.InsertParagraph();
+                         par5.Append($"инструкция: {test.Instruction}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                         questions = questions.OrderBy(x => x.Number).ToList();
+
+                         foreach (var quest in questions)
+                         {
+                             Paragraph par6 = doc.InsertParagraph();
+                             par6.Append($"{quest.Number}. {quest.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                             Paragraph par7 = doc.InsertParagraph();
+                             par7.Append($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                             if (!quest.ImagePath.IsNullOrEmpty())
+                             {
+                                 if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                 {
+                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                     string base64 = Convert.ToBase64String(array);
+                                     Xceed.Document.NET.Image image1 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath.ToString());
+                                 }
+                             }
+
+                             if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                 {
+                                     Paragraph par8 = doc.InsertParagraph();
+                                     par8.Append($"☐{answer.Number}. {answer.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                     if (!answer.ImagePath.IsNullOrEmpty())
+                                     {
+                                         if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                         {
+
+                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
+                                             string base64 = Convert.ToBase64String(array);
+                                             Xceed.Document.NET.Image image2 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath.ToString());
+                                         }
+                                     }
+                                 }
+                             }
+                             if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                 {
+                                     Paragraph par8 = doc.InsertParagraph();
+                                     par8.Append($"☐{sub.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                 }
+                             }
+                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                 List<string> fpText = new List<string>();
+                                 List<string> spText = new List<string>();
+                                 foreach (FirstSecondPartDto dto in list)
+                                 {
+                                     fpText.Add(dto.FirstPartText);
+                                     spText.Add(dto.SecondPartText);
+                                 }
+                                 Random rnd = new Random();
+                                 fpText.OrderBy(x => rnd.Next()).ToArray();
+                                 spText.OrderBy(x => rnd.Next()).ToArray();
+
+                                 for (int i = 0; i < fpText.Count; i++)
+                                 {
+                                     Paragraph par8 = doc.InsertParagraph();
+                                     par8.Append($"{fpText[i]}         {spText[i]}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                 }
+                             }
+                         }
+                         Paragraph par9 = doc.InsertParagraph();
+                         par9.Append($"Дата прохождения теста:______________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par10 = doc.InsertParagraph();
+                         par10.Append($"ФИО:_________________________________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                         doc.Save();
+                         return File(stream.ToArray(), "application/octet-stream", $"{test.Name}.docx");
+                     }
+                 }
+                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+             }
+             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+         }
+
+         [HttpPost("GetWordCorrectTest")]
+         public async Task<IActionResult> GetWordCorrectTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+         {
+             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
+             {
+                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                 if (token != null)
+                 {
+                     if (await ms.IsTokenAdminExpired(token))
+                     {
+                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                     }
+                     else
+                     {
+                         logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                         await ms.Log.SaveLog(new Log
+                         {
+                             UrlPath = "admin-api/GetPdfTest",
+                             UserId = token.IdAdmin,
+                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                             DataTime = DateTime.Now,
+                             Params = $"Id теста ={id.Id}"
+                         });
+
+                         MemoryStream stream = new MemoryStream();
+                         DocX doc = DocX.Create(stream);
+
+                         Test? test = await ms.Test.GetTestById(id.Id);
+                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                         Paragraph par1 = doc.InsertParagraph();
+                         par1.Append($"Название: {test.Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                         Paragraph par2 = doc.InsertParagraph();
+                         par2.Append($"Категория теста: {(await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
+                         Paragraph par3 = doc.InsertParagraph();
+                         par3.Append($"Кол-во баллов: {test.Weight}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par4 = doc.InsertParagraph();
+                         par4.Append($"Описание: {test.Description}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par5 = doc.InsertParagraph();
+                         par5.Append($"инструкция: {test.Instruction}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                         questions = questions.OrderBy(x => x.Number).ToList();
+
+                         foreach (var quest in questions)
+                         {
+                             Paragraph par6 = doc.InsertParagraph();
+                             par6.Append($"{quest.Number}. {quest.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                             Paragraph par7 = doc.InsertParagraph();
+                             par7.Append($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                             if (!quest.ImagePath.IsNullOrEmpty())
+                             {
+                                 if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                 {
+                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
+                                     string base64 = Convert.ToBase64String(array);
+                                     Xceed.Document.NET.Image image1 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath.ToString());
+                                 }
+                             }
+
+                             if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                 {
+                                     if (answer.Correct.Value)
+                                     {
+                                         Paragraph par81 = doc.InsertParagraph();
+                                         par81.Append($"☒{answer.Number}. {answer.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                     }
+                                     else
+                                     {
+                                         Paragraph par8 = doc.InsertParagraph();
+                                         par8.Append($"☐{answer.Number}. {answer.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                     }
+
+                                     if (!answer.ImagePath.IsNullOrEmpty())
+                                     {
+                                         if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                         {
+
+                                             byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
+                                             string base64 = Convert.ToBase64String(array);
+                                             Xceed.Document.NET.Image image2 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath.ToString());
+                                         }
+                                     }
+                                 }
+                             }
+                             if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                 {
+                                     Paragraph par8 = doc.InsertParagraph();
+                                     par8.Append($"  {sub.Number} {sub.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                 }
+                             }
+                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                             {
+                                 List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                 foreach (FirstSecondPartDto dto in list)
+                                 {
+                                     Paragraph par8 = doc.InsertParagraph();
+                                     par8.Append($"{dto.FirstPartText} - {dto.SecondPartText}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                 }
+                             }
+                         }
+                         Paragraph par9 = doc.InsertParagraph();
+                         par9.Append($"Дата прохождения теста:______________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                         Paragraph par10 = doc.InsertParagraph();
+                         par10.Append($"ФИО:_________________________________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                         doc.Save();
+                         return File(stream.ToArray(), "application/octet-stream", $"{test.Name}.docx");
+                     }
+                 }
+                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+             }
+             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+         }*/
+
+        [HttpPost("GetWordTest")]
         public async Task<IActionResult> GetWordTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
@@ -1327,98 +2077,240 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id теста ={id.Id}"
                         });
 
-                        MemoryStream stream = new MemoryStream();
-                        DocX doc = DocX.Create(stream);
+                        WordDocument doc = new WordDocument(CultureInfo.GetCultureInfo("ru-ru"));
+                        doc.Styles.DocumentDefaults.RunProperties.Font.Ascii = "Times New Roman";
+                        doc.Styles.DocumentDefaults.RunProperties.Font.HighAnsi = "Times New Roman";
 
                         Test? test = await ms.Test.GetTestById(id.Id);
                         if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
 
-                        Paragraph par1 = doc.InsertParagraph();
-                        par1.Append($"Название: {test.Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
-                        Paragraph par2 = doc.InsertParagraph();
-                        // todo await
-                        par2.Append($"Категория теста: { (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black).Bold();
-                        Paragraph par3 = doc.InsertParagraph();
-                        par3.Append($"Кол-во баллов: {test.Weight}").Font("Times New Roman").FontSize(14).Color(Color.Black);
-                        Paragraph par4 = doc.InsertParagraph();
-                        par4.Append($"Описание: {test.Description}").Font("Times New Roman").FontSize(14).Color(Color.Black);
-                        Paragraph par5 = doc.InsertParagraph();
-                        par5.Append($"инструкция: {test.Instruction}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                        var section = doc.Body.Sections.First();
+                        var paragraph = section.AppendParagraph();
+                        paragraph.AppendText($"Название: {test.Name}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"\"Категория теста: { (await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}\"");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Кол-во баллов: {test.Weight}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Описание: {test.Description}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Инструкция: {test.Instruction}");
+                        paragraph.AppendText("\n");
 
                         List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                        questions = questions.OrderBy(x => x.Number).ToList();
 
                         foreach (var quest in questions)
                         {
-                            Paragraph par6 = doc.InsertParagraph();
-                            par6.Append($"{quest.Number}. {quest.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
-                            Paragraph par7 = doc.InsertParagraph();
-                            //todo await
-                            par7.Append($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                            var paragraph1 = section.AppendParagraph();
+                            paragraph1.AppendText($"{quest.Number}. {quest.Text}");
+                            paragraph1.AppendText("\n");
+                            paragraph1.AppendText($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}");
+                            paragraph1.AppendText("\n");
 
-                            if (!quest.ImagePath.IsNullOrEmpty())
+                           if (!quest.ImagePath.IsNullOrEmpty())
                             {
                                 if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
                                 {
-                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath);
-                                    string base64 = Convert.ToBase64String(array);
-                                    Xceed.Document.NET.Image image1 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath.ToString());
+                                    FileStream file = new FileStream(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath, FileMode.Open);
+                                    var image = doc.AddImage(file, KnownImageContentTypes.Jpg);
+                                    var picture = section.WrapImageIntoInlinePicture(image, "quest", "", 200, 100);
+                                    paragraph1.AppendPicture(picture);
                                 }
                             }
 
                             if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
                             {
+                                var paragraph2 = section.AppendParagraph();
                                 foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
                                 {
-                                    Paragraph par8 = doc.InsertParagraph();
-                                    par8.Append($"⬜{answer.Number}. {answer.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
                                     if (!answer.ImagePath.IsNullOrEmpty())
                                     {
-                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath))
                                         {
-
-                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath);
-                                            string base64 = Convert.ToBase64String(array);
-                                            Xceed.Document.NET.Image image2 = doc.AddImage(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath.ToString());
+                                            FileStream file = new FileStream(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath, FileMode.Open);
+                                            var image = doc.AddImage(file, KnownImageContentTypes.Jpg);
+                                            var picture = section.WrapImageIntoInlinePicture(image, "answer", "", 200, 100);
+                                            paragraph2.AppendPicture(picture);
                                         }
+                                    }
+                                    paragraph2.AppendText($"☐{answer.Number}. {answer.Text}\n");
+                                }
+                                paragraph2.AppendText("\n");
+                            }
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                var paragraph3 = section.AppendParagraph();
+                                foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
+                                {
+                                    paragraph3.AppendText($"☐{sub.Text}\n");
+                                }
+                                paragraph3.AppendText("\n");
+                            }
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
+                                List<string> fpText = new List<string>();
+                                List<string> spText = new List<string>();
+                                foreach (FirstSecondPartDto dto in list)
+                                {
+                                    fpText.Add(dto.FirstPartText);
+                                    spText.Add(dto.SecondPartText);
+                                }
+                                Random rnd = new Random();
+                                fpText = fpText.OrderBy(x => rnd.Next()).ToList();
+                                spText = spText.OrderBy(x => rnd.Next()).ToList();
+
+                                var paragraph4 = section.AppendParagraph();
+                                for (int i = 0; i < fpText.Count; i++)
+                                {
+                                    paragraph4.AppendText($"{fpText[i]}         {spText[i]}\n");
+                                }
+                                paragraph4.AppendText("\n");
+                            }
+                        }
+                        var paragraph5 = section.AppendParagraph();
+                        paragraph5.AppendText($"Дата прохождения теста:______________________");
+                        paragraph5.AppendText("\n");
+                        paragraph5.AppendText($"ФИО:_________________________________________");
+
+                        byte[] res = null;
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            doc.Save(ms);
+                            res = ms.ToArray();
+                        }
+
+                        return File(res, "application/octet-stream", $"{test.Name}.docx");
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("GetWordCorrectTest")]
+        public async Task<IActionResult> GetWordCorrectTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetPdfTest",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id теста ={id.Id}"
+                        });
+
+                        WordDocument doc = new WordDocument(CultureInfo.GetCultureInfo("ru-ru"));
+                        doc.Styles.DocumentDefaults.RunProperties.Font.Ascii = "Times New Roman";
+                        doc.Styles.DocumentDefaults.RunProperties.Font.HighAnsi = "Times New Roman";
+
+                        Test? test = await ms.Test.GetTestById(id.Id);
+                        if (test == null) return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        var section = doc.Body.Sections.First();
+                        var paragraph = section.AppendParagraph();
+                        paragraph.AppendText($"Название: {test.Name}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"\"Категория теста: {(await ms.TestType.GetCompetenceById(test.IdCompetence.Value)).Name}\"");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Кол-во баллов: {test.Weight}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Описание: {test.Description}");
+                        paragraph.AppendText("\n");
+                        paragraph.AppendText($"Инструкция: {test.Instruction}");
+                        paragraph.AppendText("\n");
+
+                        List<Question> questions = await ms.Question.GetQuestionsByTest(id.Id);
+                        questions = questions.OrderBy(x => x.Number).ToList();
+
+                        foreach (var quest in questions)
+                        {
+                            var paragraph1 = section.AppendParagraph();
+                            paragraph1.AppendText($"{quest.Number}. {quest.Text}\n");
+                            paragraph1.AppendText($"Тип вопроса: {(await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value)).Name}\n");
+
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    FileStream file = new FileStream(environment.WebRootFileProvider.GetFileInfo("images/" + quest.ImagePath).PhysicalPath, FileMode.Open);
+                                    var image = doc.AddImage(file, KnownImageContentTypes.Jpg);
+                                    var picture = section.WrapImageIntoInlinePicture(image, "quest", "", 200, 100);
+                                    paragraph.AppendPicture(picture);
+                                }
+                            }
+
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                var paragraph2 = section.AppendParagraph();
+                                foreach (AnswerDto answer in await ms.Answer.GetAnswerDtosByQuestionId(quest.Id))
+                                {
+                                    if (!answer.ImagePath.IsNullOrEmpty())
+                                    {
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath))
+                                        {
+                                            FileStream file = new FileStream(environment.WebRootFileProvider.GetFileInfo("images/" + answer.ImagePath).PhysicalPath, FileMode.Open);
+                                            var image = doc.AddImage(file, KnownImageContentTypes.Jpg);
+                                            var picture = section.WrapImageIntoInlinePicture(image, "answer", "", 200, 100);
+                                            paragraph2.AppendPicture(picture);
+                                        }
+                                    }
+                                    if (answer.Correct.Value)
+                                    {
+                                        paragraph2.AppendText($"☒{answer.Number}. {answer.Text}\n");
+                                    }
+                                    else
+                                    {
+                                        paragraph2.AppendText($"☐{answer.Number}. {answer.Text}\n");
                                     }
                                 }
                             }
                             if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
                             {
+                                var paragraph3 = section.AppendParagraph();
                                 foreach (SubsequenceDto sub in await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id))
                                 {
-                                    Paragraph par8 = doc.InsertParagraph();
-                                    par8.Append($"⬜{sub.Text}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+
+                                    paragraph3.AppendText($" {sub.Number} {sub.Text}\n");
                                 }
                             }
                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
+                                var paragraph4 = section.AppendParagraph();
                                 List<FirstSecondPartDto> list = await ms.GetFirstSecondPartDtoByQuestion(quest.Id);
-                                string[,] array = new string[2, list.Count];
-                                int position = 0;
                                 foreach (FirstSecondPartDto dto in list)
                                 {
-                                    array[0, position] = dto.FirstPartText;
-                                    array[1, position] = dto.SecondPartText;
-                                    position++;
-                                }
-                                Random rnd = new Random();
-                                //array = array.OrderBy(x => rnd.Next()).ToArray();
-
-                                for (int i = 0; i < array.GetLength(0); i++)
-                                {
-                                    Paragraph par8 = doc.InsertParagraph();
-                                    par8.Append($"{array[0, i]}     {array[1, i]}").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                                    paragraph4.AppendText($"{dto.FirstPartText} - {dto.SecondPartText}\n");
                                 }
                             }
                         }
-                        Paragraph par9 = doc.InsertParagraph();
-                        par9.Append($"Дата прохождения теста:______________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
-                        Paragraph par10 = doc.InsertParagraph();
-                        par10.Append($"ФИО:_________________________________________").Font("Times New Roman").FontSize(14).Color(Color.Black);
+                        var paragraph5 = section.AppendParagraph();
+                        paragraph5.AppendText($"Дата прохождения теста:______________________");
+                        paragraph5.AppendText("\n");
+                        var paragraph6 = section.AppendParagraph();
+                        paragraph6.AppendText($"ФИО:_________________________________________");
 
-                        doc.Save();
-                        return File(stream.ToArray(), "application/octet-stream", $"{test.Name}.docx");
+                        byte[] res = null;
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            doc.Save(ms);
+                            res = ms.ToArray();
+                        }
+
+                        return File(res, "application/octet-stream", $"{test.Name}.docx");
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -1461,7 +2353,8 @@ namespace Personal_Testing_System.Controllers
                                 Id = idTest,
                                 Name = test.Name,
                                 IdCompetence = test.CompetenceId,
-                                Weight = test.Weight,
+                                //todo quest.weight
+                                //Weight = test.Weight,
                                 Description = test.Description,
                                 Instruction = test.Instruction
                             });
@@ -1490,6 +2383,8 @@ namespace Personal_Testing_System.Controllers
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = quest.ImagePath,
                                                 Number = Convert.ToByte(countOfQuestions),
+                                                //todo quest.weight
+                                                //Weight = quest.Weight,
                                                 IdTest = idTest
                                             });
                                         }
@@ -1508,6 +2403,8 @@ namespace Personal_Testing_System.Controllers
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = imagePath,
                                                 Number = Convert.ToByte(countOfQuestions),
+                                                //todo quest.weight
+                                                //Weight = Convert.ToByte(quest.Weight),
                                                 IdTest = idTest
                                             });
                                         }
@@ -1522,6 +2419,8 @@ namespace Personal_Testing_System.Controllers
                                         IdQuestionType = quest.IdQuestionType,
                                         ImagePath = quest.ImagePath,
                                         Number = Convert.ToByte(countOfQuestions),
+                                        //todo quest.weight
+                                        //Weight = quest.Weight,
                                         IdTest = idTest
                                     });
                                 }
@@ -1646,7 +2545,7 @@ namespace Personal_Testing_System.Controllers
                 UpdateTestModel? test = JsonConvert.DeserializeObject<UpdateTestModel>(updatePostModel.Test);
                 if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions != null && test.Questions.Count != 0 &&
-                    test.CompetenceId != 0 && ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
+                    test.CompetenceId != 0 && await ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
                 {
                     TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
@@ -1712,7 +2611,9 @@ namespace Personal_Testing_System.Controllers
                                         IdQuestionType = quest.IdQuestionType,
                                         IdTest = test.Id,
                                         ImagePath = quest.ImagePath,
-                                        Number = Convert.ToByte(quest.Number)
+                                        Number = Convert.ToByte(quest.Number),
+                                        //todo quest.weight
+                                        //Weight = quest.Weight
                                     });
                                 }
                                 else
@@ -1729,7 +2630,9 @@ namespace Personal_Testing_System.Controllers
                                         IdQuestionType = quest.IdQuestionType,
                                         ImagePath = quest.ImagePath,
                                         IdTest = test.Id,
-                                        Number = Convert.ToByte(quest.Number)
+                                        Number = Convert.ToByte(quest.Number),
+                                        //todo quest.weight
+                                        //Weight = quest.Weight
                                     });
                                 }
                                 foreach (JObject answer in quest.Answers)
@@ -1999,7 +2902,7 @@ namespace Personal_Testing_System.Controllers
         public async Task<IActionResult> AddPurpose([FromHeader] string Authorization, [FromBody] AddTestPurposeModel? purpose)
         {
             if (!Authorization.IsNullOrEmpty() && purpose != null && !purpose.IdTest.IsNullOrEmpty() &&
-                !purpose.IdEmployee.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty())
+                !purpose.IdEmployee.IsNullOrEmpty() )//&& !purpose.DatatimePurpose.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -2012,14 +2915,25 @@ namespace Personal_Testing_System.Controllers
                     {
                         if (await ms.Test.GetTestById(purpose.IdTest) == null)
                                 return BadRequest(new { message = "Ошибка. Пользователя с эти Id нет" });
-
-                        if (await ms.Employee.GetEmployeeById(purpose.IdEmployee) == null)
-                            return BadRequest(new { message = "Ошибка. Теста с этим Id нет" });
+                        
+                        Employee employee = await ms.Employee.GetEmployeeById(purpose.IdEmployee);
+                        if  (employee == null)
+                            return NotFound(new { message = "Ошибка. Такого сотрудника нет" });
 
                         if (await ms.TestPurpose.GetTestPurposeByEmployeeTestId(purpose.IdTest,purpose.IdEmployee) != null)
                                 return BadRequest(new { message = "Ошибка. Этот тест уже назначен этому пользованелю" });
 
-                        logger.LogInformation($"/admin-api/AddPurpose employeeId={purpose.IdEmployee}, testId={purpose.IdTest}, datatime={purpose.DatatimePurpose}");
+                        Subdivision subdivision = await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value);
+                        if (subdivision != null)
+                        {
+                            if(await ms.CompetenciesForGroup.GetCompetenciesForGroupByEmployeeTestId(purpose.IdTest, subdivision.IdGroupPositions.Value) == null)
+                            {
+                                return NotFound(new { message = $"Ошибка. Этот тест не назначен группе:id группы={subdivision.IdGroupPositions}" });
+                            }
+                        }
+
+
+                        logger.LogInformation($"/admin-api/AddPurpose employeeId={purpose.IdEmployee}, testId={purpose.IdTest}");
                         await ms.Log.SaveLog(new Log
                         {
                             UrlPath = "admin-api/AddPurpose",
@@ -2037,7 +2951,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-        [HttpPost("AddPurposesBySubdivision")]
+        /*[HttpPost("AddPurposesBySubdivision")]
         public async Task<IActionResult> AddPurposesBySubdivision([FromHeader] string Authorization, string? testId, int? idSubdivision, string? time)
         {
             if (!Authorization.IsNullOrEmpty() && !testId.IsNullOrEmpty() && idSubdivision.HasValue && !time.IsNullOrEmpty())
@@ -2094,7 +3008,7 @@ namespace Personal_Testing_System.Controllers
         public async Task<IActionResult> UpdatePurpose([FromHeader] string Authorization, [FromBody] UpdateTestPurposeModel? purpose)
         {
             if (!Authorization.IsNullOrEmpty() && purpose != null && purpose.Id.HasValue &&
-                !purpose.IdTest.IsNullOrEmpty() && !purpose.DatatimePurpose.IsNullOrEmpty())
+                !purpose.IdTest.IsNullOrEmpty())// && !purpose.DatatimePurpose.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -2107,6 +3021,19 @@ namespace Personal_Testing_System.Controllers
                     {
                         if (await ms.TestPurpose.GetTestPurposeById(purpose.Id.Value) != null)
                         {
+                            Employee employee = await ms.Employee.GetEmployeeById(purpose.IdEmployee);
+                            if (employee == null)
+                                return NotFound(new { message = "Ошибка. Такого сотрудника нет" });
+
+                            Subdivision subdivision = await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value);
+                            if (subdivision != null)
+                            {
+                                if (await ms.CompetenciesForGroup.GetCompetenciesForGroupByEmployeeTestId(purpose.IdTest, subdivision.IdGroupPositions.Value) == null)
+                                {
+                                    return NotFound(new { message = $"Ошибка. Этот тест не назначен группе:id группы={subdivision.IdGroupPositions}" });
+                                }
+                            }
+
                             logger.LogInformation($"/admin-api/UpdatePurpose purposeId={purpose.Id}");
                             await ms.Log.SaveLog(new Log
                             {
@@ -2114,7 +3041,7 @@ namespace Personal_Testing_System.Controllers
                                 UserId = token.IdAdmin,
                                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                                 DataTime = DateTime.Now,
-                                Params = $"Id Сотрудника={purpose.IdEmployee}, Id теста={purpose.IdTest}, Дата сдачи={purpose.DatatimePurpose}"
+                                Params = $"Id Сотрудника={purpose.IdEmployee}, Id теста={purpose.IdTest}"
                             });
                             await ms.TestPurpose.SaveTestPurpose(purpose);
                             return Ok(new { message = "Назначение обновлено" });

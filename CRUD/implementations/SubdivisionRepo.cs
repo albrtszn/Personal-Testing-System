@@ -44,6 +44,7 @@ namespace CRUD.implementations
                 /*context.Subdivisions.Entry(SubdivisionToSave).State = EntityState.Detached;
                 context.Set<Subdivision>().Update(SubdivisionToSave);*/
                 Subdivision.Name = SubdivisionToSave.Name;
+                Subdivision.IdGroupPositions = SubdivisionToSave.IdGroupPositions;
 
                 await context.SaveChangesAsync();
             }

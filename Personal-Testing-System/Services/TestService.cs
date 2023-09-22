@@ -9,21 +9,23 @@ namespace Personal_Testing_System.Services
     public class TestService
     {
         private ITestRepo TestRepo;
+        private IQuestionRepo QuestionRepo;
         private CompetenceService competenceService;
-        public TestService(ITestRepo _testRepo, CompetenceService competenceService)
+        public TestService(ITestRepo _testRepo, CompetenceService competenceService, IQuestionRepo questionRepo)
         {
             this.TestRepo = _testRepo;
             this.competenceService = competenceService;
+            this.QuestionRepo = questionRepo;
         }
 
         private async Task<TestGetModel> ConvertToGetTestModel(Test test)
         {
-            CompetenceDto competenceDto = await competenceService.GetCompetenceDtoById(test.IdCompetence.Value);
             return new TestGetModel
             {
                 Id = test.Id,
                 Name = test.Name,
-                Competence = competenceDto,
+                CompetenceId = test.IdCompetence,
+                QuestionsCount = (await QuestionRepo.GetAllQuestionsByTestId(test.Id)).Count
             };
         }
 

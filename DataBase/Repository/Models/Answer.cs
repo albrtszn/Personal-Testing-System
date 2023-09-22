@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataBase.Repository.Models;
 
-[Table("Answer", Schema = "fitpsuon_fitpsuon")]
+[Table("Answer")]
 public partial class Answer
 {
     [Key]
@@ -27,12 +27,12 @@ public partial class Answer
     [Column("number")]
     public int? Number { get; set; }
 
-    [Column("weight")]
-    public int? Weight { get; set; }
-
     [Column("imagePath")]
     [StringLength(150)]
     public string? ImagePath { get; set; }
+
+    [Column("weight")]
+    public int? Weight { get; set; }
 
     [InverseProperty("IdAnswerNavigation")]
     public virtual ICollection<EmployeeAnswer> EmployeeAnswers { get; set; } = new List<EmployeeAnswer>();

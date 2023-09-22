@@ -47,7 +47,6 @@ namespace Personal_Testing_System.Services
         //Model
         private async Task<EmployeeModel?> ConvertToEmployeeModel(Employee employee)
         {
-            //todo await
             SubdivisionDto? subdivision = await subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
             return new EmployeeModel
             {
@@ -99,7 +98,10 @@ namespace Personal_Testing_System.Services
         { 
             List<EmployeeModel> Employees = new List<EmployeeModel>();
             List<Employee> list = await EmployeeRepo.GetAllEmployees();
-            list.ForEach(async x => Employees.Add(await ConvertToEmployeeModel(x)));
+            foreach (Employee empl in list)
+            {
+                Employees.Add(await ConvertToEmployeeModel(empl));
+            }
             return Employees;
         }
 

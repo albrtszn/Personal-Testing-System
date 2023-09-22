@@ -47,6 +47,8 @@ namespace CRUD.implementations
                 answer.IdQuestion = AnswerToSave.IdQuestion;
                 answer.Correct = AnswerToSave.Correct;
                 answer.ImagePath = AnswerToSave.ImagePath;
+                answer.Number = AnswerToSave.Number;
+                answer.Weight = AnswerToSave.Weight;
 
                 await context.SaveChangesAsync();
             }

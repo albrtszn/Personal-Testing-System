@@ -30,6 +30,12 @@ namespace CRUD.implementations
             return await context.Questions.ToListAsync();
         }
 
+        public async Task<List<Question>> GetAllQuestionsByTestId(string testId)
+        {
+            List<Question> list = (await context.Questions.ToListAsync()).Where(x => x.IdTest.Equals(testId)).ToList();
+            return list;
+        }
+
         public async Task<Question> GetQuestionById(string id)
         {
             return await context.Questions.FirstOrDefaultAsync(x => x.Id.Equals(id));
@@ -47,6 +53,9 @@ namespace CRUD.implementations
                 question.IdQuestionType = QuestionToSave.IdQuestionType;
                 question.IdTest = QuestionToSave.IdTest;
                 question.ImagePath = QuestionToSave.ImagePath;
+                question.Number = QuestionToSave.Number;
+                //todo quest weight
+                //question.Weight = QuestionToSave.Weight;
 
                 await context.SaveChangesAsync();
             }

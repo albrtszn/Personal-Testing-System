@@ -13,5 +13,7 @@ namespace Personal_Testing_System.DTOs
         public string? Password { get; set; }
         public string? DateOfBirth { get; set; }
         public int? IdSubdivision { get; set; }
+        public string? Phone { get; set; }
+        public string? RegistrationDate { get; set; }
     }
 }

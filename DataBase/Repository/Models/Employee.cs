@@ -37,6 +37,13 @@ public partial class Employee
     [Column("idSubdivision")]
     public int? IdSubdivision { get; set; }
 
+    [Column("phone")]
+    [StringLength(18)]
+    public string? Phone { get; set; }
+
+    [Column("registrationDate")]
+    public DateOnly? RegistrationDate { get; set; }
+
     [InverseProperty("IdEmployeeNavigation")]
     public virtual ICollection<EmployeeResult> EmployeeResults { get; set; } = new List<EmployeeResult>();
 

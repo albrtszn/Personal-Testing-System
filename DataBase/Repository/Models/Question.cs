@@ -15,7 +15,7 @@ public partial class Question
     public string Id { get; set; } = null!;
 
     [Column("text")]
-    [StringLength(500)]
+    [StringLength(4000)]
     public string? Text { get; set; }
 
     [Column("idQuestionType")]

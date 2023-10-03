@@ -67,6 +67,11 @@ namespace Personal_Testing_System.Services
             return Subsequences;
         }
 
+        public async Task<List<Subsequence>> GetSubsequencesByQuestionId(string id)
+        {
+            return (await GetAllSubsequences()).Where(x => x.IdQuestion.Equals(id)).ToList();
+        }
+
         public async Task<List<SubsequenceDto>> GetSubsequenceDtosByQuestionId(string id)
         {
             return (await GetAllSubsequenceDtos()).Where(x => x.IdQuestion.Equals(id)).ToList();

@@ -50,6 +50,8 @@ namespace CRUD.implementations
                 employee.Password = EmployeeToSave.Password;
                 employee.DateOfBirth = EmployeeToSave.DateOfBirth;
                 employee.IdSubdivision = EmployeeToSave.IdSubdivision;
+                employee.Phone = EmployeeToSave.Phone;
+                employee.RegistrationDate = EmployeeToSave.RegistrationDate;
 
                 await context.SaveChangesAsync();
             }

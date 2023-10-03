@@ -39,6 +39,12 @@ namespace Personal_Testing_System.Services
             return await TestRepo.GetAllTests();
         }
 
+        public async Task<TestGetModel> GetTestModelById(string idTest)
+        {
+            Test test = await GetTestById(idTest);
+            return await ConvertToGetTestModel(test);
+        }
+
         public async Task<List<TestGetModel>> GetAllTestGetModels()
         {
             List<TestGetModel> list = new List<TestGetModel>();

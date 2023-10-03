@@ -27,7 +27,9 @@ namespace Personal_Testing_System.Services
                 Login = employee.Login,
                 Password = employee.Password,
                 DateOfBirth = employee.DateOfBirth.ToString(),
-                IdSubdivision = employee.IdSubdivision
+                IdSubdivision = employee.IdSubdivision,
+                Phone = employee.Phone,
+                RegistrationDate = employee.RegistrationDate.ToString()
             };
         }
         private Employee ConvertToEmployee(EmployeeDto employeeDto)
@@ -41,7 +43,9 @@ namespace Personal_Testing_System.Services
                 Login = employeeDto.Login,
                 Password = employeeDto.Password,
                 DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
-                IdSubdivision = employeeDto.IdSubdivision
+                IdSubdivision = employeeDto.IdSubdivision,
+                Phone = employeeDto.Phone,
+                RegistrationDate = DateOnly.Parse(employeeDto.RegistrationDate)
             };
         }
         //Model
@@ -57,7 +61,9 @@ namespace Personal_Testing_System.Services
                 Login = employee.Login,
                 Password = employee.Password,
                 DateOfBirth = employee.DateOfBirth.ToString(),
-                Subdivision = subdivision
+                Subdivision = subdivision,
+                Phone= employee.Phone,
+                RegistrationDate = employee.RegistrationDate.ToString()
             };
         }
 
@@ -72,7 +78,9 @@ namespace Personal_Testing_System.Services
                 Login = employeeDto.Login,
                 Password = employeeDto.Password,
                 DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
-                IdSubdivision = employeeDto.IdSubdivision
+                IdSubdivision = employeeDto.IdSubdivision,
+                Phone = employeeDto.Phone,
+                RegistrationDate = DateOnly.Parse(employeeDto.RegistrationDate)
             };
         }
 

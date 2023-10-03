@@ -11,6 +11,8 @@ namespace Personal_Testing_System.Models
         public string? Login { get; set; }
         public string? Password { get; set; }
         public string? DateOfBirth { get; set; }
+        public string? Phone { get; set; }
+        public string? RegistrationDate { get; set; }
         public SubdivisionDto? Subdivision { get; set; }
     }
 }

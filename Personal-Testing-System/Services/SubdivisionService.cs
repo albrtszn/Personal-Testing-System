@@ -87,7 +87,8 @@ namespace Personal_Testing_System.Services
         {
             await SubdivisionRepo.SaveSubdivision(new Subdivision
             {
-                Name = SubdivisionToSave.Name
+                Name = SubdivisionToSave.Name,
+                IdGroupPositions = SubdivisionToSave.IdGroupPositions
             });
             return true;
 

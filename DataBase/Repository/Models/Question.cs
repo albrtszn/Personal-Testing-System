@@ -32,6 +32,9 @@ public partial class Question
     [Column("number")]
     public byte? Number { get; set; }
 
+    [Column("weight")]
+    public int? Weight { get; set; }
+
     [InverseProperty("IdQuestionNavigation")]
     public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
 

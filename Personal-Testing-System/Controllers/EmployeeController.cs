@@ -228,6 +228,7 @@ namespace Personal_Testing_System.Controllers
                             Id = test.Id,
                             Name = test.Name,
                             Weight = test.Weight,
+                            Generation = test.Generation,
                             Description = test.Description,
                             Instruction = test.Instruction,
                             CompetenceId = test.IdCompetence.Value,
@@ -242,8 +243,7 @@ namespace Personal_Testing_System.Controllers
                                 IdQuestionType = quest.IdQuestionType,
                                 Text = quest.Text,
                                 Number = Convert.ToInt32(quest.Number),
-                                //todo quest weight
-                                //Weight = quest.Weight,
+                                Weight = quest.Weight,
                                 Answers = new List<object>() { }
                             };
                             if (!quest.ImagePath.IsNullOrEmpty())
@@ -252,7 +252,7 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
                                     string base64 = Convert.ToBase64String(array);
-                                    //createQuestionDto.Base64Image = base64;
+                                    createQuestionDto.Base64Image = base64;
                                     createQuestionDto.ImagePath = quest.ImagePath;
                                 }
                             }
@@ -269,8 +269,7 @@ namespace Personal_Testing_System.Controllers
                                         Number = answerDto.Number,
                                         IdQuestion = answerDto.IdQuestion,
                                         Correct = answerDto.Correct,
-                                        //todo quest.weight
-                                        //Weight = answerDto.Weight
+                                        Weight = answerDto.Weight
                                     };
                                     if (!answerDto.ImagePath.IsNullOrEmpty())
                                     {
@@ -291,18 +290,34 @@ namespace Personal_Testing_System.Controllers
                             }
                             if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
                             {
-                                createQuestionDto.Answers.AddRange(await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
+                                List<FirstPartDto> firstPartDtos = await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id);
+                                List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+
+                                foreach (var firstPart in firstPartDtos)
+                                {
+                                    secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                }
+
+                                Random rand = new Random();
+                                firstPartDtos = firstPartDtos.OrderBy(x => rand.Next()).ToList();
+                                secondPartDtos = secondPartDtos.OrderBy(x => rand.Next()).ToList();
+
+                                createQuestionDto.Answers.AddRange(firstPartDtos);
+                                createQuestionDto.Answers.AddRange(secondPartDtos);
+
+                                /*createQuestionDto.Answers.AddRange(await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id));
 
                                 List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
                                 foreach (var firstPart in await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id))
                                 {
                                     secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                                 }
-                                createQuestionDto.Answers.AddRange(secondPartDtos);
+                                createQuestionDto.Answers.AddRange(secondPartDtos);*/
                             }
 
                             testDto.Questions.Add(createQuestionDto);
                         }
+                        testDto.Questions = testDto.Questions.OrderBy(x => x.Number).ToList();
                         return Ok(testDto);
                     }
                     else
@@ -372,13 +387,15 @@ namespace Personal_Testing_System.Controllers
                         Question? quest= await ms.Question.GetQuestionById(question.QuestionId);
                         if (quest != null)
                         {
+                            int subFlag = 0;
+                            int fsPartFlag = 0;
                             foreach (JsonElement answer in question.Answers)
                             {
                                 AnswerResultModel answerModel = answer.Deserialize<AnswerResultModel>();
                                 SubsequenceResultModel subsequenceModel = answer.Deserialize<SubsequenceResultModel>();
                                 FSPartResultModel fsPartModel = answer.Deserialize<FSPartResultModel>();
 
-                                if (answerModel != null && answerModel.AnswerId.HasValue)
+                                if (answerModel != null && answerModel.AnswerId.HasValue && answerModel.AnswerId > 0)
                                 {
                                     logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
 
@@ -397,11 +414,18 @@ namespace Personal_Testing_System.Controllers
                                 if (subsequenceModel != null && subsequenceModel.SubsequenceId.HasValue)
                                 {
                                     logger.LogInformation($"subsequenceModel -> id={subsequenceModel.SubsequenceId}, number={subsequenceModel.Number}");
-
+                                    int subsequenceCount = (await ms.Subsequence.GetSubsequencesByQuestionId(question.QuestionId)).Count;
                                     if ((await ms.Subsequence.GetSubsequenceById(subsequenceModel.SubsequenceId.Value)).Number == (subsequenceModel.Number.Value))
                                     {
-                                        //todo quest dcore
-                                        //score += quest.Weight.Value;
+                                        subFlag++;
+                                    }
+
+                                    if(subFlag == subsequenceCount)
+                                    {
+                                        if (quest.Weight != null)
+                                        {
+                                            score += quest.Weight.Value;
+                                        }
                                     }
 
                                     await ms.EmployeeSubsequence.SaveEmployeeSubsequence(new EmployeeSubsequence
@@ -415,10 +439,18 @@ namespace Personal_Testing_System.Controllers
                                 {
                                     logger.LogInformation($"fsPartModel -> first={fsPartModel.FirstPartId}, second={fsPartModel.SecondPartId}");
 
+                                    int fsPartsCount = (await ms.FirstPart.GetFirstPartsByQuestionId(question.QuestionId)).Count;
                                     if ((await ms.SecondPart.GetSecondPartById(fsPartModel.SecondPartId.Value)).IdFirstPart.Equals(fsPartModel.FirstPartId))
                                     {
-                                        //todo quest score
-                                       //score += quest.Weight.Value;
+                                        fsPartFlag++;
+                                    }
+
+                                    if(fsPartFlag == fsPartsCount)
+                                    {
+                                        if (quest.Weight != null)
+                                        {
+                                            score += quest.Weight.Value;
+                                        }
                                     }
 
                                     await ms.EmployeeMatching.SaveEmployeeMatching(new EmployeeMatching
@@ -429,6 +461,8 @@ namespace Personal_Testing_System.Controllers
                                     });
                                 }
                             }
+                            subFlag = 0;
+                            fsPartFlag = 0;
                         }
                     }
                     await ms.EmployeeResult.SaveEmployeeResult(new EmployeeResult
@@ -438,8 +472,8 @@ namespace Personal_Testing_System.Controllers
                         ScoreFrom = score, 
                         ScoreTo = testCheck.Weight.Value
                     });
-
-                    await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+                    //todo deletePurpose
+                    //await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
 
                     return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
                 }

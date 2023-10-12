@@ -53,6 +53,11 @@ namespace Personal_Testing_System.Services
             return await EmployeeAnswerRepo.GetAllEmployeeAnswers();
         }
 
+        public async Task<List<EmployeeAnswer>> GetAllEmployeeAnswersByResultId(string resultId)
+        {
+            return (await EmployeeAnswerRepo.GetAllEmployeeAnswers()).Where(x=>x.IdResult.Equals(resultId)).ToList();
+        }
+
         public async Task<List<EmployeeAnswerDto>> GetAllEmployeeAnswerDtos()
         {
             List<EmployeeAnswerDto> EmployeeAnswers = new List<EmployeeAnswerDto>();

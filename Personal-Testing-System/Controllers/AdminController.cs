@@ -1532,6 +1532,7 @@ namespace Personal_Testing_System.Controllers
                                 Id = test.Id,
                                 Name = test.Name,
                                 Weight = test.Weight,
+                                Generation = test.Generation,
                                 Instruction = test.Instruction,
                                 Description = test.Description,
                                 CompetenceId = test.IdCompetence.Value,
@@ -1540,7 +1541,6 @@ namespace Personal_Testing_System.Controllers
 
                             foreach (var quest in questions)
                             {
-                                //todo quest.weight
                                 QuestionModel createQuestionDto = new QuestionModel
                                 {
                                     Id = quest.Id,
@@ -1548,7 +1548,7 @@ namespace Personal_Testing_System.Controllers
                                     Text = quest.Text,
                                     ImagePath = quest.ImagePath,
                                     Number = Convert.ToInt32(quest.Number),
-                                    //Weight = Convert.ToInt32(quest.Number),
+                                    Weight = quest.Weight,
                                     Answers = new List<object>() { }
                                 };
                                 if (!quest.ImagePath.IsNullOrEmpty())
@@ -2386,7 +2386,7 @@ namespace Personal_Testing_System.Controllers
                 AddTestModel? test = JsonConvert.DeserializeObject<AddTestModel>(postModel.Test);
                 if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions != null && test.Questions.Count != 0 &&
-                    test.CompetenceId != 0 && await ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
+                    test.CompetenceId != 0)
                 {
                     TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
@@ -2405,16 +2405,20 @@ namespace Personal_Testing_System.Controllers
                                 UserId = token.IdAdmin,
                                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                                 DataTime = DateTime.Now,
-                                Params = $"Название теста={test.Name}, Id компетенции={test.CompetenceId}"
+                                Params = $"Id компетенции={test.CompetenceId}"
                             });
+
+                            if (await ms.TestType.GetCompetenceById(test.CompetenceId.Value) == null)
+                                return BadRequest(new { message = "Ошибка. Такой компетенции нет" });
+
                             string idTest = Guid.NewGuid().ToString();
                             await ms.Test.SaveTest(new Test
                             {
                                 Id = idTest,
                                 Name = test.Name,
                                 IdCompetence = test.CompetenceId,
-                                //todo quest.weight
-                                //Weight = test.Weight,
+                                Weight = test.Weight,
+                                Generation = test.Generation,
                                 Description = test.Description,
                                 Instruction = test.Instruction
                             });
@@ -2443,8 +2447,7 @@ namespace Personal_Testing_System.Controllers
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = quest.ImagePath,
                                                 Number = Convert.ToByte(countOfQuestions),
-                                                //todo quest.weight
-                                                //Weight = quest.Weight,
+                                                Weight = quest.Weight,
                                                 IdTest = idTest
                                             });
                                         }
@@ -2463,8 +2466,7 @@ namespace Personal_Testing_System.Controllers
                                                 IdQuestionType = quest.IdQuestionType,
                                                 ImagePath = imagePath,
                                                 Number = Convert.ToByte(countOfQuestions),
-                                                //todo quest.weight
-                                                //Weight = Convert.ToByte(quest.Weight),
+                                                Weight = quest.Weight,
                                                 IdTest = idTest
                                             });
                                         }
@@ -2479,8 +2481,7 @@ namespace Personal_Testing_System.Controllers
                                         IdQuestionType = quest.IdQuestionType,
                                         ImagePath = quest.ImagePath,
                                         Number = Convert.ToByte(countOfQuestions),
-                                        //todo quest.weight
-                                        //Weight = quest.Weight,
+                                        Weight = quest.Weight,
                                         IdTest = idTest
                                     });
                                 }
@@ -2605,7 +2606,7 @@ namespace Personal_Testing_System.Controllers
                 UpdateTestModel? test = JsonConvert.DeserializeObject<UpdateTestModel>(updatePostModel.Test);
                 if (!Authorization.IsNullOrEmpty() && test != null && !test.Name.IsNullOrEmpty() && test.Weight.HasValue &&
                     test.CompetenceId.HasValue && test.Questions != null && test.Questions.Count != 0 &&
-                    test.CompetenceId != 0 && await ms.TestType.GetCompetenceById(test.CompetenceId.Value) != null)
+                    test.CompetenceId != 0)
                 {
                     TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
@@ -2624,17 +2625,21 @@ namespace Personal_Testing_System.Controllers
                                 UserId = token.IdAdmin,
                                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                                 DataTime = DateTime.Now,
-                                Params = $"Id Теста={test.Id}, Название Теста={test.Name}, Кол-во вопросов={test.Questions.Count}"
+                                Params = $"Id Теста={test.Id}"
                             });
 
+                            if (await ms.TestType.GetCompetenceById(test.CompetenceId.Value) == null)
+                                return BadRequest(new { message = "Ошибка. Такой компетенции нет"});
+
                             if (await ms.Test.GetTestById(test.Id) == null)
-                                return BadRequest(new { message = "Ошибка. Такого теста не существует" });
+                                return BadRequest(new { message = "Ошибка. Такого теста нет" });
 
                             await ms.Test.SaveTest(new Test
                             {
                                 Id = test.Id,
                                 Name = test.Name,
                                 Weight = test.Weight,
+                                Generation = test.Generation,
                                 IdCompetence = test.CompetenceId,
                                 Instruction = test.Instructuion,
                                 Description = test.Description
@@ -2672,8 +2677,7 @@ namespace Personal_Testing_System.Controllers
                                         IdTest = test.Id,
                                         ImagePath = quest.ImagePath,
                                         Number = Convert.ToByte(quest.Number),
-                                        //todo quest.weight
-                                        //Weight = quest.Weight
+                                        Weight = quest.Weight
                                     });
                                 }
                                 else
@@ -2691,8 +2695,7 @@ namespace Personal_Testing_System.Controllers
                                         ImagePath = quest.ImagePath,
                                         IdTest = test.Id,
                                         Number = Convert.ToByte(quest.Number),
-                                        //todo quest.weight
-                                        //Weight = quest.Weight
+                                        Weight = quest.Weight
                                     });
                                 }
                                 foreach (JObject answer in quest.Answers)
@@ -2843,8 +2846,7 @@ namespace Personal_Testing_System.Controllers
             {
                 AddQuestionInTestModel? quest = JsonConvert.DeserializeObject<AddQuestionInTestModel>(addQuestModel.Question);
                 if (!Authorization.IsNullOrEmpty() && quest != null && !string.IsNullOrEmpty(quest.IdTest) && !quest.Text.IsNullOrEmpty() &&
-                    quest.IdQuestionType.HasValue && quest.Answers != null && quest.Answers.Count != 0 &&
-                    await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) != null)
+                    quest.IdQuestionType.HasValue && quest.Answers != null && quest.Answers.Count != 0 && quest.Weight.HasValue )
                 {
                     TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
@@ -2863,8 +2865,11 @@ namespace Personal_Testing_System.Controllers
                                 UserId = token.IdAdmin,
                                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                                 DataTime = DateTime.Now,
-                                Params = $"Id Теста={quest.IdTest}, Текст Вопроса={quest.Text}, Кол-во вопросов={quest.Answers.Count}"
+                                Params = $"Id Теста={quest.IdTest}, Кол-во ответов={quest.Answers.Count}"
                             });
+
+                            if (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) == null)
+                                return BadRequest(new { message = "Ошибка. Нет такого типа вопроса" });
 
                             if (await ms.Test.GetTestById(quest.IdTest) == null)
                                 return BadRequest(new { message = "Ошибка. Такого теста не существует" });
@@ -2897,8 +2902,7 @@ namespace Personal_Testing_System.Controllers
                                 IdTest = quest.IdTest,
                                 ImagePath = quest.ImagePath,
                                 Number = Convert.ToByte(questNumber),
-                                //todo quest.weight
-                                //Weight = quest.Weight
+                                Weight = quest.Weight
                             });
 
                             int answerNumber = 1;
@@ -3376,8 +3380,9 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Result
          */
+        //todo edit query GetResults
         [HttpPost("GetResults")]
-        public async Task<IActionResult> GetResults([FromHeader] string Authorization, [FromBody] ResultQuerryModel query)
+        public async Task<IActionResult> GetResults([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty())
             {
@@ -3400,7 +3405,7 @@ namespace Personal_Testing_System.Controllers
                         });
 
                         List<EmployeeResultModel> list = await ms.GetAllEmployeeResultModels();
-                        if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
+                        /*if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
                         {
                             list = list.Where(x => x.Employee.Subdivision.Id == query.IdSubdivision).ToList();
                         }
@@ -3453,8 +3458,189 @@ namespace Personal_Testing_System.Controllers
                             {
                                 list = list.OrderByDescending(x => x.ScoreFrom).ToList();
                             }
-                        }
+                        }*/
                         return Ok(list);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("GetEmployeeResultAnswers")]
+        public async Task<IActionResult> GetResult([FromHeader] string Authorization, [FromBody]StringIdModel ResultId)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty() && ResultId != null && !ResultId.Id.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResult");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResult",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id результата={ResultId.Id}"
+                        });
+
+                        Result result = (await ms.Result.GetResultById(ResultId.Id));
+                        if (ResultId == null)
+                            return NotFound(new { message = "Ошибка. такого результата нет" });
+                        List<EmployeeAnswer>? employeeAnswers = await ms.EmployeeAnswer.GetAllEmployeeAnswersByResultId(result.Id);
+                        List<EmployeeSubsequence>? employeeSubs = await ms.EmployeeSubsequence.GetAllEmployeeSubsequencesByResultId(result.Id);
+                        List<EmployeeMatching>? employeeMatchs = await ms.EmployeeMatching.GetAllEmployeeMatchingsByResultId(result.Id);
+
+
+                        Test? test = await ms.Test.GetTestById(result.IdTest);
+                        if (test == null) 
+                            return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        List<Question> questions = (await ms.Question.GetAllQuestions())
+                            .Where(x => x.IdTest.Equals(test.Id)).ToList();
+                        questions = questions.OrderBy(x => x.Number).ToList();
+
+                        TestModel testDto = new TestModel
+                        {
+                            Id = test.Id,
+                            Name = test.Name,
+                            Weight = test.Weight,
+                            Generation = test.Generation,
+                            Instruction = test.Instruction,
+                            Description = test.Description,
+                            CompetenceId = test.IdCompetence.Value,
+                            Questions = new List<QuestionModel>()
+                        };
+
+                        foreach (var quest in questions)
+                        {
+                            QuestionModel createQuestionDto = new QuestionModel
+                            {
+                                Id = quest.Id,
+                                IdQuestionType = quest.IdQuestionType,
+                                Text = quest.Text,
+                                ImagePath = quest.ImagePath,
+                                Number = Convert.ToInt32(quest.Number),
+                                Weight = quest.Weight,
+                                Answers = new List<object>() { }
+                            };
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    createQuestionDto.Base64Image = base64;
+                                }
+                            }
+
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<Answer> list = await ms.Answer.GetAnswersByQuestionId(quest.Id);
+                                foreach (Answer answer in list)
+                                {
+                                    EmployeeAnswerModel model = new EmployeeAnswerModel
+                                    {
+                                        IdAnswer = answer.Id,
+                                        Text = answer.Text,
+                                        IdQuestion = answer.IdQuestion,
+                                        Number = answer.Number,
+                                        Weight = answer.Weight,
+                                        Correct = answer.Correct
+                                    };
+                                    if (!answer.ImagePath.IsNullOrEmpty())
+                                    {
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath))
+                                        {
+                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath);
+                                            string base64 = Convert.ToBase64String(array);
+                                            model.Base64Image = base64;
+                                            model.ImagePath = answer.ImagePath;
+                                        }
+                                    }
+                                    if (employeeAnswers.Find(x=>x.IdAnswer.Equals(answer.Id)) != null)
+                                    {
+                                        model.IsUserAnswer = true;
+                                    }
+                                    else
+                                    {
+                                        model.IsUserAnswer = false;
+                                    }
+                                    createQuestionDto.Answers.Add(model);
+                                }
+                            }
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<SubsequenceDto> subs = await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id);
+                                foreach (SubsequenceDto dto in subs)
+                                {
+                                    EmployeeSubsequence userSubsequence = employeeSubs.Find(x => x.IdSubsequence.Equals(dto.IdSubsequence));
+                                    if (userSubsequence != null)
+                                    {
+                                        dto.Number = userSubsequence.Number;
+                                        createQuestionDto.Answers.Add(dto);
+                                    }
+                                    else
+                                    {
+                                        dto.Number = 0;
+                                        createQuestionDto.Answers.Add(dto);
+                                    }
+                                }
+                                //createQuestionDto.Answers.AddRange();
+                            }
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<FirstPartDto> firstPartDtos = await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id);
+                                List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+
+                                foreach (var firstPart in firstPartDtos)
+                                {
+                                    secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                }
+
+                                /*Random rand = new Random();
+                                firstPartDtos = firstPartDtos.OrderBy(x => rand.Next()).ToList();
+                                secondPartDtos = secondPartDtos.OrderBy(x => rand.Next()).ToList();*/
+
+                                List<EmployeeResultFSPartModel> models = new List<EmployeeResultFSPartModel>();
+                                foreach(SecondPartDto sDto in secondPartDtos)
+                                {
+                                    EmployeeMatching match = employeeMatchs.Find(x=>x.IdSecondPart.Equals(sDto.IdSecondPart));
+                                    if (match != null)
+                                    {
+                                        models.Add(new EmployeeResultFSPartModel
+                                        {
+                                            FirstPartId = firstPartDtos.FirstOrDefault(x=>x.IdFirstPart.Equals(match.IdFirstPart)),
+                                            SecondPartId = secondPartDtos.FirstOrDefault(x=>x.IdSecondPart.Equals(match.IdSecondPart)),
+                                            IsUserAnswer = true
+                                        });
+                                    }
+                                    else
+                                    {
+                                        models.Add(new EmployeeResultFSPartModel
+                                        {
+                                            FirstPartId = firstPartDtos.FirstOrDefault(x => x.IdFirstPart.Equals(sDto.IdFirstPart)),
+                                            SecondPartId = sDto,
+                                            IsUserAnswer = false
+                                        });
+                                    }
+                                }
+
+                                createQuestionDto.Answers.Add(models);
+                                /*createQuestionDto.Answers.AddRange(firstPartDtos);
+                                createQuestionDto.Answers.AddRange(secondPartDtos);*/
+                            }
+                            testDto.Questions.Add(createQuestionDto);
+                        }
+                        testDto.Questions.OrderBy(x => x.Number);
+                        return Ok(testDto);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });

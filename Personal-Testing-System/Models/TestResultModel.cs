@@ -7,7 +7,8 @@
         public string? StartDate { get; set; }//DateOnly
         public string? StartTime { get; set; }//TimeOnly
         public string? EndTime { get; set; }//DateOnly
-        public string? Description { get; set; }
+        //todo edit PushTest 
+        //public string? Description { get; set; }
         public List<QuestionResultModel>? Questions { get; set; }
     }
 }

@@ -41,6 +41,11 @@ namespace Personal_Testing_System.Services
             return SecondParts;
         }
 
+        public async Task<SecondPart> GetSecondPartByFirstPartId(string id)
+        {
+            return (await GetAllSecondParts()).Find(x => x.IdFirstPart.Equals(id));
+        }
+
         public async Task<SecondPartDto> GetSecondPartDtoByFirstPartId(string id)
         {
             return (await GetAllSecondPartDtos()).Find(x => x.IdFirstPart.Equals(id));

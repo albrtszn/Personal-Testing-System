@@ -43,6 +43,11 @@ namespace Personal_Testing_System.Services
             return await FirstPartRepo.GetAllFirstParts();
         }
 
+        public async Task<List<FirstPart>> GetFirstPartsByQuestionId(string id)
+        {
+            return (await GetAllFirstParts()).Where(x => x.IdQuestion.Equals(id)).ToList();
+        }
+
         public async Task<List<FirstPartDto>> GetFirstPartDtos()
         {
             List<FirstPartDto> FirstParts = new List<FirstPartDto>();

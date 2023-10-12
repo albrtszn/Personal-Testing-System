@@ -47,6 +47,7 @@ namespace CRUD.implementations
                 Test.Name = TestToSave.Name;
                 Test.IdCompetence = TestToSave.IdCompetence;
                 Test.Weight = TestToSave.Weight;
+                Test.Generation = TestToSave.Generation;
                 Test.Description = TestToSave.Description;
                 Test.Instruction = TestToSave.Instruction;
 

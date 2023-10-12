@@ -32,6 +32,9 @@ public partial class Test
     [StringLength(500)]
     public string? Instruction { get; set; }
 
+    [Column("generation")]
+    public bool? Generation { get; set; }
+
     [InverseProperty("IdTestNavigation")]
     public virtual ICollection<CompetenciesForGroup> CompetenciesForGroups { get; set; } = new List<CompetenciesForGroup>();
 

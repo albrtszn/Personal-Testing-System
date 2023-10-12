@@ -56,6 +56,11 @@ namespace Personal_Testing_System.Services
             return await EmployeeSubsequenceRepo.GetAllEmployeeSubsequences();
         }
 
+        public async Task<List<EmployeeSubsequence>> GetAllEmployeeSubsequencesByResultId(string resultId)
+        {
+            return (await EmployeeSubsequenceRepo.GetAllEmployeeSubsequences()).Where(x=>x.IdResult.Equals(resultId)).ToList();
+        }
+
         public async Task<List<EmployeeSubsequenceDto>> GetAllEmployeeSubsequenceDtos()
         {
             List<EmployeeSubsequenceDto> EmployeeSubsequences = new List<EmployeeSubsequenceDto>();

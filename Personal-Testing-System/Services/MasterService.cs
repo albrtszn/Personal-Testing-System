@@ -189,9 +189,10 @@ namespace Personal_Testing_System.Services
          */
         public async Task<bool> DeleteTestById(string id, IWebHostEnvironment env)
         {
-            foreach (Question quest in (await Question.GetAllQuestions()).Where(x => x.IdTest.Equals(id)).ToList())
+            List<Question> quests = (await Question.GetQuestionsByTest(id));
+            foreach (Question quest in quests)
             {
-                List<Answer> answerList = (await Answer.GetAllAnswers()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
+                List<Answer> answerList = (await Answer.GetAnswersByQuestionId(quest.Id));
                 foreach (Answer answer in answerList)
                 {
                     string answerFilePath = env.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath;
@@ -199,14 +200,25 @@ namespace Personal_Testing_System.Services
                     {
                         System.IO.File.Delete(answerFilePath);
                     }
+                    await Answer.DeleteAnswerById(answer.Id);
                 }
-                answerList.ForEach(async x => await Answer.DeleteAnswerById(x.Id));
+                //answerList.ForEach(async x => await Answer.DeleteAnswerById(x.Id));
 
-                (await Subsequence.GetAllSubsequences()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList()
-                      .ForEach(async x => await Subsequence.DeleteSubsequenceById(x.Id));
-                List<FirstPart> list = (await FirstPart.GetAllFirstParts()).Where(x => x.IdQuestion.Equals(quest.Id)).ToList();
-                list.ForEach(async x => await SecondPart.DeleteSecondPartById((await SecondPart.GetSecondPartDtoByFirstPartId(x.Id)).IdSecondPart.Value));
-                list.ForEach(async x => await FirstPart.DeleteFirstPartById(x.Id));
+                List<Subsequence> subs = (await Subsequence.GetSubsequencesByQuestionId(quest.Id));
+                foreach(Subsequence subsequence in subs)
+                {
+                    await Subsequence.DeleteSubsequenceById(subsequence.Id);
+                }
+
+                List<FirstPart> list = (await FirstPart.GetFirstPartsByQuestionId(quest.Id));
+                foreach(FirstPart firstPart in list)
+                {
+                    SecondPart sPart = await SecondPart.GetSecondPartByFirstPartId(firstPart.Id);
+                    await SecondPart.DeleteSecondPartById(sPart.Id);
+                    await FirstPart.DeleteFirstPartById(firstPart.Id);
+                }
+                /*list.ForEach(async x => await SecondPart.DeleteSecondPartById((await SecondPart.GetSecondPartDtoByFirstPartId(x.Id)).IdSecondPart.Value));
+                list.ForEach(async x => await FirstPart.DeleteFirstPartById(x.Id));*/
                 string path = env.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath;
                 if (File.Exists(path))
                 {
@@ -254,14 +266,21 @@ namespace Personal_Testing_System.Services
         public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModels()
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            (await EmployeeResult.GetAllEmployeeResults()).ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
+            foreach (EmployeeResult result in  await EmployeeResult.GetAllEmployeeResults())
+            {
+                list.Add(await ConvertToEmployeeResultModel(result));
+            } 
+            //().ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
             return list;
         }
         public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            (await EmployeeResult.GetAllEmployeeResults()).Where(x => x.IdEmployee.Equals(employeeId)).ToList()
-                          .ForEach(async x => list.Add( await ConvertToEmployeeResultModel(x)));
+            List<EmployeeResult> employeeResults = (await EmployeeResult.GetAllEmployeeResults()).Where(x => x.IdEmployee.Equals(employeeId)).ToList();
+            foreach (EmployeeResult res in employeeResults)
+            {
+                list.Add(await ConvertToEmployeeResultModel(res));
+            }
             return list;
         }
     }

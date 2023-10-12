@@ -58,6 +58,11 @@ namespace Personal_Testing_System.Services
             return await EmployeeMatchingRepo.GetAllEmployeeMatchings();
         }
 
+        public async Task<List<EmployeeMatching>> GetAllEmployeeMatchingsByResultId(string resultId)
+        {
+            return (await EmployeeMatchingRepo.GetAllEmployeeMatchings()).Where(x => x.IdResult.Equals(resultId)).ToList();
+        }
+
         public async Task<List<EmployeeMatchingDto>> GetAllEmployeeMatchingDtos()
         {
             List<EmployeeMatchingDto> EmployeeMatchings = new List<EmployeeMatchingDto>();

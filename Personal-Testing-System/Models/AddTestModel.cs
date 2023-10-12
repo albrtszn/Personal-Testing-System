@@ -4,6 +4,7 @@
     {
         public string? Name { get; set; }
         public int? Weight { get; set; }
+        public bool? Generation { get; set; }
         public int? CompetenceId { get; set; }
         public string? Description { get; set; }
         public string? Instruction { get; set; }

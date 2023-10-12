@@ -54,8 +54,7 @@ namespace CRUD.implementations
                 question.IdTest = QuestionToSave.IdTest;
                 question.ImagePath = QuestionToSave.ImagePath;
                 question.Number = QuestionToSave.Number;
-                //todo quest weight
-                //question.Weight = QuestionToSave.Weight;
+                question.Weight = QuestionToSave.Weight;
 
                 await context.SaveChangesAsync();
             }

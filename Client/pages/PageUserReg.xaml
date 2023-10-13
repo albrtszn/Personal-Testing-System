@@ -1,0 +1,43 @@
+﻿<Page x:Class="Client.forms.PageUserReg"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.forms"
+      mc:Ignorable="d" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      d:DesignHeight="750" d:DesignWidth="800"
+      Title="PageUserReg"
+      Background="White">
+
+    <Grid Margin="20 0 20 0">
+        <StackPanel>
+            <TextBlock Text="Регистрация нового пользователя" HorizontalAlignment="Center" FontSize="15"/>
+            <TextBox x:Name="addLastName" materialDesign:HintAssist.Hint="Введите фамилию" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Введите имя" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Введите отчество" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Введите дату рождения" FontSize="15" Margin="15 5 15 10" Padding="5"></DatePicker>
+            <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            <TextBox x:Name="addLogin" materialDesign:HintAssist.Hint="Введите логин" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"> </TextBox>
+            <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Введите пароль" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            
+            <ComboBox x:Name="profileCB"   FontSize="15" Margin="15 5 15 10" Padding="5" SelectedIndex="0">
+                <TextBlock>Механик</TextBlock>
+                <TextBlock>Технолог</TextBlock>
+            </ComboBox>
+            
+            <ComboBox x:Name="groupeCB"  FontSize="15" Margin="15 5 15 10" Padding="5" SelectedIndex="0">
+                <TextBlock Text="Группа 1"> </TextBlock>
+                <TextBlock Text="Группа 2"> </TextBlock>
+                <TextBlock Text="Группа 3"> </TextBlock>
+                <TextBlock Text="Группа 4"> </TextBlock>
+            </ComboBox>
+            <ComboBox x:Name="subdivisionComboBox" DisplayMemberPath="Name"  FontSize="15" Margin="15 5 15 10" Padding="5"/>
+            <Grid Margin="0 0 0 10">
+                <Button Background="#2E333A" Content="Добавить" FontSize="15" Width="100" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" />
+
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</Page>

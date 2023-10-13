@@ -1,0 +1,155 @@
+﻿<Page x:Class="Client.pages.PageAddQuestion"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1000"
+      Title="PageAddQuestion"
+      Background="White">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <ScrollViewer>
+        <StackPanel>
+            <Label Content="Тип вопроса" Margin="20 20 20 0"/>
+            <ComboBox x:Name="QType" FontSize="15" Margin="20 0 20 5" Padding="5" SelectedIndex="0" >
+                <TextBlock>Вопрос с одним ответом</TextBlock>
+                <TextBlock>Вопрос на установление порядка</TextBlock>
+                <TextBlock>Вопрос на соответствие</TextBlock>
+            </ComboBox>
+            <Label Content="Количество ответов" Margin="20 0 20 0"/>
+            <ComboBox x:Name="QKol" FontSize="15" Margin="20 0 20 5" Padding="5" SelectedIndex="3">
+                <TextBlock>1</TextBlock>
+                <TextBlock>2</TextBlock>
+                <TextBlock>3</TextBlock>
+                <TextBlock>4</TextBlock>
+                <TextBlock>5</TextBlock>
+                <TextBlock>6</TextBlock>
+                <TextBlock>7</TextBlock>
+                <TextBlock>8</TextBlock>
+                <TextBlock>9</TextBlock>
+                <TextBlock>10</TextBlock>
+            </ComboBox>
+            <TextBox x:Name="QName" materialDesign:HintAssist.Hint="Введите наименование вопроса" FontSize="15" Margin="20 0 20 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+            <Border Margin="20 0 20 10" BorderBrush="Gray" BorderThickness="1,1,1,1" Padding="0 0 0 10">
+                <Grid Margin="20 0 20 0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Ответ 1:"  FontSize="15"/>
+                    <TextBox x:Name="QAnsweText1" Grid.ColumnSpan="4" Grid.Row="1" materialDesign:HintAssist.Hint="Текст ответа 1" FontSize="15" Margin="0 0 0 15" Padding="0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                    <Button Grid.Column="0" Grid.Row="2" Content="Добавить изображение" Click="Button_Click_1"/>
+                    <TextBox x:Name="QFile1" Grid.Row="2" Grid.Column="1"  materialDesign:HintAssist.Hint="Наименование файла" Text="Изображение не загружено" Margin="15 0 15 0"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" />
+                    <TextBox x:Name="QWeigth1" Grid.Row="2" Grid.Column="2"  materialDesign:HintAssist.Hint="Весовой коэффициент" Margin="0 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <ComboBox Name="QAnswerCor1" Grid.Column="3" Grid.Row="2" VerticalAlignment="Bottom" SelectedIndex="1">
+                        <TextBlock>Верно</TextBlock>
+                        <TextBlock>Неверно</TextBlock>
+                    </ComboBox>
+
+                </Grid>
+            </Border>
+            
+            <Border Margin="20 0 20 10" BorderBrush="Gray" BorderThickness="1,1,1,1" Padding="0 0 0 10">
+                <Grid Margin="20 0 20 0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Ответ 2:"  FontSize="15"/>
+                    <TextBox x:Name="QAnsweText2" Grid.ColumnSpan="4" Grid.Row="1" materialDesign:HintAssist.Hint="Текст ответа 2" FontSize="15" Margin="0 0 0 15" Padding="0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                    <Button Grid.Column="0" Grid.Row="2" Content="Добавить изображение"/>
+                    <TextBox x:Name="QFile2" Grid.Row="2" Grid.Column="1"  materialDesign:HintAssist.Hint="Наименование файла" Text="Изображение не загружено" Margin="15 0 15 0"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" />
+                    <TextBox x:Name="QWeigth2" Grid.Row="2" Grid.Column="2"  materialDesign:HintAssist.Hint="Весовой коэффициент" Margin="0 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <ComboBox Name="QAnswerCor2" Grid.Column="3" Grid.Row="2" VerticalAlignment="Bottom" SelectedIndex="1">
+                        <TextBlock>Верно</TextBlock>
+                        <TextBlock>Неверно</TextBlock>
+                    </ComboBox>
+
+                </Grid>
+            </Border>
+
+            <Border Margin="20 0 20 10" BorderBrush="Gray" BorderThickness="1,1,1,1" Padding="0 0 0 10">
+                <Grid Margin="20 0 20 0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Ответ 3:"  FontSize="15"/>
+                    <TextBox x:Name="QAnsweText3" Grid.ColumnSpan="4" Grid.Row="1" materialDesign:HintAssist.Hint="Текст ответа 3" FontSize="15" Margin="0 0 0 15" Padding="0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                    <Button Grid.Column="0" Grid.Row="2" Content="Добавить изображение"/>
+                    <TextBox x:Name="QFile3" Grid.Row="2" Grid.Column="1"  materialDesign:HintAssist.Hint="Наименование файла" Text="Изображение не загружено" Margin="15 0 15 0"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" />
+                    <TextBox x:Name="QWeigth3" Grid.Row="2" Grid.Column="2"  materialDesign:HintAssist.Hint="Весовой коэффициент" Margin="0 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <ComboBox Name="QAnswerCor3" Grid.Column="3" Grid.Row="2" VerticalAlignment="Bottom" SelectedIndex="1">
+                        <TextBlock>Верно</TextBlock>
+                        <TextBlock>Неверно</TextBlock>
+                    </ComboBox>
+
+                </Grid>
+            </Border>
+
+            <Border Margin="20 0 20 10" BorderBrush="Gray" BorderThickness="1,1,1,1" Padding="0 0 0 10">
+                <Grid Margin="20 0 20 0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Ответ 4:"  FontSize="15"/>
+                    <TextBox x:Name="QAnsweText4" Grid.ColumnSpan="4" Grid.Row="1" materialDesign:HintAssist.Hint="Текст ответа 4" FontSize="15" Margin="0 0 0 15" Padding="0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                    <Button Grid.Column="0" Grid.Row="2" Content="Добавить изображение"/>
+                    <TextBox x:Name="QFile4" Grid.Row="2" Grid.Column="1"  materialDesign:HintAssist.Hint="Наименование файла" Text="Изображение не загружено" Margin="15 0 15 0"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsReadOnly="True" />
+                    <TextBox x:Name="QWeigth4" Grid.Row="2" Grid.Column="2"  materialDesign:HintAssist.Hint="Весовой коэффициент" Margin="0 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <ComboBox Name="QAnswerCor4" Grid.Column="3" Grid.Row="2" VerticalAlignment="Bottom" SelectedIndex="1">
+                        <TextBlock>Верно</TextBlock>
+                        <TextBlock>Неверно</TextBlock>
+                    </ComboBox>
+
+                </Grid>
+            </Border>
+
+            <Grid Margin="0 10 0 10">
+                <Button Background="#2E333A" Content="Добавить" FontSize="15" Width="100" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click_final" />
+            </Grid>
+        </StackPanel>
+            </ScrollViewer>
+
+    </Grid>
+</Page>

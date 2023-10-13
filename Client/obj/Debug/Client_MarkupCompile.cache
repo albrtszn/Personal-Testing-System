@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\Chertkov\workspace\Personal-Testing-System\Client\App.xaml
-22080152624
+181475119907
 
-6-1331834086
-17-367990858
-MainWindow.xaml;Window1.xaml;
+54-1536432570
+20-1522972248
+pages\PageResults.xaml;pages\PageRunTest.xaml;windows\AutWindow.xaml;windows\addSubdivision.xaml;pages\PageAddPurpose.xaml;pages\PageAddQuestion.xaml;pages\PageCompetence.xaml;pages\PageHome.xaml;pages\PageLogs.xaml;pages\PageSubdivision.xaml;pages\PageTestOne.xaml;pages\PageTests.xaml;pages\PageUserHome.xaml;pages\PageUserReg.xaml;pages\PageUsers.xaml;windows\MainWindow.xaml;windows\SettingConnHost.xaml;windows\UserWindow.xaml;
 
-False
+True
 

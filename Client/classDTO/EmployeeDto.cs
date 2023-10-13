@@ -1,0 +1,27 @@
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using MaterialDesignThemes.Wpf;
+using System.Collections.ObjectModel;
+using System.Configuration;
+
+namespace Client
+{
+    public class EmployeeDto
+    {
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string SecondName { get; set; }
+        public string LastName { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public string DateOfBirth { get; set; }
+        public int IdSubdivision { get; set; }
+        public string Phone { get; set; }
+        public string RegistrationDate { get; set; }
+    }
+}

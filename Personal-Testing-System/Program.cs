@@ -3,10 +3,12 @@ using CRUD.interfaces;
 using DataBase;
 using DataBase.Repository;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Personal_Testing_System;
+using Personal_Testing_System.Hubs;
 using Personal_Testing_System.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +65,13 @@ builder.Services.AddScoped<LogService>();
 builder.Services.AddScoped<TokenEmployeeService>();
 builder.Services.AddScoped<TokenAdminService>();
 builder.Services.AddScoped<MasterService>();
+//builder.Services.AddScoped<IHubContext<NotificationHub, INotificationClient>>();
+//builder.Services.AddScoped<NotificationHub>();
+//builder.Services.AddSignalRCore();
+builder.Services.AddSignalR();/*options =>
+{
+    options.EnableDetailedErrors = true;
+});*/
 
 //builder.Services.Configure<TokenTimeToLiveInHours>(builder.Configuration.GetSection("TokenTimeToLiveInHours"));
 //builder.Services.AddScoped<TokenTimeToLiveInHours>();
@@ -141,9 +150,11 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 app.UseDefaultFiles();
-app.UseCors();
+app.UseCors(builder => builder.AllowAnyOrigin());
 
 app.UseHttpsRedirection();
+
+app.MapHub<NotificationHub>("notification-hub");
 
 app.UseAuthorization();
 

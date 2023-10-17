@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using PdfSharpCore;
 using PdfSharpCore.Pdf;
 using Personal_Testing_System.DTOs;
+using Personal_Testing_System.Hubs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
 using System.ComponentModel.DataAnnotations;
@@ -34,12 +35,14 @@ namespace Personal_Testing_System.Controllers
         private readonly ILogger<AdminController> logger;
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
+        private IHubContext<NotificationHub, INotificationClient> notificationHub;
         public AdminController(ILogger<AdminController> _logger, MasterService _masterService,
-                               IWebHostEnvironment _environmentironment)//, EFDbContext db)
+                               IWebHostEnvironment _environmentironment, IHubContext<NotificationHub, INotificationClient> _notificationHub)//, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             environment = _environmentironment;
+            notificationHub = _notificationHub;
             ///InitDB.InitData(db);
             //CreateDirectory !!!
             /*if (!Directory.Exists(environment.WebRootPath + "/images"))
@@ -52,6 +55,12 @@ namespace Personal_Testing_System.Controllers
         public async Task<IActionResult> Ping()
         {
             return Ok(new { message = $"Ping: {HttpContext.Request.Host + HttpContext.Request.Path} {DateTime.Now}." });
+        }
+        [HttpGet("RequestestNotification")]
+        public async Task<IActionResult> RequestestNotification()
+        {
+            await notificationHub.Clients.All.ReceiveMessage($"Test message to all connections.{DateTime.Now}");
+            return NoContent();
         }
         /*
          *  TEST METHODS
@@ -3467,8 +3476,50 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("GetResultsByEmployee")]
+        public async Task<IActionResult> GetResultsByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetTestResultsByEmployee");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetTestResultsByEmployee",
+                        UserId = $"{token.IdAdmin}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"EmployeeId={id.Id}"
+                    });
+
+                    if (await ms.Employee.GetEmployeeById(id.Id) == null)
+                    {
+                        return NotFound(new { message = "Ошибка. Такого пользователя нет" });
+                    }
+
+                    List<EmployeeResultModel>? results = await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+                    if (results != null && results.Count != 0)
+                    {
+                        return Ok(results);
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Результатов нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("GetEmployeeResultAnswers")]
-        public async Task<IActionResult> GetResult([FromHeader] string Authorization, [FromBody]StringIdModel ResultId)//, [FromBody] ResultQuerryModel query)
+        public async Task<IActionResult> GetEmployeeResultAnswers([FromHeader] string Authorization, [FromBody]StringIdModel ResultId)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty() && ResultId != null && !ResultId.Id.IsNullOrEmpty())
             {

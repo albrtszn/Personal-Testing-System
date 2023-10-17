@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using DataBase.Repository;
 using DataBase;
+using Microsoft.AspNetCore.SignalR;
+using Personal_Testing_System.Hubs;
 
 namespace Personal_Testing_System.Controllers
 {
@@ -24,12 +26,15 @@ namespace Personal_Testing_System.Controllers
         private readonly ILogger<EmployeeController> logger;
         private readonly IWebHostEnvironment environment;
         private MasterService ms;
+        private IHubContext<NotificationHub, INotificationClient> notificationHub;
+
         public EmployeeController(ILogger<EmployeeController> _logger, MasterService _masterService,
-                                  IWebHostEnvironment environment)//, EFDbContext db)
+                                  IWebHostEnvironment environment, IHubContext<NotificationHub, INotificationClient> _notificationHub)//, EFDbContext db)
         {
             logger = _logger;
             ms = _masterService;
             this.environment = environment;
+            notificationHub = _notificationHub;
             //InitDB.InitData(db);
         }
 
@@ -400,9 +405,10 @@ namespace Personal_Testing_System.Controllers
                                     logger.LogInformation($"answerModel -> text={answerModel.AnswerId}");
 
                                     Answer answerCheck = await ms.Answer.GetAnswerById(answerModel.AnswerId.Value);
-                                    if (answerCheck.Correct.Value)
+                                    if (answerCheck.Correct != null && answerCheck.Correct.Value)
                                     {
-                                        score += answerCheck.Weight.Value;
+                                        if(answerCheck.Weight.HasValue)
+                                            score += answerCheck.Weight.Value;
                                     }
 
                                     await ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
@@ -474,6 +480,10 @@ namespace Personal_Testing_System.Controllers
                     });
                     //todo deletePurpose
                     //await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
+                    Employee? employee = await ms.Employee.GetEmployeeById(token.IdEmployee);
+                    if (employee != null) {
+                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.SecondName} {employee.FirstName} {employee.LastName} завершил тест '{testCheck.Name} с оценкой '{score}'.");
+                    }
 
                     return Ok(new { message = $"Тест выполнен. Оценка: {score}" });
                 }

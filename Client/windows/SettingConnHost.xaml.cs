@@ -19,8 +19,11 @@ namespace Client
     /// </summary>
     public partial class SettingConnHost : Window
     {
-        public SettingConnHost()
+        private MainWindow globalOwner;
+
+        public SettingConnHost(object myOwner)
         { 
+            globalOwner = myOwner as MainWindow;
             InitializeComponent();
             serverName.Text = ConnectHost.urlHost;
             if (ConnectHost.proсHost == "http")
@@ -40,8 +43,7 @@ namespace Client
             try
             {
                 this.Close(); // Скрываем нынешнее окно
-                AutWindow autWindow = new AutWindow();
-                autWindow.Show();
+                globalOwner.Show();
 
             }
             catch (Exception ex)

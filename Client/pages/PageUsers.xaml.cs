@@ -41,15 +41,5 @@ namespace Client.forms
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-            //VM.UserVM.UserEmployee emp = new VM.UserVM.UserEmployee();
-            //emp = DGuser.SelectedItem as VM.UserVM.UserEmployee;
-            //this.NavigationService.Navigate(new PageAddPurpose(emp.employee));
-
-
-
-        }
     }
 }

@@ -64,6 +64,25 @@ namespace Client
             return jObject;
         }
 
+        public async Task<JToken> DeleteEmployee(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/DeleteEmployee";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/DeleteEmployee";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+
         public async Task<JToken> AddPurpose(string pay_data)
         {
             Payload data_payload = new Payload();
@@ -175,6 +194,25 @@ namespace Client
             return jObject;
         }
 
+        public async Task<JToken> GetEmployeeResultAnswers(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetEmployeeResultAnswers";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetEmployeeResultAnswers";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
         public async Task<JToken> GetResults()
         {
             Payload data_payload = new Payload();
@@ -188,6 +226,26 @@ namespace Client
             }
 
             data_payload.payload = "";
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+
+        public async Task<JToken> GetResultsByEmployee(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetResultsByEmployee";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetResultsByEmployee";
+            }
+
+            data_payload.payload = pay_data;
             data_payload.metod = (int)connMetod.POST;
             data_payload.token = token;
             var jObject = await ProcessRequest(data_payload);
@@ -288,7 +346,25 @@ namespace Client
             var jObject = await ProcessRequest(data_payload);
             return jObject;
         }
-        
+
+        public async Task<JToken> UpdateEmployee(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/UpdateEmployee";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateEmployee";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
 
         public async Task<JToken> GetSubdivisions()
         {
@@ -448,7 +524,8 @@ namespace Client
             {
                 jObject = null;
             }
-            Console.WriteLine(xjson);
+
+            //Console.WriteLine(xjson);
             return jObject;
 
         }

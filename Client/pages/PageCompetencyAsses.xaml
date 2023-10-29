@@ -1,0 +1,73 @@
+﻿<Page x:Class="Client.pages.PageCompetencyAsses"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+      xmlns:local="clr-namespace:Client.pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="640" d:DesignWidth="800"
+      Title="PageCompetencyAsses"
+      Background="White"
+      x:Name="myPageCompetens"
+      >
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Label Content="Оценка компетенций" HorizontalAlignment="Center" Margin="15" FontSize="25"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Фамилия:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Имя:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Отчество:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Дата рождения:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Номер телефона:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{Binding LastName}" TextAlignment="Left" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding FirstName}" TextAlignment="Left" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding SecondName}" TextAlignment="Left" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding DateOfBirth}" TextAlignment="Left" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding Phone}" TextAlignment="Left" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Группа компетенций:" TextAlignment="Right" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="Профессиональные:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Корпоративные:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Управленческие:" TextAlignment="Right" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="Профессионально-психологические:" TextAlignment="Right" TextWrapping="Wrap" FontSize="15" Margin="5 0 0 10"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="3">
+                    <TextBlock Text="Уровень компетенций:" TextAlignment="Center" FontSize="15" FontWeight="Bold" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding Competence1}" TextAlignment="Center" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding Competence2}" TextAlignment="Center" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding Competence3}" TextAlignment="Center" FontSize="15" Margin="5 0 0 10"/>
+                    <TextBlock Text="{Binding Competence4}" TextAlignment="Center" TextWrapping="Wrap" FontSize="15" Margin="5 0 0 10"/>
+                </StackPanel>
+
+            </Grid>
+        </StackPanel>
+
+        
+        <ScottPlot:WpfPlot x:Name="WpfPlot1" Grid.Row="1" Width="700" Height="400"/>
+        <Button Grid.Row="2" x:Name="BT_BackGo" Content="Назад" Width="80" HorizontalAlignment="Left" Margin="20 0 0 0" Click="Button_Click_Back"/>
+    </Grid>
+</Page>

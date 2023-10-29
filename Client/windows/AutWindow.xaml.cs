@@ -1,20 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
+
 
 namespace Client
 {
@@ -36,22 +26,12 @@ namespace Client
         {
             try
             {
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                System.Windows.MessageBox.Show(ex.Message);
             }
-        }
-
-        private void Setting(object sender, RoutedEventArgs e)
-        {
-            this.Hide(); // Скрываем нынешнее окно
-
-            // Создаем объект на основе определенного окан
-            SettingConnHost windowSetting = new SettingConnHost();
-            // Показываем новое окно
-            windowSetting.Show();
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -74,7 +54,7 @@ namespace Client
 
             if (jObject == null)
             {
-                MessageBox.Show("Пользователь не найден");
+                System.Windows.MessageBox.Show("Пользователь не найден");
                 
             }
             else
@@ -114,6 +94,11 @@ namespace Client
             public string login { get; set; }
             public string password { get; set; }
         }
-  
-  }
+
+        private void autPass_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                Button_Click(null, null);
+        }
+    }
 }

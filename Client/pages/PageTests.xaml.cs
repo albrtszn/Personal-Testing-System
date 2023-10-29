@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -31,14 +32,15 @@ namespace Client.pages
 
         private void PageTests_Loaded(object sender, RoutedEventArgs e)
         {
-            DataContext = new VM.TestsVM();
+            this.DataContext = new VM.TestsVM();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            string tmp = "{\"Id\"" + ":\"" + VM.TestsVM.tests[DGTests.SelectedIndex].Id + "\"}"; 
+            VM.TestsVM.TestView testView = DGTests.SelectedValue as VM.TestsVM.TestView;
+            string tmp_str = "{\"Id\"" + ":\"" + testView.test.Id + "\"}"; 
            
-            this.NavigationService.Navigate(new PageTestOne(tmp));
+            this.NavigationService.Navigate(new PageTestOne(tmp_str));
 
 
         }

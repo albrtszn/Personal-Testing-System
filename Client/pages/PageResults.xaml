@@ -7,17 +7,18 @@
       xmlns:local="clr-namespace:Client.pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" 
-      d:DesignWidth="800"
+      d:DesignWidth="1000"
       Title="PageResults"
+      x:Name="myPageResults"
       Background="White"
       >
 
     <Grid >
         <StackPanel>
-            <TextBlock Text="Список всех пользователей" HorizontalAlignment="Center"></TextBlock>
+            <TextBlock Text="Список пройденных тестов" FontSize="20" HorizontalAlignment="Center" Margin="5"></TextBlock>
         </StackPanel>
 
-        <Grid Background="White" Margin="0 20 0 0">
+        <Grid Background="White" Margin="0 35 0 0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -25,10 +26,7 @@
                 <RowDefinition Height="50"/>
 
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Фильтр:" Margin="15 5 5 5" FontSize="15" FontStyle="Italic"/>
-                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-            </StackPanel>
+
             <DataGrid x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Фамилия" IsReadOnly="True" Binding="{Binding result.Employee.LastName}"/>
@@ -37,19 +35,22 @@
                     <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
                     <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding result.Employee.Subdivision.Name}"/>
                     <DataGridTextColumn Header="Тест (компетенция)" IsReadOnly="True" Binding="{Binding result.Result.Test.Name}"/>
-                    <DataGridTextColumn Header="Баллы" IsReadOnly="True" Binding="{Binding result.ScoreFrom}"/>
+                    <DataGridTextColumn Header="Уровень" IsReadOnly="True" Binding="{Binding level}"/>
+                    <DataGridTextColumn Header="Баллы" IsReadOnly="True" Binding="{Binding points}"/>
                     <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0">
+                                    <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0"
+                                            Command="{Binding DataContext.CmdViewTestAnswers, ElementName=myPageResults}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
+
+                                            >
                                         <iconPacks:PackIconMaterial Kind="Information" Height="10" Width="10" />
                                     </Button>
+                              
                                   
-                                  
-                                    <!--<Button Height="25" Width="25" Padding="0" Background="Red">
-                                        <iconPacks:PackIconMaterial Kind="DeleteOutline" Height="10" Width="10"/>
-                                    </Button>-->
+
                                     
                                   
                                 </StackPanel>
@@ -59,7 +60,7 @@
 
                 </DataGrid.Columns>
             </DataGrid>
-
+            <Button x:Name="BTBackGo" Grid.Row="2" Content="Назад" Width="100" HorizontalAlignment="Left" Margin="15 0 0 0" Command="{Binding CmdBackGO}"/>
         </Grid>
     </Grid>
 </Page>

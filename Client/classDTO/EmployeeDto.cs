@@ -23,5 +23,8 @@ namespace Client
         public int IdSubdivision { get; set; }
         public string Phone { get; set; }
         public string RegistrationDate { get; set; }
+        public int CountOfPurposes { get; set; }
+        public int CountOfResults { get; set; }
+        public int CountOfTestsToPurpose { get; set; }
     }
 }

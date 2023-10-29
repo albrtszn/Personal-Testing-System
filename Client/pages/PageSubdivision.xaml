@@ -17,7 +17,7 @@
             <DataGrid x:Name="dataGridSubdivision" Grid.Row="1" Margin="5"  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Гурппа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions}"/>
+                    <DataGridTextColumn Header="Гурппа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions2}"/>
                     <DataGridTextColumn Header="Профиль должности" IsReadOnly="True" Binding="{Binding Profile}"/>
 
                 </DataGrid.Columns>

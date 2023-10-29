@@ -71,3 +71,7 @@ D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\pages\PageUserR
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\windows\MainWindow.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\windows\SettingConnHost.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\windows\UserWindow.baml
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\pages\PageUserEdit.g.cs
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\windows\PasswordWindow.g.cs
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\pages\PageUserEdit.baml
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Release\windows\PasswordWindow.baml

@@ -27,7 +27,7 @@
             <StackPanel>
                 <TextBlock Text="Авторизация" FontSize="30" Margin="0 0 0 10" HorizontalAlignment="Center"/>
                 <TextBox x:Name="autLogin" materialDesign:HintAssist.Hint="Введите логин" FontSize="20" Margin="0 0 0 10"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <PasswordBox x:Name="autPass" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="0 0 0 20" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"></PasswordBox>
+                <PasswordBox x:Name="autPass" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="0 0 0 20" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" KeyDown="autPass_KeyDown"/>
             </StackPanel>
 
         </Border>
@@ -39,10 +39,6 @@
         <!--<materialDesign:PackIcon Kind="Close" HorizontalAlignment="Right" Width="20" Height="20" Margin="10" MouseLeftButtonDown="closeApp" Opacity="0.4" /> -->
         <Button  Click="CloseApp" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0 5 5 0">
             <materialDesign:PackIcon Kind="Close" Width="25" Height="25"  Foreground="#2E333A"/>
-        </Button>
-
-        <Button Click="Setting" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="5 5 0 0">
-            <materialDesign:PackIcon Kind="Settings"  Width="25" Height="25" Foreground="#2E333A"/>
         </Button>
 
     </Grid>

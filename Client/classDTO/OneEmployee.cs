@@ -18,6 +18,9 @@ namespace Client.classDTO
         public string DateOfBirth { get; set; }
         public string Phone { get; set; }
         public string RegistrationDate { get; set; }
+        public int CountOfPurposes { get; set; }
+        public int CountOfResults { get; set; }
+        public int CountOfTestsToPurpose { get; set; }
         public OneSubdivision Subdivision { get; set; }
     }
 }

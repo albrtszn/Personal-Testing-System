@@ -17,9 +17,10 @@ namespace Client.VM
     {
         public class TestView
         {
+            public int number { get; set; }
             public TestDto test { get; set; }
             public string nameCompetense { get; set; }
-
+            public string nameProfile { get; set; }
         }
 
         public static TestDto[] tests;
@@ -88,9 +89,9 @@ namespace Client.VM
             {
                 var tmp = new TestView();
 
+                tmp.number = i + 1;
                 tmp.test = test;
                 tmp.nameCompetense = GlobalRes.GetCompetence(test.CompetenceId).Name;
-
                 alltest[i] = tmp;
                 i++;
             }

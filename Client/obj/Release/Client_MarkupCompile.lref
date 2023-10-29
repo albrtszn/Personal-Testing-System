@@ -2,6 +2,7 @@
 FD:\Chertkov\workspace\Personal-Testing-System\Client\App.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageResults.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageRunTest.xaml;;
+FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageUserEdit.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\AutWindow.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\addSubdivision.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageAddPurpose.xaml;;
@@ -14,7 +15,9 @@ FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageTestOne.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageTests.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageUserHome.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageUserReg.xaml;;
+FD:\Chertkov\workspace\Personal-Testing-System\Client\pages\PageUsers.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\MainWindow.xaml;;
+FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\PasswordWindow.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\SettingConnHost.xaml;;
 FD:\Chertkov\workspace\Personal-Testing-System\Client\windows\UserWindow.xaml;;
 

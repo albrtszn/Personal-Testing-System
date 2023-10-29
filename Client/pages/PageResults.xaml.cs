@@ -21,15 +21,17 @@ namespace Client.pages
     /// </summary>
     public partial class PageResults : Page
     {
-        public PageResults()
+        private string IdUser = string.Empty;
+        public PageResults(string id)
         {
+            IdUser = id;
             InitializeComponent();
             Loaded += PageResults_Loaded;
         }
 
         private void PageResults_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = new PageResultsVM(this);
+            this.DataContext = new PageResultsVM(this, IdUser);
         }
     }
 }

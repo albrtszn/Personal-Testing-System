@@ -61,14 +61,6 @@ namespace Client
             adminFrame.Navigate(new PageUsers());
         }
 
-        private void itemExit_Selected(object sender, RoutedEventArgs e)
-        {
-            this.Hide();
-            AutWindow autWindow = new AutWindow();
-            autWindow.Show();
-            this.Close();
-        }
-
         private void item1_Selected(object sender, RoutedEventArgs e)
         {
             adminFrame.Navigate(new PageUserReg());
@@ -127,7 +119,42 @@ namespace Client
 
         private void itemResults_Selected(object sender, RoutedEventArgs e)
         {
-            adminFrame.Navigate(new PageResults());
+            adminFrame.Navigate(new PageChoiceUser());
+        }
+
+        private void itemSetting_Selected(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+          private void ListViewItem_Selected_Exit(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            AutWindow autWindow = new AutWindow();
+            autWindow.Show();
+            this.Close();
+        }
+
+        private void ListView_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+        }
+
+        private void Setting(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            this.Hide(); // Скрываем нынешнее окно
+
+            // Создаем объект на основе определенного окан
+            SettingConnHost windowSetting = new SettingConnHost(this);
+            // Показываем новое окно
+            windowSetting.Show();
+
+        }
+
+        private void ListViewItem_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+             ListSetting.SelectedIndex = -1;
         }
     }
 

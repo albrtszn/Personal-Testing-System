@@ -22,7 +22,7 @@ namespace Client.VM
         public TestView[] alltest;
 
         public RelayCommand CmdAddPurpose { get; }
-
+        public RelayCommand CmdBackGo { get; }
 
         public class TestView
         {
@@ -42,9 +42,16 @@ namespace Client.VM
             myGlobal = myOwner as PageAddPurpose;
             LoadData();
             this.CmdAddPurpose = new RelayCommand(FuncAddPurpose);
+            this.CmdBackGo = new RelayCommand(FuncBackGo);
         }
 
         // Добавление теста как назваченный выбранному пользователю
+
+        void FuncBackGo(object param)
+        {
+            myGlobal.NavigationService.GoBack();
+        }
+
         void FuncAddPurpose(object param)
         {
             int i = 0;

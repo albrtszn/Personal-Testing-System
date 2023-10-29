@@ -11,33 +11,42 @@
       Background="White">
 
     <Grid Margin="20 0 20 0">
-        <StackPanel>
-            <TextBlock Text="Регистрация нового пользователя" HorizontalAlignment="Center" FontSize="15"/>
-            <TextBox x:Name="addLastName" materialDesign:HintAssist.Hint="Введите фамилию" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-            <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Введите имя" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-            <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Введите отчество" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-            <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Введите дату рождения" FontSize="15" Margin="15 5 15 10" Padding="5"></DatePicker>
-            <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-            <TextBox x:Name="addLogin" materialDesign:HintAssist.Hint="Введите логин" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"> </TextBox>
-            <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Введите пароль" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Background="AliceBlue" Margin="50 30 50 15" CornerRadius="20" Height="auto">
+            <StackPanel>
+                <TextBlock Text="Регистрация нового пользователя" HorizontalAlignment="Center" FontSize="25" Margin="0 10 0 0"/>
+                <TextBox x:Name="addLastName" materialDesign:HintAssist.Hint="Введите фамилию" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Введите имя" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Введите отчество" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Введите дату рождения" FontSize="20" Margin="15 5 15 0" Padding="5"></DatePicker>
+                <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона" FontSize="20" Margin="15 0 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="15 0 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <Label Content="Профиль" Margin="20 5 0 0" Padding="0"/>
+                <ComboBox x:Name="profileCB"   FontSize="20" Margin="15 0 15 10" Padding="5" SelectedIndex="0">
+                    <ComboBoxItem Content="Механик"/>
+                    <ComboBoxItem Content="Технолог" />
+                </ComboBox>
+                <Label Content="Группа специализации" Margin="20 5 0 0" Padding="0"/>
+                <ComboBox x:Name="groupeCB"  FontSize="20" Margin="15 0 15 10" Padding="5" SelectedIndex="0" SelectionChanged="groupeCB_SelectionChanged" >
+                    <ComboBoxItem Content="Группа 1. Рабочие"/>
+                    <ComboBoxItem Content="Группа 2. Инженерные и руководящие начального уровня"/>
+                    <ComboBoxItem Content="Группа 3. Руководящие среднего уровня"/>
+                    <ComboBoxItem Content="Группа 4. Руководящие высшего уровня"/>
+                </ComboBox>
+                <Label Content="Должность" Margin="20 5 0 0" Padding="0"/>
+                <ComboBox x:Name="subdivisionComboBox" FontSize="20" Margin="15 0 15 20" Padding="5" SelectedIndex="-1"
+                          ItemsSource="{Binding ElementName=list}" DisplayMemberPath="Name"  SelectedItem="{Binding SelectedValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                          
+                          
+                
+            </StackPanel>
             
-            <ComboBox x:Name="profileCB"   FontSize="15" Margin="15 5 15 10" Padding="5" SelectedIndex="0">
-                <TextBlock>Механик</TextBlock>
-                <TextBlock>Технолог</TextBlock>
-            </ComboBox>
-            
-            <ComboBox x:Name="groupeCB"  FontSize="15" Margin="15 5 15 10" Padding="5" SelectedIndex="0">
-                <TextBlock Text="Группа 1"> </TextBlock>
-                <TextBlock Text="Группа 2"> </TextBlock>
-                <TextBlock Text="Группа 3"> </TextBlock>
-                <TextBlock Text="Группа 4"> </TextBlock>
-            </ComboBox>
-            <ComboBox x:Name="subdivisionComboBox" DisplayMemberPath="Name"  FontSize="15" Margin="15 5 15 10" Padding="5"/>
-            <Grid Margin="0 0 0 10">
-                <Button Background="#2E333A" Content="Добавить" FontSize="15" Width="100" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" />
+        </Border>
 
-            </Grid>
-        </StackPanel>
+        <Button Grid.Row="1" Background="#2E333A" Content="Добавить" FontSize="20" Width="150" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" Height="40"/>
 
     </Grid>
 </Page>

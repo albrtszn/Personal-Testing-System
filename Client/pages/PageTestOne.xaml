@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="900
+      " d:DesignWidth="800"
       Title="PageTestOne"
       Background="White">
 
@@ -15,30 +16,31 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0">
-                <DockPanel>
+                <WrapPanel>
                     <TextBlock Text="Наименование теста: "  FontSize="20"  Padding="0" Margin="5"/>
                     <TextBlock x:Name="TB_Name" Text="Название" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold" />
-                </DockPanel>
-                <DockPanel>
+                </WrapPanel>
+                <WrapPanel>
                     <TextBlock Text="Описание теста: "  FontSize="20"  Padding="0" Margin="5"/>
                     <TextBlock x:Name="TB_Discrib" Text="Описание" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                </DockPanel>
-                <DockPanel>
+                </WrapPanel>
+                <WrapPanel>
                     <TextBlock Text="Инструкция прохождения теста: "  FontSize="20"  Padding="0" Margin="5"/>
                     <TextBlock x:Name="TB_Instruct" Text="Инструкция" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                </DockPanel>
-                <DockPanel>
+                </WrapPanel>
+                <WrapPanel>
                     <TextBlock Text="Компетенция: "  FontSize="20"  Padding="0" Margin="5"/>
                     <TextBlock x:Name="TB_Comp" Text="Личная" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                    <Button Content="Добавить вопрос" Width="150" HorizontalAlignment="Right" Margin=" 0 5 10 5" Click="Button_Click"></Button>
-                </DockPanel>
+                   
+                </WrapPanel>
                 
             </StackPanel>
 
-            <ListBox x:Name="TestLB"  Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=2}" FontSize="15" >
+            <ListBox x:Name="TestLB"  Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=1}" FontSize="15" VirtualizingPanel.ScrollUnit="Pixel" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -52,7 +54,7 @@
                                     <TextBlock Text="{Binding Number}" FontSize="15"  Padding="0" Margin="0 0 5 0"/>
                                     <TextBlock Text="{Binding Text}" FontSize="15"  Padding="0"/>
                                 </DockPanel>
-                                <Image x:Name="QNameImg" Source="{Binding Img}" Width="150"/>
+                                <Image x:Name="QNameImg" Source="{Binding Img}" Width="250" Stretch="UniformToFill"/>
                                 <TextBlock Text="Ответы:" FontSize="15"  Padding="0" FontStyle="Italic"/>
                             </StackPanel>
 
@@ -83,6 +85,7 @@
                 </ListBox.ItemTemplate>
 
             </ListBox>
+            <Button Grid.Row="2" Content="Добавить вопрос" Width="150" HorizontalAlignment="Center" Margin=" 0 5 10 5" Click="Button_Click"></Button>
         </Grid>
     </Grid>
 </Page>

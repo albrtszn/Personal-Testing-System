@@ -13,5 +13,6 @@ namespace Client
         public int IdGroupPositions { get; set; }
         public string Profile { get; set; }
         public string NameGroupPositions { get; set; }
+        public string NameGroupPositions2 { get; set; }
     }
 }

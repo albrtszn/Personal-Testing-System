@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.IO.Packaging;
 
 namespace Client.VM
 {
@@ -28,6 +29,8 @@ namespace Client.VM
             public string dateB { get ; set; }
             public string sub { get; set; }
             public string prof { get; set; }
+            public int kolTest { get; set; }
+
         }
 
         public string FilterText
@@ -114,20 +117,31 @@ namespace Client.VM
 
             employees = JsonConvert.DeserializeObject<EmployeeDto[]>(jObject.ToString(), jsonSettings);
 
-            UserEmployee[] users = new UserEmployee[employees.Count()];
-            
             int i = 0;
             foreach (EmployeeDto employee in employees)
             {
-                var tmp = new UserEmployee();
-                tmp.id = employee.Id;
-                tmp.Name = employee.LastName + " " + employee.FirstName + " " + employee.SecondName;
-                tmp.dateB = employee.DateOfBirth;
-                tmp.sub = GlobalRes.GetSubdivision(employee.IdSubdivision).Name;
-                tmp.prof = GlobalRes.GetSubdivision(employee.IdSubdivision).Profile;
-                users[i] = tmp;
+                if (employee.CountOfResults > 0)
+                {
+                    i++;
+                }
+            }
 
-                i++;
+            UserEmployee[] users = new UserEmployee[i];
+            
+            i = 0;
+            foreach (EmployeeDto employee in employees)
+            {
+                if (employee.CountOfResults > 0)
+                {
+                    users[i] = new UserEmployee();
+                    users[i].id = employee.Id;
+                    users[i].Name = employee.LastName + " " + employee.FirstName + " " + employee.SecondName;
+                    users[i].dateB = employee.DateOfBirth;
+                    users[i].sub = GlobalRes.GetSubdivision(employee.IdSubdivision).Name;
+                    users[i].prof = GlobalRes.GetSubdivision(employee.IdSubdivision).Profile;
+                    users[i].kolTest = employee.CountOfResults;
+                    i++;
+                }
             }
 
             Items = CollectionViewSource.GetDefaultView(users);

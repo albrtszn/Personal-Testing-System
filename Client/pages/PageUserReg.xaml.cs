@@ -46,7 +46,7 @@ namespace Client.forms
             foreach (var tmp in GlobalRes.itemsSubdivision)
             {
                 string iProfile = profileCB.Text;
-                    
+
                 string iGroupe = groupeCB.Text;
                 int selecGroupe = groupeCB.SelectedIndex;
 
@@ -55,14 +55,28 @@ namespace Client.forms
                     list.Add(tmp);
                     Console.WriteLine(tmp.Name);
                 }
-                
+
                 //list.Add(tmp);
 
             }
-        
+
+            addPassword.Text = CreatePassword(6);
             subdivisionComboBox.ItemsSource = list;
             subdivisionComboBox.SelectedIndex = 0;
 
+        }
+
+
+        public string CreatePassword(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < length--)
+            {
+                res.Append(valid[rnd.Next(valid.Length)]);
+            }
+            return res.ToString();
         }
 
         private void UpdateSubdivisions()
@@ -114,46 +128,138 @@ namespace Client.forms
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             EmployeeDto user = new EmployeeDto();
-            if (addLastName.Text == null || addLastName.Text == "")
+            if (addLastName.Text == null || addLastName.Text == "" || addLastName.Text.Length < 2)
             {
-                MessageBox.Show("Значение в поле фамилии не заполнено!");
+                addLastName.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле фамилии заполнено неверно!");
                 return;
             }
-
-            if (addFirstName.Text == null || addFirstName.Text == "")
+            else
             {
-                MessageBox.Show("Значение в поле имени не заполнено!");
-                return;
+                addLastName.Background = Brushes.Transparent;
             }
 
-            if (addSecondName.Text == null || addSecondName.Text == "")
+            if (addFirstName.Text == null || addFirstName.Text == "" || addFirstName.Text.Length < 2)
             {
-                MessageBox.Show("Значение в поле отчества не заполнено!");
+                addFirstName.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле имени заполнено неверно!");
                 return;
+            }
+            else
+            {
+                addFirstName.Background = Brushes.Transparent;
+            }
+
+            if (addSecondName.Text == null || addSecondName.Text == "" || addSecondName.Text.Length < 2)
+            {
+                addSecondName.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле отчества заполнено неверно!");
+                return;
+            }
+            else
+            {
+                addSecondName.Background = Brushes.Transparent;
             }
 
             if (addDate.Text == null || addDate.Text == "")
             {
-                MessageBox.Show("Значение в поле дата рождения не заполнено!");
+                addDate.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле дата рождения заполнено неверно!");
                 return;
             }
-
-            if (addPhone.Text == null || addPhone.Text == "")
+            else
             {
-                MessageBox.Show("Значение в поле номер телефона е заполнено!");
+                DateTime dateTime = DateTime.Parse(addDate.Text);
+                int tmpTime = System.DateTime.Now.Year - dateTime.Year;
+                if (tmpTime <= 17)
+                {
+                    addDate.Background = Brushes.Pink;
+                    MessageBox.Show("Значение в поле дата рождения заполнено неверно!");
+                    return;
+                }
+
+                addDate.Background = Brushes.Transparent;
+            }
+
+            if (addPhone.Text == null || addPhone.Text == "" || addPhone.Text.Length != 9 ) 
+            {
+                addPhone.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле номер телефона заполнено неверно!");
                 return;
+            }
+            else
+            {
+
+                double number;
+                if (double.TryParse(addPhone.Text, out number))
+                {
+                    if (number > 0)
+                    {
+                        addPhone.Background = Brushes.Transparent;
+                    }
+                    else
+                    {
+                        addPhone.Background = Brushes.Pink;
+                        MessageBox.Show("Значение в поле номер телефона заполнено неверно!");
+                        return;
+                    }
+                }
+                else
+                {
+                    addPhone.Background = Brushes.Pink;
+                    MessageBox.Show("Значение в поле номер телефона заполнено неверно!");
+                    return;
+                }
+
+               
             }
 
             if (addPassword.Text == null || addPassword.Text == "")
             {
-                MessageBox.Show("Значение в поле пароль!");
+                addPassword.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле пароль заполнено неверно!");
                 return;
+            }
+            else
+            {
+
+                foreach (var tmpUser in GlobalRes.itemsUserEmployee)
+                {
+                    if (tmpUser.employee.Phone != null)
+                    {
+                        if (tmpUser.employee.Phone.Contains(addPhone.Text))
+                        {
+                            if (tmpUser.employee.LastName.Contains(addLastName.Text))
+                            {
+                                if (tmpUser.employee.DateOfBirth.Contains(addDate.Text))
+                                {
+                                    if (addPassword.Text == tmpUser.employee.Password)
+                                    {
+                                        addPassword.Background = Brushes.Pink;
+                                        MessageBox.Show("Измените значение в поле пароль!");
+                                        return;
+                                    }
+
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                addPassword.Background = Brushes.Transparent;
+
             }
 
             if (subdivisionComboBox.SelectedIndex == -1)
             {
-                MessageBox.Show("Значение в поле подраздение не выбрано!");
+                subdivisionComboBox.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле должность не выбрано!");
                 return;
+            }
+            else
+            {
+                subdivisionComboBox.Background = Brushes.Transparent;
             }
 
             user.LastName = addLastName.Text.Trim();
@@ -162,7 +268,7 @@ namespace Client.forms
             user.Login = addPhone.Text.Trim();
             user.Password = addPassword.Text;
             user.DateOfBirth = addDate.Text;
-            user.Phone = addPhone.Text.Trim(); ;
+            user.Phone = addPhone.Text.Trim();
             user.IdSubdivision = list[subdivisionComboBox.SelectedIndex].Id;
             user.RegistrationDate = System.DateTime.Now.ToShortDateString();
             
@@ -181,6 +287,16 @@ namespace Client.forms
             else
             {
                 MessageBox.Show("Пользователь успешно добавлен");
+                GlobalRes.flagUpdateEmployee = true;
+                addLastName.Text = string.Empty;
+                addFirstName.Text = string.Empty;
+                addSecondName.Text = string.Empty;
+                addPhone.Text = string.Empty;
+                addPassword.Text = string.Empty;
+                addDate.Text = string.Empty;
+                addPhone.Text = string.Empty;
+
+                GlobalRes.getUserEmployee();
             }
 
         }

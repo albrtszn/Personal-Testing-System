@@ -60,6 +60,10 @@ namespace Client.VM
         // Добавление теста как назваченный выбранному пользователю
         void FuncRunTest(object param)
         {
+            if (SelectedTest == null)
+            {
+                return;
+            }
             int i = 0;
             string tmp_payload = string.Empty;
 

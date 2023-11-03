@@ -22,7 +22,7 @@
                 <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Введите имя" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
                 <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Введите отчество" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
                 <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Введите дату рождения" FontSize="20" Margin="15 5 15 0" Padding="5"></DatePicker>
-                <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона" FontSize="20" Margin="15 0 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона (2 цифры код и 7 цифр номер)" FontSize="20" Margin="15 0 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
                 <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="15 0 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
                 <Label Content="Профиль" Margin="20 5 0 0" Padding="0"/>
                 <ComboBox x:Name="profileCB"   FontSize="20" Margin="15 0 15 10" Padding="5" SelectedIndex="0">

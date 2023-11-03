@@ -34,6 +34,7 @@
                     <DataGridTextColumn Header="Дата рождения" IsReadOnly="True" Binding="{Binding dateB}"/>
                     <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
                     <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}"/>
+                    <DataGridTextColumn Header="Кол. заверщенных" IsReadOnly="True" Binding="{Binding kolTest}"/>
                     <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

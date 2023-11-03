@@ -13,7 +13,17 @@
       Background="White"
       >
 
+    <Page.Resources>
+        <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="loadingImage" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
+            <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:5" RepeatBehavior="Forever"/>
+        </Storyboard>
+    </Page.Resources>
+
+
     <Grid >
+
+
+
         <StackPanel>
             <TextBlock Text="Список пройденных тестов" FontSize="20" HorizontalAlignment="Center" Margin="5"></TextBlock>
         </StackPanel>
@@ -62,5 +72,21 @@
             </DataGrid>
             <Button x:Name="BTBackGo" Grid.Row="2" Content="Назад" Width="100" HorizontalAlignment="Left" Margin="15 0 0 0" Command="{Binding CmdBackGO}"/>
         </Grid>
+
+        <Border x:Name="PageLoad" Background="White" Visibility="{Binding vis}">
+            <Image Name="loadingImage" Width="120" Height="120" RenderTransformOrigin="0.5,0.5" Source="/Images/Naftan.png">
+                <Image.Triggers>
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <EventTrigger.Actions>
+                            <BeginStoryboard Storyboard="{StaticResource imageRotationStoryboard}" />
+                        </EventTrigger.Actions>
+                    </EventTrigger>
+                </Image.Triggers>
+                <Image.RenderTransform>
+                    <RotateTransform Angle="0"/>
+                </Image.RenderTransform>
+            </Image>
+        </Border>
+
     </Grid>
 </Page>

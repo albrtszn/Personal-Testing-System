@@ -27,6 +27,23 @@ namespace Client.VM
         public RelayCommand CmdDeletUser { get; }
         public RelayCommand CmdEditUser { get; }
 
+
+        public static UserEmployee SelectedItems { get; set; }
+
+
+
+        public string FilterPhone
+        {
+            get { return (string)GetValue(FilterPhoneProperty); }
+            set { SetValue(FilterPhoneProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FilterPhone.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FilterPhoneProperty =
+            DependencyProperty.Register("FilterPhone", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
+
+
+
         public string FilterDateB
         {
             get { return (string)GetValue(FilterDateBProperty); }
@@ -82,7 +99,9 @@ namespace Client.VM
         {
             myGlobal = myOwner as PageUsers;
 
+
             GetUsers();
+
             this.CmdAddPurpose = new RelayCommand(FuncAddPurpose);
             this.CmdDeletUser = new RelayCommand(FuncDeletUser);
             this.CmdEditUser = new RelayCommand(FuncEditUser);
@@ -91,8 +110,8 @@ namespace Client.VM
 
         void FuncEditUser(object param)
         {
-           UserEmployee tmp = param as UserEmployee;
-           
+            UserEmployee tmp = param as UserEmployee;
+            SelectedItems = tmp;
             myGlobal.NavigationService.Navigate(new PageUserEdit(tmp.employee));
 
         }
@@ -102,92 +121,97 @@ namespace Client.VM
             UserEmployee tmp_user = param as UserEmployee;
             var tmp = new PasswordWindow(tmp_user.employee.Id);
             tmp.Show();
-
+            SelectedItems = null;
+            GlobalRes.flagUpdateEmployee = true;
         }
         
         void FuncAddPurpose(object param)
         {
             UserEmployee tmp = param as UserEmployee;
-            
+            SelectedItems = tmp;
             //this.NavigationService.Navigate(new PageAddPurpose(emp.employee));
             myGlobal.NavigationService.Navigate(new PageAddPurpose(tmp.employee));
         }
 
         public async void GetUsers()
         {
-
             EmployeeDto[] employees;
             ConnectHost conn = new ConnectHost();
-            JToken jObject = await conn.GetEmployees();
-
+            JToken jObject = null;
             var jsonSettings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             };
 
 
-            employees = JsonConvert.DeserializeObject<EmployeeDto[]>(jObject.ToString(), jsonSettings);
-
-
-            jObject = await conn.GetGroupPositions();
-            GlobalRes.itemsGroupPosition = JsonConvert.DeserializeObject<GroupPositionDto[]>(jObject.ToString(), jsonSettings);
-
-
-            jObject = await conn.GetCompetences();
-            GlobalRes.itemsCompetence = JsonConvert.DeserializeObject<CompetenceDto[]>(jObject.ToString(), jsonSettings);
-
-
-            jObject = await conn.GetSubdivisions();
-
-
-
-            GlobalRes.itemsSubdivision = JsonConvert.DeserializeObject<SubdivisionDto[]>(jObject.ToString(), jsonSettings);
-            foreach (var item in GlobalRes.itemsSubdivision)
+            if (GlobalRes.flagLoadSubdivision == false)
             {
-                var index = GlobalRes.searchID_Groupe(item.IdGroupPositions);
-                item.Profile = GlobalRes.itemsProfile[GlobalRes.itemsGroupPosition[index].IdProfile - 1];
-                item.NameGroupPositions = GlobalRes.itemsGroupPosition[index].Name;
-                if (item.NameGroupPositions == "Группа 1")
+                jObject = await conn.GetGroupPositions();
+                GlobalRes.itemsGroupPosition = JsonConvert.DeserializeObject<GroupPositionDto[]>(jObject.ToString(), jsonSettings);
+
+                jObject = await conn.GetCompetences();
+                GlobalRes.itemsCompetence = JsonConvert.DeserializeObject<CompetenceDto[]>(jObject.ToString(), jsonSettings);
+
+
+                jObject = await conn.GetSubdivisions();
+                GlobalRes.itemsSubdivision = JsonConvert.DeserializeObject<SubdivisionDto[]>(jObject.ToString(), jsonSettings);
+
+
+                foreach (var item in GlobalRes.itemsSubdivision)
                 {
-                    item.NameGroupPositions2 = "Группа 1. Рабочие";
+                    var index = GlobalRes.searchID_Groupe(item.IdGroupPositions);
+                    item.Profile = GlobalRes.itemsProfile[GlobalRes.itemsGroupPosition[index].IdProfile - 1];
+                    item.NameGroupPositions = GlobalRes.itemsGroupPosition[index].Name;
+                    if (item.NameGroupPositions == "Группа 1")
+                    {
+                        item.NameGroupPositions2 = "Группа 1. Рабочие";
+                    }
+                    else if (item.NameGroupPositions == "Группа 2")
+                    {
+                        item.NameGroupPositions2 = "Группа 2. Инженерные и руководящие начального уровня";
+                    }
+                    else if (item.NameGroupPositions == "Группа 3")
+                    {
+                        item.NameGroupPositions2 = "Группа 3. Руководящие среднего уровня";
+                    }
+                    else if (item.NameGroupPositions == "Группа 4")
+                    {
+                        item.NameGroupPositions2 = "Группа 4. Руководящие высшего уровня";
+                    }
                 }
-                else if (item.NameGroupPositions == "Группа 2")
+                GlobalRes.flagLoadSubdivision = true;
+            }
+            
+            if (GlobalRes.flagUpdateEmployee == true)
+            {
+                jObject = await conn.GetEmployees();
+                employees = JsonConvert.DeserializeObject<EmployeeDto[]>(jObject.ToString(), jsonSettings);
+
+                UserEmployee[] users = new UserEmployee[employees.Count()];
+                int i = 0;
+
+                foreach (EmployeeDto employee in employees)
                 {
-                    item.NameGroupPositions2 = "Группа 2. Инженерные и руководящие начального уровня";
+                    var tmp = new UserEmployee();
+
+                    tmp.employee = employee;
+                    tmp.sub = GlobalRes.GetSubdivision(employee.IdSubdivision).Name;
+                    tmp.prof = GlobalRes.GetSubdivision(employee.IdSubdivision).Profile;
+                    tmp.kolPur = employee.CountOfPurposes.ToString() + " из " + employee.CountOfTestsToPurpose.ToString();
+                    users[i] = tmp;
+
+                    i++;
                 }
-                else if (item.NameGroupPositions == "Группа 3")
-                {
-                    item.NameGroupPositions2 = "Группа 3. Руководящие среднего уровня";
-                }
-                else if (item.NameGroupPositions == "Группа 4")
-                {
-                    item.NameGroupPositions2 = "Группа 4. Руководящие высшего уровня";
-                }
+
+                GlobalRes.itemsUserEmployee = users;
+                SelectedItems = users[0];
+                GlobalRes.flagUpdateEmployee = false;
             }
 
-
-            UserEmployee[] users = new UserEmployee[employees.Count()];
-            int i = 0;
-
-            foreach (EmployeeDto employee in employees) 
-            {
-                var tmp = new UserEmployee();
-                
-                tmp.employee = employee;
-                tmp.sub = GlobalRes.GetSubdivision(employee.IdSubdivision).Name;
-                tmp.prof = GlobalRes.GetSubdivision(employee.IdSubdivision).Profile;
-                tmp.kolPur = employee.CountOfPurposes.ToString() + " из " + employee.CountOfTestsToPurpose.ToString();
-                users[i] = tmp;
-                                        
-                i++;    
-            }
-
-            GlobalRes.itemsUserEmployee = users;
             Items = CollectionViewSource.GetDefaultView(GlobalRes.itemsUserEmployee);
             Items.Filter = Filters;
+            
         }
-
-
 
         private bool Filters(object obj)
         {
@@ -203,7 +227,8 @@ namespace Client.VM
                 A = string.IsNullOrEmpty(FilterText) || curr.employee.FirstName.Contains(FilterText) || (curr.employee.LastName.Contains(FilterText)) || (curr.employee.SecondName.Contains(FilterText));
                 C = string.IsNullOrEmpty(FilterSub) || curr.sub.Contains(FilterSub);
                 D = string.IsNullOrEmpty(FilterDateB) || curr.employee.DateOfBirth.Contains(FilterDateB); 
-                result = A && C && D; 
+                B = string.IsNullOrEmpty(FilterPhone) || curr.employee.Phone.Contains(FilterPhone);
+                result = A && C && D && B; 
             }
 
 

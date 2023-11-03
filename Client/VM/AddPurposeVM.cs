@@ -49,6 +49,7 @@ namespace Client.VM
 
         void FuncBackGo(object param)
         {
+            
             myGlobal.NavigationService.GoBack();
         }
 
@@ -75,6 +76,7 @@ namespace Client.VM
                
             }
 
+            GlobalRes.flagUpdateEmployee = true;
             MessageBox.Show("Выбранные тесты назначены");
             myGlobal.NavigationService.GoBack();
 

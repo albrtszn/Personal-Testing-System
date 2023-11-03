@@ -76,11 +76,6 @@ namespace Client
             adminFrame.Navigate(new PageCompetence());
         }
 
-        private void itemLogs_Selected(object sender, RoutedEventArgs e)
-        {
-            adminFrame.Navigate(new PageLogs());
-        }
-
         private void itemTests_Selected(object sender, RoutedEventArgs e)
         {
             adminFrame.Navigate(new PageTests());

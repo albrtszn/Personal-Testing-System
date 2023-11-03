@@ -35,9 +35,10 @@ namespace Client.classDTO
         //  "Name": "Стратегическое мышление",
 
 
+
         //  "Id": "ad3d986c-dfd8-4f68-836c-c0a5e4aa9723",
         //  "Name": "Дисциплинированность",
-
+        const string test_discipline = "ad3d986c-dfd8-4f68-836c-c0a5e4aa9723"; 
 
         //  "Id": "ad3d986c-dfd8-4f68-836c-c0a5e4aa9724",
         //  "Name": "Лояльность",
@@ -49,9 +50,11 @@ namespace Client.classDTO
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c0a5e4aa972b",
         //   "Name": "Командность",
+        const string test_teamwork = "ad3d986c-dfd8-4f68-836c-c0a5e4aa972b";
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c0a5e4aa9744",
         //    "Name": "Ориентация на профессиональное развитие",
+        const string test_evolution = "ad3d986c-dfd8-4f68-836c-c0a5e4aa9744";
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c0a5e7aa9723",
         //    "Name": "Организаторские способности ",
@@ -61,6 +64,7 @@ namespace Client.classDTO
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c0a5e8aa9722",
         //    "Name": "Стратегическое мышление",
+        const string test_thinking = "ad3d986c-dfd8-4f68-836c-c0a5e8aa9722";
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c0a5e8aa9723",
         //    "Name": "Стрессоустойчивость",
@@ -68,6 +72,7 @@ namespace Client.classDTO
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c745e4aa9723",
         //    "Name": "Адаптивность к изменениям",
+        const string test_adaptability = "ad3d986c-dfd8-4f68-836c-c745e4aa9723";
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-c7a5e4aa9723",
         //    "Name": "Экономические",
@@ -86,9 +91,12 @@ namespace Client.classDTO
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-caa5e4aa9725",
         //    "Name": "Ориентация на достижения",
+        const string test_achievements = "ad3d986c-dfd8-4f68-836c-caa5e4aa9725"; 
 
         //    "Id": "ad3d986c-dfd8-4f68-836c-caa5e4aa9742",
         //    "Name": "Коммуникативность",
+        const string test_communication = "ad3d986c-dfd8-4f68-836c-caa5e4aa9742";
+        
 
         //    "Id": "ar3d999c-dfd8-4f68-836c-1aa5e4aa9723",
         //    "Name": "Физико-механические",
@@ -116,6 +124,29 @@ namespace Client.classDTO
 
             switch (idTest)
             {
+                case test_thinking:
+                case test_evolution:
+                case test_achievements:
+                case test_communication:
+                case test_teamwork:
+                case test_adaptability:
+                    
+                    kol_Q = ans.Questions.Count();
+                    res = 0;
+                    for (int i = 0; i < kol_Q; i++)
+                    {
+                        kol_A = ans.Questions[i].Answers.Count();
+                        for (int j = 0; j < kol_A; j++)
+                        {
+                            if (ans.Questions[i].Answers[j].IsUserAnswer)
+                            {
+                                res = res + ans.Questions[i].Answers[j].Weight;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
                 case test_tehno:
 
                     kol_Q = ans.Questions.Count();
@@ -293,6 +324,99 @@ namespace Client.classDTO
 
             switch (IdTest)
             {
+                case test_thinking:
+                    if (Point >= 0 && Point <= 75)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 76 && Point <= 124)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 125)
+                    {
+                        res = "высокий";
+                    }
+                    break;
+
+                case test_evolution:
+                    if (Point >= 0 && Point <= 10)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 11 && Point <= 16)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 17)
+                    {
+                        res = "высокий";
+                    }
+                    break;
+
+                case test_achievements:
+                    if (Point >= 0 && Point <= 122)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 123 && Point <= 204)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 205)
+                    {
+                        res = "высокий";
+                    }
+                    break;
+
+                case test_communication:
+                    if (Point >= 0 && Point <= 45)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 46 && Point <= 65)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 66)
+                    {
+                        res = "высокий";
+                    }
+
+                    break;
+
+                case test_teamwork:
+                    if (Point >= 0 && Point <= 71)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 72 && Point <= 168)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 169)
+                    {
+                        res = "высокий";
+                    }
+                    break;
+
+                case test_adaptability:
+
+                    if (Point >= 0 && Point <= 67)
+                    {
+                        res = "низкий";
+                    }
+                    else if (Point >= 68 && Point <= 136)
+                    {
+                        res = "средний";
+                    }
+                    else if (Point >= 137)
+                    {
+                        res = "высокий";
+                    }
+
+                    break;
+
                 case test_tehno:
 
                     if (Point >= 0 && Point <= 6)
@@ -305,7 +429,7 @@ namespace Client.classDTO
                     }
                     else if (Point >= 13 && Point <= 18)
                     {
-                        res = "средний уровень";
+                        res = "средний";
                     }
                     else if (Point >= 19 && Point <= 24)
                     {

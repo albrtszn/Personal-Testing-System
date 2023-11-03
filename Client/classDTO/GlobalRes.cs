@@ -17,12 +17,15 @@ namespace Client.classDTO
 {
     public class GlobalRes
     {
+        public static bool flagLoadSubdivision = false;
         public static SubdivisionDto[] itemsSubdivision;
         public static CompetenceDto[] itemsCompetence;
         public static GroupPositionDto[] itemsGroupPosition;
         public static string[] itemsProfile = { "Механик", "Технолог"};
-        public static UserEmployee[] itemsUserEmployee;
         
+        public static UserEmployee[] itemsUserEmployee;
+        public static bool flagUpdateEmployee = true;
+        public static int indexItemsUserEmployee = 0;
 
         public GlobalRes()
         {
@@ -137,14 +140,11 @@ namespace Client.classDTO
             };
             employees = JsonConvert.DeserializeObject<EmployeeDto[]>(jObject.ToString(), jsonSettings);
 
-            if (itemsUserEmployee == null)
-            {
-                itemsUserEmployee = new UserEmployee[employees.Count()];
-            }
-            else
-            {
+            UserEmployee[] tmpUserEmployee;
 
-            }
+
+            tmpUserEmployee = new UserEmployee[employees.Count()];
+
 
             int i = 0;
 
@@ -155,10 +155,13 @@ namespace Client.classDTO
                 tmp.employee = employee;
                 tmp.sub = GlobalRes.GetSubdivision(employee.IdSubdivision).Name;
                 tmp.prof = GlobalRes.GetSubdivision(employee.IdSubdivision).Profile;
-                itemsUserEmployee[i] = tmp;
+                tmpUserEmployee[i] = tmp;
 
                 i++;
             }
+            itemsUserEmployee = tmpUserEmployee;
+
+            flagUpdateEmployee = false;
         }
 
     }

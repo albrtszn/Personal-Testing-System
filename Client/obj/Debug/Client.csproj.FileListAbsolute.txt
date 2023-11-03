@@ -89,7 +89,6 @@ D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageAddPurp
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageAddQuestion.g.cs
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageCompetence.g.cs
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageHome.g.cs
-D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageLogs.g.cs
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageSubdivision.g.cs
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageTestOne.g.cs
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageTests.g.cs
@@ -115,7 +114,6 @@ D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageAddPurp
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageAddQuestion.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageCompetence.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageHome.baml
-D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageLogs.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageSubdivision.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageTestOne.baml
 D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageTests.baml
@@ -147,3 +145,5 @@ D:\Chertkov\workspace\Personal-Testing-System\Client\bin\Debug\System.ValueTuple
 D:\Chertkov\workspace\Personal-Testing-System\Client\bin\Debug\ScottPlot.xml
 D:\Chertkov\workspace\Personal-Testing-System\Client\bin\Debug\System.Numerics.Vectors.xml
 D:\Chertkov\workspace\Personal-Testing-System\Client\bin\Debug\System.ValueTuple.xml
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageLoad.g.cs
+D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\pages\PageLoad.baml

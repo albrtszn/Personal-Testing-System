@@ -70,8 +70,16 @@
                 <TextBox Text="{Binding FilterDateB, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
                 <Label Content="Фильтр должность:" Margin="5"/>
                 <TextBox Text="{Binding FilterSub, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
+                <Label Content="Номер телефона:" Margin="5"/>
+                <TextBox Text="{Binding FilterPhone, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
             </StackPanel>
-            <DataGrid CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeRows="False" CanUserDeleteRows="False">
+            <DataGrid CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" 
+                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeRows="False" CanUserDeleteRows="False"
+                      SelectedItem="{Binding SelectedItems}"
+                      FocusManager.IsFocusScope="True"
+                      FocusManager.FocusedElement="{Binding SelectedItems}"
+                      HorizontalAlignment="Stretch"
+                      >
 
 
 
@@ -80,6 +88,7 @@
                     <DataGridTextColumn Header="Имя" IsReadOnly="True" Binding="{Binding employee.FirstName}"/>
                     <DataGridTextColumn Header="Отчество" IsReadOnly="True" Binding="{Binding employee.SecondName}"/>
                     <DataGridTextColumn Header="Дата рож." IsReadOnly="True" Binding="{Binding employee.DateOfBirth}"/>
+                    <DataGridTextColumn Header="Номер тел." IsReadOnly="True" Binding="{Binding employee.Phone}"/>
                     <DataGridTextColumn Header="Дата рег." IsReadOnly="True" Binding="{Binding employee.RegistrationDate}"/>
                     <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
                     <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}"/>

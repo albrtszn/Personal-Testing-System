@@ -38,7 +38,6 @@ namespace Client.forms
         private void PageUsers_Loaded(object sender, RoutedEventArgs e)
         {
             this.DataContext = new VM.UserVM(this);
-
         }
 
     }

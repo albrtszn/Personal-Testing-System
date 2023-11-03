@@ -30,6 +30,8 @@ namespace Client.VM
         public RelayCommand CmdBackGO { get; }
         public RelayCommand CmdViewTestAnswers { get; }
 
+     
+
         public class ResultView
         {
             public ResultDto result { get; set; }
@@ -63,6 +65,18 @@ namespace Client.VM
             myGlobal.NavigationService.Navigate(new PageViewTestAnswers(result.result));
         }
 
+        public System.Windows.Visibility vis
+        {
+            get { return (System.Windows.Visibility)GetValue(visProperty); }
+            set { SetValue(visProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty visProperty =
+            DependencyProperty.Register("vis", typeof(System.Windows.Visibility), typeof(PageResultsVM), new PropertyMetadata(Visibility.Visible));
+
+
+
         public string FilterText
         {
             get { return (string)GetValue(FilterTextProperty); }
@@ -95,6 +109,8 @@ namespace Client.VM
 
         public async void LoadData()
         {
+            vis = Visibility.Visible;
+
             ResultDto[] res;
             AnswersUserTest ans;
 
@@ -159,6 +175,7 @@ namespace Client.VM
 
             Items = CollectionViewSource.GetDefaultView(resultViews);
             myGlobal.BTBackGo.IsEnabled = true;
+            vis = Visibility.Hidden;
 
         }
 

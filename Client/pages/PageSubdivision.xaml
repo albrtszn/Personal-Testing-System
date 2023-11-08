@@ -14,17 +14,34 @@
             <TextBlock Text="Вакантные должности" HorizontalAlignment="Center" FontSize="20"/>
         </StackPanel>
         <Grid Background="White" Margin="0 30 0 0">
-            <DataGrid x:Name="dataGridSubdivision" Grid.Row="1" Margin="5"  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="119*"/>
+                <ColumnDefinition Width="281*"/>
+            </Grid.ColumnDefinitions>
+            <DataGrid x:Name="dataGridSubdivision" Margin="5,5,5,5"  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False" Grid.ColumnSpan="2">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Гурппа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions2}"/>
+                    <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}" Width="300">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Гурппа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions2}" Width="300">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
                     <DataGridTextColumn Header="Профиль должности" IsReadOnly="True" Binding="{Binding Profile}"/>
 
                 </DataGrid.Columns>
             </DataGrid>
 
         </Grid>
-            
+
 
 
 

@@ -1,0 +1,54 @@
+﻿<Window x:Class="Client.windows.WindowAbout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.windows"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="WindowAbout" 
+                Width="500" 
+                Height="280"
+        WindowStyle="None"
+        Background="Transparent"    
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        >
+    <Grid Margin="20" Background="White">
+
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="1" Opacity="0.4"></DropShadowEffect>
+        </Grid.Effect>
+
+        <Border Background="White" VerticalAlignment="top" >
+            <Grid>
+                <StackPanel>
+                    <Grid Background="#2f2f2f" Height="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="О приложении" VerticalAlignment="Center" Foreground="LightGray" FontSize="18" Margin="0 0 0 0" Padding="5"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 5 0" Grid.Column="1">
+
+                            <Button Click="CloseWindow" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Red" Opacity="0.6">
+                                <materialDesign:PackIcon Kind="Close" Foreground="Black" />
+                            </Button>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                    <TextBox Text="Программное обеспечение для автоматизации процесса проверки наличия у кандидатов на трудоустройство/перевод необходимых для эффективной работы компетенций и уровня их развития, а также проведения периодической аттестации служащих ОАО «Нафтан» на соответствие занимаемой должности." FontSize="12" Margin="15 5 15 0" Padding="5" TextWrapping="Wrap" IsReadOnly="True" ></TextBox>
+                    <TextBox x:Name="VersionTB" Text="Версия: " FontSize="12" Margin="15 5 15 0" Padding="5" TextWrapping="Wrap" IsReadOnly="True" ></TextBox>
+                    <TextBox x:Name="Copy1TB" Text="Euphrosyne Polotskaya State University of Polotsk © 2023" FontSize="12" Margin="15 5 15 0" Padding="5" TextWrapping="Wrap" IsReadOnly="True" ></TextBox>
+                    <TextBox x:Name="Copy2TB" Text="JSC «Naftan»  © 2023" FontSize="12" Margin="15 5 15 10" Padding="5" TextWrapping="Wrap" IsReadOnly="True" ></TextBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>

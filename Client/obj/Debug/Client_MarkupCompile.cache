@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\Chertkov\workspace\Personal-Testing-System\Client\obj\Debug\
+D:\workspace\NET\Personal-Testing-System\Client\obj\Debug\
 Client
 none
 false
 DEBUG;TRACE
-D:\Chertkov\workspace\Personal-Testing-System\Client\App.xaml
-23-389249883
+D:\workspace\NET\Personal-Testing-System\Client\App.xaml
+24-927663457
 
-66-281888741
-29-1434787188
-pages\PageChoiceUser.xaml;pages\PageCompetencyAsses.xaml;pages\PageLoad.xaml;pages\PageResults.xaml;pages\PageRunTest.xaml;pages\PageUserEdit.xaml;pages\PageViewTestAnswers.xaml;windows\AutWindow.xaml;windows\addSubdivision.xaml;pages\PageAddPurpose.xaml;pages\PageAddQuestion.xaml;pages\PageCompetence.xaml;pages\PageHome.xaml;pages\PageSubdivision.xaml;pages\PageTestOne.xaml;pages\PageTests.xaml;pages\PageUserHome.xaml;pages\PageUserReg.xaml;pages\PageUsers.xaml;windows\MainWindow.xaml;windows\PasswordWindow.xaml;windows\SettingConnHost.xaml;windows\UserWindow.xaml;
+66-181613425
+29-1234303390
+pages\PageChoiceUser.xaml;pages\PageCompetencyAsses.xaml;pages\PageLoad.xaml;pages\PageResults.xaml;pages\PageRunTest.xaml;pages\PageUserEdit.xaml;pages\PageViewTestAnswers.xaml;windows\AutWindow.xaml;windows\addSubdivision.xaml;pages\PageAddPurpose.xaml;pages\PageAddQuestion.xaml;pages\PageCompetence.xaml;pages\PageHome.xaml;pages\PageSubdivision.xaml;pages\PageTestOne.xaml;pages\PageTests.xaml;pages\PageUserHome.xaml;pages\PageUserReg.xaml;pages\PageUsers.xaml;windows\MainWindow.xaml;windows\PasswordWindow.xaml;windows\SettingConnHost.xaml;windows\UserWindow.xaml;windows\WindowAbout.xaml;
 
-True
+False
 

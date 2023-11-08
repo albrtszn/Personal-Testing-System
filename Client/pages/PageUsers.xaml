@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:Client.forms" x:Class="Client.forms.PageUsers" 
       mc:Ignorable="d" 
       d:DesignHeight="450" 
-      d:DesignWidth="1000"
+      d:DesignWidth="1500"
       Title="PageUsers"
       x:Name="myPageUsers"
       Background="White"
@@ -52,10 +52,10 @@
 
     <Grid >
         <StackPanel>
-            <TextBlock Text="Список всех пользователей" HorizontalAlignment="Center"/>
+            <TextBlock Text="Список всех пользователей" HorizontalAlignment="Center"  FontSize="20"/>
         </StackPanel>
 
-        <Grid Background="White" Margin="0 20 0 0">
+        <Grid Background="White" Margin="0 35 0 0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -80,9 +80,6 @@
                       FocusManager.FocusedElement="{Binding SelectedItems}"
                       HorizontalAlignment="Stretch"
                       >
-
-
-
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Фамилия" IsReadOnly="True" Binding="{Binding employee.LastName}"/>
                     <DataGridTextColumn Header="Имя" IsReadOnly="True" Binding="{Binding employee.FirstName}"/>
@@ -91,9 +88,36 @@
                     <DataGridTextColumn Header="Номер тел." IsReadOnly="True" Binding="{Binding employee.Phone}"/>
                     <DataGridTextColumn Header="Дата рег." IsReadOnly="True" Binding="{Binding employee.RegistrationDate}"/>
                     <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
-                    <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}"/>
-                    <DataGridTextColumn Header="Кол. назначенных" IsReadOnly="True" Binding="{Binding kolPur}"/>
-                    <DataGridTextColumn Header="Кол. завершенных" IsReadOnly="True" Binding="{Binding employee.CountOfResults}"/>
+                    <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}" MaxWidth="200">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn IsReadOnly="True" Binding="{Binding kolPur}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="Кол. назнач."
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Left"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="50"
+                                           Margin="1"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn IsReadOnly="True" Binding="{Binding employee.CountOfResults}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="Кол. заверш."
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Left"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="50"
+                                           Margin="1"/>
+                        </DataGridTextColumn.Header>
+
+                    </DataGridTextColumn>
                     <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

@@ -35,12 +35,13 @@
         <Grid>
             <Button x:Name="BtnAut" Background="#2E333A" Content="Войти" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 25" Click="Button_Click"/>
             <!-- <ToggleButton VerticalAlignment="Bottom" Margin="0 0 30 25" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignSwitchToggleButton}"></ToggleButton> -->
+            <Label x:Name="VerL" Content="Версия:" VerticalAlignment="Bottom" Margin="40 0 0 0"/>
         </Grid>
         <!--<materialDesign:PackIcon Kind="Close" HorizontalAlignment="Right" Width="20" Height="20" Margin="10" MouseLeftButtonDown="closeApp" Opacity="0.4" /> -->
         <Button  Click="CloseApp" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0 5 5 0">
             <materialDesign:PackIcon Kind="Close" Width="25" Height="25"  Foreground="#2E333A"/>
         </Button>
-
+        
     </Grid>
 </Window>
 

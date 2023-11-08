@@ -19,6 +19,7 @@ namespace Client
             InitializeComponent();
             ConnectHost.urlHost = Properties.Settings.Default.hostUrl;
             ConnectHost.proсHost = Properties.Settings.Default.protocol;
+            VerL.Content = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         }
 

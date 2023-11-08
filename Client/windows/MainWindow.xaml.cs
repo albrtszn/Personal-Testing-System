@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Client.classDTO;
 using Client.forms;
 using Client.pages;
+using Client.windows;
 
 namespace Client
 {
@@ -150,6 +151,14 @@ namespace Client
         private void ListViewItem_LostMouseCapture(object sender, MouseEventArgs e)
         {
              ListSetting.SelectedIndex = -1;
+        }
+
+        private void About(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            WindowAbout windowAbout = new WindowAbout();
+            // Показываем новое окно
+            windowAbout.Show();
         }
     }
 

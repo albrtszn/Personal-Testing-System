@@ -161,24 +161,38 @@ namespace Client.forms
                 addSecondName.Background = Brushes.Transparent;
             }
 
-            if (addDate.Text == null || addDate.Text == "")
+
+            if (addDate3.Text == null || addDate3.Text == "")
             {
-                addDate.Background = Brushes.Pink;
-                MessageBox.Show("Значение в поле дата рождения заполнено неверно!");
+                addDate3.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле дата рождения (год) заполнено неверно!");
+                return;
+            }
+            
+            if ( falidDateBirthday(addDate1.Text + "." + addDate2.Text + "." + addDate3.Text))
+            {
+                addDate3.Background = Brushes.Pink;
+                addDate1.Background = Brushes.Pink;
+                addDate2.Background = Brushes.Pink;
+                MessageBox.Show("Значение полей даты рождения заполнено неверно!");
                 return;
             }
             else
             {
-                DateTime dateTime = DateTime.Parse(addDate.Text);
+                DateTime dateTime = DateTime.Parse(addDate1.Text + "." + addDate2.Text + "." + addDate3.Text);
                 int tmpTime = System.DateTime.Now.Year - dateTime.Year;
                 if (tmpTime <= 17)
                 {
-                    addDate.Background = Brushes.Pink;
-                    MessageBox.Show("Значение в поле дата рождения заполнено неверно!");
+                    addDate3.Background = Brushes.Pink;
+                    addDate1.Background = Brushes.Pink;
+                    addDate2.Background = Brushes.Pink;
+                    MessageBox.Show("Значение в поле год, даты рождения заполнено неверно!");
                     return;
                 }
 
-                addDate.Background = Brushes.Transparent;
+                addDate1.Background = Brushes.Transparent;
+                addDate2.Background = Brushes.Transparent;
+                addDate3.Background = Brushes.Transparent;
             }
 
             if (addPhone.Text == null || addPhone.Text == "" || addPhone.Text.Length != 9 ) 
@@ -231,7 +245,7 @@ namespace Client.forms
                         {
                             if (tmpUser.employee.LastName.Contains(addLastName.Text))
                             {
-                                if (tmpUser.employee.DateOfBirth.Contains(addDate.Text))
+                                if (tmpUser.employee.DateOfBirth.Contains(addDate3.Text))
                                 {
                                     if (addPassword.Text == tmpUser.employee.Password)
                                     {
@@ -267,13 +281,26 @@ namespace Client.forms
             user.SecondName = addSecondName.Text.Trim();
             user.Login = addPhone.Text.Trim();
             user.Password = addPassword.Text;
-            user.DateOfBirth = addDate.Text;
+            user.DateOfBirth = DateTime.Parse(addDate1.Text + "." + addDate2.Text + "." + addDate3.Text).ToShortDateString();
             user.Phone = addPhone.Text.Trim();
             user.IdSubdivision = list[subdivisionComboBox.SelectedIndex].Id;
             user.RegistrationDate = System.DateTime.Now.ToShortDateString();
             
             string jout = JsonConvert.SerializeObject(user);
             sendRequest(jout);
+        }
+
+        private bool falidDateBirthday(string v)
+        {
+            try
+            {
+                DateTime.Parse(v);
+            }
+            catch (Exception ex)
+            {
+                return true;
+            }
+            return false;
         }
 
         private async void sendRequest(string jin)
@@ -293,7 +320,7 @@ namespace Client.forms
                 addSecondName.Text = string.Empty;
                 addPhone.Text = string.Empty;
                 addPassword.Text = string.Empty;
-                addDate.Text = string.Empty;
+                addDate3.Text = string.Empty;
                 addPhone.Text = string.Empty;
 
                 GlobalRes.getUserEmployee();

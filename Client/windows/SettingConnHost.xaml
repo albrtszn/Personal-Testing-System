@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="SettingConnHost" 
-        Height="380" 
-        Width="600"
+        Height="600" 
+        Width="800"
         WindowStyle="None"
         Background="Transparent"    
         WindowStartupLocation="CenterScreen"
@@ -21,31 +21,65 @@
             <DropShadowEffect BlurRadius="30" ShadowDepth="1" Opacity="0.4"></DropShadowEffect>
         </Grid.Effect>
 
-        <Border x:Name="borderAut" Background="White" VerticalAlignment="top" Padding="40" CornerRadius="20"  Height="340" >
-            <StackPanel>
-                <TextBlock Text="Настройка IP или имени HOST" FontSize="30" Margin="0 0 0 10" HorizontalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Выбирите протокол связи" FontSize="20" Margin="0 0 15 10" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-                    <ComboBox x:Name="CB_http" Width="100" SelectedIndex="0" FontSize="20">
-                        <ComboBoxItem Content="http">  </ComboBoxItem>
-                        <ComboBoxItem Content="https"></ComboBoxItem>
+        <Border x:Name="borderAut" Background="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <Grid Background="#2f2f2f" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
 
-                    </ComboBox>
+                    <TextBlock x:Name="textBlock_UserName" Text="Настройки приложения" VerticalAlignment="Center" Foreground="LightGray" FontSize="20" Margin="10 0 0 0"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 5 0" Grid.Column="1">
+
+                        <Button Click="closeSetting" Width="20" Height="20" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Red" Opacity="0.6" Margin="0 0 5 0">
+                            <materialDesign:PackIcon Kind="Close" Foreground="Black" />
+                        </Button>
+
+                    </StackPanel>
+
+                </Grid>
+
+                <StackPanel Grid.Row="1" Margin="20 20 20 0">
+
+                    <TextBlock Text="Настройка IP или имени HOST" FontSize="20" Margin="0 0 0 10" HorizontalAlignment="Left" FontWeight="Bold" />
+                    <Grid Margin="0 0 0 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                    
+                        <StackPanel Orientation="Horizontal" Margin="15 0 0 10" Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="Выбирите протокол связи" FontSize="20" Margin="0 0 15 0" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="CB_http" Width="100" SelectedIndex="0" FontSize="20">
+                                <ComboBoxItem Content="http"></ComboBoxItem>
+                                <ComboBoxItem Content="https"></ComboBoxItem>
+
+                            </ComboBox>
+                        </StackPanel>
+                
+                        <TextBox Grid.Row="1" Grid.Column="0" x:Name="serverName" Text="" materialDesign:HintAssist.Hint="Введите ИМЯ или IP адрес формата 0.0.0.0" FontSize="20" Margin="15 0 15 5"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Padding="0,0,0,0"></TextBox>
+
+                        <Button Grid.Column="1" Grid.Row="0" Content="Тест соединения" Width="150" Click="Button_Click" VerticalAlignment="Center" Height="25"/>
+                        <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+                            <TextBlock  Text="Статус соединения с сервером:" FontSize="15" Margin="0 0 0 5" HorizontalAlignment="Center"/>
+                            <TextBlock  x:Name="statusConn" Text="Соединение не установлено" Foreground="Red" FontSize="15" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator></Separator>
                 </StackPanel>
-                
-                <TextBox x:Name="serverName" Text="" materialDesign:HintAssist.Hint="Введите ИМЯ или IP адрес формата 0.0.0.0" FontSize="20" Margin="0 0 0 15"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                
-                <Button Content="Тест соединения" Width="150" Margin="0 0 0 15" Click="Button_Click"></Button>
-                <Separator></Separator>
-                <TextBlock Text="Статус соединения с сервером:" FontSize="15" Margin="0 0 0 5" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="statusConn" Text="Соединение не установлено" Foreground="Red" FontSize="20" Margin="0 0 0 10" HorizontalAlignment="Center" />
-
-            </StackPanel>
+            </Grid>
         </Border>
-
-        <Button Click="closeSetting" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0 5 5 0">
-            <materialDesign:PackIcon Kind="Close" Width="25" Height="25" />
-        </Button>
 
     </Grid>
 </Window>

@@ -6,147 +6,372 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.forms" x:Class="Client.forms.PageUsers" 
       mc:Ignorable="d" 
-      d:DesignHeight="450" 
-      d:DesignWidth="1500"
+      d:DesignHeight="800" 
+      d:DesignWidth="1120"
       Title="PageUsers"
       x:Name="myPageUsers"
-      Background="White"
-      xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
-    >
+      Background="#EDEDED"
+    
+    xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
     <Page.Resources>
-        <Style x:Key="DataGridCellStyle1" TargetType="{x:Type DataGridCell}">
-            <Setter Property="FontSize" Value="12"/>
+        <Geometry x:Key="ion_filter_outlineGeometry">F1 M20,21z M0,0z M2.30768,6.65381L18.4615,6.65381 M5.19229,10.5L15.5769,10.5 M8.65383,14.3461L12.1154,14.3461</Geometry>
+        <DrawingGroup x:Key="ion_filter_outlineDrawingGroup" ClipGeometry="M0,0 V21 H20 V0 H0 Z">
+            <GeometryDrawing Geometry="{StaticResource ion_filter_outlineGeometry}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF6970B5" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingImage x:Key="ion_filter_outlineDrawingImage" Drawing="{StaticResource ion_filter_outlineDrawingGroup}" />
+
+        <Geometry x:Key="ion_search_outlineGeometry1">F1 M20,20z M0,0z M8.63633,2.5C7.42268,2.5 6.23628,2.85989 5.22717,3.53416 4.21806,4.20843 3.43155,5.16679 2.9671,6.28806 2.50266,7.40932 2.38114,8.64314 2.61791,9.83347 2.85468,11.0238 3.43911,12.1172 4.29729,12.9754 5.15547,13.8335 6.24886,14.418 7.43919,14.6547 8.62952,14.8915 9.86334,14.77 10.9846,14.3056 12.1059,13.8411 13.0642,13.0546 13.7385,12.0455 14.4128,11.0364 14.7727,9.84998 14.7727,8.63633 14.7726,7.0089 14.126,5.44817 12.9753,4.2974 11.8245,3.14664 10.2638,2.5001 8.63633,2.5z</Geometry>
+        <Geometry x:Key="ion_search_outlineGeometry2">F1 M20,20z M0,0z M13.2145,13.2145L17.5,17.5</Geometry>
+        <DrawingGroup x:Key="ion_search_outlineDrawingGroup" ClipGeometry="M0,0 V20 H20 V0 H0 Z">
+            <GeometryDrawing Geometry="{StaticResource ion_search_outlineGeometry1}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="1.5" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+            <GeometryDrawing Geometry="{StaticResource ion_search_outlineGeometry2}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="10" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingImage x:Key="ion_search_outlineDrawingImage" Drawing="{StaticResource ion_search_outlineDrawingGroup}" />
+
+        <Geometry x:Key="tabler_editGeometry1">F1 M24,24z M0,0z M7,7L6,7C5.46957,7 4.96086,7.21071 4.58579,7.58579 4.21071,7.96086 4,8.46957 4,9L4,18C4,18.5304 4.21071,19.0391 4.58579,19.4142 4.96086,19.7893 5.46957,20 6,20L15,20C15.5304,20 16.0391,19.7893 16.4142,19.4142 16.7893,19.0391 17,18.5304 17,18L17,17</Geometry>
+        <Geometry x:Key="tabler_editGeometry2">F1 M24,24z M0,0z M16,5.00011L19,8.00011 M20.385,6.58511C20.7788,6.19126 21.0001,5.65709 21.0001,5.10011 21.0001,4.54312 20.7788,4.00895 20.385,3.61511 19.9912,3.22126 19.457,3 18.9,3 18.343,3 17.8088,3.22126 17.415,3.61511L9,12.0001 9,15.0001 12,15.0001 20.385,6.58511z</Geometry>
+        <DrawingGroup x:Key="tabler_editDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry1}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry2}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingImage x:Key="tabler_editDrawingImage" Drawing="{StaticResource tabler_editDrawingGroup}" />
+
+        <Geometry x:Key="mdi_note_add_outlineGeometry">F1 M24,24z M0,0z M5,19L5,5 12,5 12,12 19,12 19,13C19.7,13,20.37,13.13,21,13.35L21,9 15,3 5,3C3.89,3,3,3.89,3,5L3,19C3,19.5304 3.21071,20.0391 3.58579,20.4142 3.96086,20.7893 4.46957,21 5,21L13.35,21C13.13,20.37,13,19.7,13,19L5,19z M14,4.5L19.5,10 14,10 14,4.5z M23,18L23,20 20,20 20,23 18,23 18,20 15,20 15,18 18,18 18,15 20,15 20,18 23,18z</Geometry>
+        <DrawingGroup x:Key="mdi_note_add_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource mdi_note_add_outlineGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="mdi_note_add_outlineDrawingImage" Drawing="{StaticResource mdi_note_add_outlineDrawingGroup}" />
+
+        <Geometry x:Key="ic_round_delete_outlineGeometry">F1 M24,24z M0,0z M6,19C6,20.1,6.9,21,8,21L16,21C17.1,21,18,20.1,18,19L18,9C18,7.9,17.1,7,16,7L8,7C6.9,7,6,7.9,6,9L6,19z M9,9L15,9C15.55,9,16,9.45,16,10L16,18C16,18.55,15.55,19,15,19L9,19C8.45,19,8,18.55,8,18L8,10C8,9.45,8.45,9,9,9z M15.5,4L14.79,3.29C14.61,3.11,14.35,3,14.09,3L9.91,3C9.65,3,9.39,3.11,9.21,3.29L8.5,4 6,4C5.45,4 5,4.45 5,5 5,5.55 5.45,6 6,6L18,6C18.55,6 19,5.55 19,5 19,4.45 18.55,4 18,4L15.5,4z</Geometry>
+        <DrawingGroup x:Key="ic_round_delete_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource ic_round_delete_outlineGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="ic_round_delete_outlineDrawingImage" Drawing="{StaticResource ic_round_delete_outlineDrawingGroup}" />
+
+        <Style x:Key="ButtonStylePageUser" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}"/>
-            <Setter Property="Padding" Value="{Binding (wpf:DataGridAssist.CellPadding), RelativeSource={RelativeSource Mode=Self}}"/>
+            <Setter Property="BorderBrush" Value="#FF787575"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="#FF787575"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="16,4,16,4"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type DataGridCell}">
-                        <Grid>
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
-                            <ContentPresenter Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    <ControlTemplate TargetType="{x:Type ButtonBase}">
+                        <Grid >
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{Binding (wpf:ButtonAssist.CornerRadius), RelativeSource={RelativeSource Mode=TemplatedParent}}" Effect="{Binding (wpf:ElevationAssist.Elevation), Converter={x:Static converters:ShadowConverter.Instance}, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                    />
+                            <wpf:Ripple ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Focusable="False" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <wpf:Ripple.Clip>
+                                    <MultiBinding Converter="{StaticResource BorderClipConverter}">
+                                        <Binding ElementName="border" Path="ActualWidth"/>
+                                        <Binding ElementName="border" Path="ActualHeight"/>
+                                        <Binding ElementName="border" Path="CornerRadius"/>
+                                        <Binding ElementName="border" Path="BorderThickness"/>
+                                    </MultiBinding>
+                                </wpf:Ripple.Clip>
+                            </wpf:Ripple>
                         </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="#F25C4F"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="true">
+                                <Setter Property="wpf:ShadowAssist.Darken" TargetName="border" Value="True"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
-            <Style.Triggers>
-                <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                    <Setter Property="BorderBrush" Value="{Binding (wpf:DataGridAssist.SelectedCellBorderBrush), RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                </Trigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=Self}}" Value="True"/>
-                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" Value="False"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Background" Value="{DynamicResource MaterialDesignSelection}"/>
-                </MultiDataTrigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value=".56"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
+            <Setter Property="TextBlock.FontWeight" Value="Medium"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="wpf:ButtonAssist.CornerRadius" Value="2"/>
+            <Setter Property="wpf:ButtonProgressAssist.IndicatorBackground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+            <Setter Property="wpf:ButtonProgressAssist.IndicatorForeground" Value="{DynamicResource PrimaryHueMidForegroundBrush}"/>
+            <Setter Property="wpf:ButtonProgressAssist.IsIndicatorVisible" Value="False"/>
+            <Setter Property="wpf:ButtonProgressAssist.Opacity" Value=".4"/>
+            <Setter Property="wpf:ElevationAssist.Elevation" Value="Dp2"/>
+            <Setter Property="wpf:RippleAssist.Feedback" Value="White"/>
         </Style>
+
+
+
     </Page.Resources>
 
     <Grid >
-        <StackPanel>
-            <TextBlock Text="Список всех пользователей" HorizontalAlignment="Center"  FontSize="20"/>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="40 60 40 10" >
+            <TextBlock Text="Список всех пользователей" HorizontalAlignment="Left"  FontSize="30" FontFamily="Roboto" Foreground="#555" VerticalAlignment="Top"/>
+            <Border Width="260" Height="40" HorizontalAlignment="Right" Margin="0 0 175 0"
+                    BorderThickness="0 0 0 0"
+                    BorderBrush="#787575"
+                    VerticalAlignment="Top">
+                <TextBox x:Name="wef"
+                         wpf:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         VerticalAlignment="Center"
+                         FontSize="16" 
+                         FontFamily="Roboto"
+                         Padding="10 0 0 0"                         
+                        
+                         wpf:TextFieldAssist.HasLeadingIcon="True"
+                         wpf:TextFieldAssist.LeadingIcon="Search"
+                         wpf:TextFieldAssist.LeadingIconSize="20"
+                             
+                         wpf:HintAssist.IsFloating="False" 
+                         Text="{Binding QuickSearch, UpdateSourceTrigger=PropertyChanged}"
+                         Height="40" 
+                         VerticalContentAlignment="Center"
+                         >
+                    <wpf:HintAssist.Hint>
+                        <TextBlock  Text="поиск" FontSize="16" FontFamily="Roboto"/>
+                    </wpf:HintAssist.Hint>
+                </TextBox>
 
-        <Grid Background="White" Margin="0 35 0 0">
+            </Border>
+            <Border HorizontalAlignment="Right" Width="140" Height="40" BorderBrush="#6970B5" BorderThickness="1.5" CornerRadius="20">
+                <Button HorizontalAlignment="Center" VerticalContentAlignment="Center" Background="Transparent"  Width="140" Height="40" Foreground="#6970B5" FontSize="16" FontFamily="Roboto"
+                    BorderThickness="0"
+                    wpf:ButtonAssist.CornerRadius="20"
+                    >
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource ion_filter_outlineDrawingImage}" Width="20" Height="20"/>
+                        <Label Content="фильтры" FontFamily="Roboto" FontSize="16" Foreground="#6970B5"/>
+                    </StackPanel>
+                    
+                    
+                </Button>
+            </Border>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="50"/>
 
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Фильтр ФИО:" Margin="5"/>
-                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-                <Label Content="Фильтр дата рождения:" Margin="5"/>
-                <TextBox Text="{Binding FilterDateB, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-                <Label Content="Фильтр должность:" Margin="5"/>
-                <TextBox Text="{Binding FilterSub, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-                <Label Content="Номер телефона:" Margin="5"/>
-                <TextBox Text="{Binding FilterPhone, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-            </StackPanel>
-            <DataGrid CellStyle="{DynamicResource DataGridCellStyle1}" x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" 
-                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeRows="False" CanUserDeleteRows="False"
-                      SelectedItem="{Binding SelectedItems}"
-                      FocusManager.IsFocusScope="True"
-                      FocusManager.FocusedElement="{Binding SelectedItems}"
-                      HorizontalAlignment="Stretch"
-                      >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Фамилия" IsReadOnly="True" Binding="{Binding employee.LastName}"/>
-                    <DataGridTextColumn Header="Имя" IsReadOnly="True" Binding="{Binding employee.FirstName}"/>
-                    <DataGridTextColumn Header="Отчество" IsReadOnly="True" Binding="{Binding employee.SecondName}"/>
-                    <DataGridTextColumn Header="Дата рож." IsReadOnly="True" Binding="{Binding employee.DateOfBirth}"/>
-                    <DataGridTextColumn Header="Номер тел." IsReadOnly="True" Binding="{Binding employee.Phone}"/>
-                    <DataGridTextColumn Header="Дата рег." IsReadOnly="True" Binding="{Binding employee.RegistrationDate}"/>
-                    <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
-                    <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}" MaxWidth="200">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="TextWrapping" Value="Wrap"></Setter>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn IsReadOnly="True" Binding="{Binding kolPur}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="Кол. назнач."
+
+        </Grid>
+
+        <Border Grid.Row="1" Margin=" 40 15 40 15" Visibility="Visible" Height="120" Width="1040" CornerRadius="5" Background="#FFFFFF" BorderBrush="Transparent">
+            <Grid>
+                <StackPanel Margin="17 0 0 0" Orientation="Horizontal" HorizontalAlignment="Center" MinWidth="1040">
+                    <TextBox
+                         wpf:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         VerticalAlignment="Center"
+                         FontSize="16" 
+                         FontFamily="Roboto"
+                         Padding="10 0 0 0"                         
+                            Margin="0 0 40 0"
+                         wpf:HintAssist.IsFloating="True" 
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32" 
+                         Width="120"
+                         VerticalContentAlignment="Center"
+                         >
+                        <wpf:HintAssist.Hint>
+                            <TextBlock  Text="ФИО" FontSize="16" FontFamily="Roboto"/>
+                        </wpf:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                         wpf:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         VerticalAlignment="Center"
+                         FontSize="16" 
+                         FontFamily="Roboto"
+                         Padding="10 0 0 0"                         
+                            Margin="0 0 40 0"
+                         wpf:HintAssist.IsFloating="True" 
+                         Text="{Binding FilterProf, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32" 
+                         Width="120"
+                         VerticalContentAlignment="Center"
+                         >
+                        <wpf:HintAssist.Hint>
+                            <TextBlock  Text="профиль" FontSize="16" FontFamily="Roboto"/>
+                        </wpf:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                         wpf:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         VerticalAlignment="Center"
+                         FontSize="16" 
+                         FontFamily="Roboto"
+                         Padding="10 0 0 0"                         
+                            Margin="0 0 40 0"
+                         wpf:HintAssist.IsFloating="True" 
+                         Text="{Binding FilterSub, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32" 
+                         Width="120"
+                         VerticalContentAlignment="Center"
+                         >
+                        <wpf:HintAssist.Hint>
+                            <TextBlock  Text="должность" FontSize="16" FontFamily="Roboto"/>
+                        </wpf:HintAssist.Hint>
+                    </TextBox>
+                    <TextBox
+                         wpf:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         VerticalAlignment="Center"
+                         FontSize="16" 
+                         FontFamily="Roboto"
+                         Padding="10 0 0 0"                         
+                            Margin="0 0 0 0"
+                         wpf:HintAssist.IsFloating="True" 
+                         Text="{Binding FilterPhone, UpdateSourceTrigger=PropertyChanged}"
+                         Height="32" 
+                         Width="120"
+                         VerticalContentAlignment="Center"
+                         >
+                        <wpf:HintAssist.Hint>
+                            <TextBlock  Text="телефон" FontSize="16" FontFamily="Roboto"/>
+                        </wpf:HintAssist.Hint>
+                    </TextBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <DataGrid x:Name="DataGridD"
+                  Grid.Row="3"
+                  CellStyle="{DynamicResource DataGridCellStyle1}"
+                  RowStyle="{DynamicResource DataGridRowStyle1}" 
+                  ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                  Style="{DynamicResource DataGridStyle1}"
+                  IsReadOnly="True" 
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}"
+                  Margin="40 5 40 40"
+                  CanUserAddRows="False" CanUserResizeRows="False" CanUserDeleteRows="False"
+                  SelectedItem="{Binding SelectedItems}"
+                  FocusManager.IsFocusScope="True"
+                  FocusManager.FocusedElement="{Binding SelectedItems}"
+                  HorizontalAlignment="Stretch" 
+                  CanUserResizeColumns="True"
+                  
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Фамилия" MinWidth="150" Width="*" Binding="{Binding employee.LastName}"/>
+                <DataGridTextColumn Header="Имя" MinWidth="150" Width="*" Binding="{Binding employee.FirstName}"/>
+                <DataGridTextColumn Header="Отчество" MinWidth="150" Width="*" Binding="{Binding employee.SecondName}"/>
+                <DataGridTextColumn MinWidth="120" Width="*" Binding="{Binding employee.DateOfBirth}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Дата рождения"
                                            TextWrapping="Wrap"
-                                           TextAlignment="Left"
+                                           TextAlignment="Center"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
-                                           Width="50"
+                                           Width="90"
                                            Margin="1"/>
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn IsReadOnly="True" Binding="{Binding employee.CountOfResults}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="Кол. заверш."
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="110" Width="*" Binding="{Binding employee.Phone}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Номер телефона"
                                            TextWrapping="Wrap"
-                                           TextAlignment="Left"
+                                           TextAlignment="Center"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
-                                           Width="50"
+                                           Width="90"
                                            Margin="1"/>
-                        </DataGridTextColumn.Header>
-
-                    </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0"
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="110" Width="*" Binding="{Binding employee.RegistrationDate}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Дата регист."
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="90"
+                                           Margin="1"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Профиль" MinWidth="120" Width="*" Binding="{Binding prof}"/>
+                <DataGridTextColumn Header="Должность" MinWidth="200" Width="*" Binding="{Binding sub}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  MinWidth="100" Width="115" Binding="{Binding kolPur}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Кол. назнач."
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="60"
+                                           Margin="1"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn MinWidth="100" Width="*" Binding="{Binding employee.CountOfResults}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Кол. заверш."
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="60"
+                                           Margin="1"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Margin="0 0 20 0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
                                             Command="{Binding DataContext.CmdAddPurpose, ElementName=myPageUsers}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
-                                        <iconPacks:PackIconMaterial Kind="NotePlus" Height="15" Width="15"/>
-                                    </Button>
-                                    <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0"
+                                    <Image Source="{StaticResource mdi_note_add_outlineDrawingImage}" Width="22" Height="22"/>
+                                </Button>
+                                <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Margin="0 0 20 0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
                                             Command="{Binding DataContext.CmdEditUser, ElementName=myPageUsers}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
-                                        <iconPacks:PackIconMaterial Kind="PencilOutline" Height="10" Width="10" />
-                                    </Button>
-                                    <Button Height="25" Width="25" Padding="0" Background="Red"
+                                    <Image Source="{StaticResource tabler_editDrawingImage}" Width="18" Height="18"/>
+                                </Button>
+                                <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
                                             Command="{Binding DataContext.CmdDeletUser, ElementName=myPageUsers}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
+                                           
                                             >
-                                        <iconPacks:PackIconMaterial Kind="DeleteOutline" Height="10" Width="10"/>
-                                    </Button>
+                                    <Image Source="{StaticResource ic_round_delete_outlineDrawingImage}" Width="24" Height="24"/>
+                                </Button>
 
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

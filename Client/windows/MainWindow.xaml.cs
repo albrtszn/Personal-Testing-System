@@ -23,15 +23,18 @@ namespace Client
 
             if (ConnectHost.userRole == 2)
             {
-                textBlock_UserName.Text = AutWindow.admin.LastName + " " + AutWindow.admin.FirstName + " " + AutWindow.admin.SecondName;
+                textBlock_UserName.Text = AutWindow.admin.LastName;
+                textBlock_UserName2.Text = AutWindow.admin.FirstName + " " + AutWindow.admin.SecondName;
             }
             else if (ConnectHost.userRole == 1)
             {
-                textBlock_UserName.Text = AutWindow.employee.LastName + " " + AutWindow.employee.FirstName + " " + AutWindow.employee.SecondName;
+                textBlock_UserName.Text = AutWindow.employee.LastName;
+                textBlock_UserName2.Text = AutWindow.admin.FirstName + " " + AutWindow.admin.SecondName;
             }
             else
             {
-                textBlock_UserName.Text = "Петров Петр Петрович";
+                textBlock_UserName.Text = "Петров";
+                textBlock_UserName2.Text = "Петр Петрович";
             }
 
             Loaded += MainWindow_Loaded;
@@ -91,28 +94,6 @@ namespace Client
                 this.DragMove();
             }
         }
-
-        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                if (isMaximazed)
-                {
-                    this.WindowState = WindowState.Normal;
-                    this.Width = 1280;
-                    this.Height = 768;
-                    isMaximazed = false;
-                }
-                else
-                {
-                    this.WindowState = WindowState.Maximized;
-
-                    isMaximazed = true;
-                }
-            }
-
-        }
-
         private void itemResults_Selected(object sender, RoutedEventArgs e)
         {
             adminFrame.Navigate(new PageChoiceUser());
@@ -159,6 +140,30 @@ namespace Client
             WindowAbout windowAbout = new WindowAbout();
             // Показываем новое окно
             windowAbout.Show();
+        }
+
+        private void WindowMaximizeApp(object sender, RoutedEventArgs e)
+        {
+
+                if (isMaximazed)
+                {
+                    this.WindowState = WindowState.Normal;
+                    this.Width = 1280;
+                    this.Height = 768;
+                    isMaximazed = false;
+                }
+                else
+                {
+                    this.WindowState = WindowState.Maximized;
+
+                    isMaximazed = true;
+                }
+
+        }
+
+        private void WindowMinimizeApp(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
     }
 

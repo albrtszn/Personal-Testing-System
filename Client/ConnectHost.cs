@@ -480,6 +480,10 @@ namespace Client
             HttpContent c = new StringContent(payload.payload, Encoding.UTF8, "application/json");
             JToken jObject = null;
 
+            if (payload.uri == null)
+            {
+                return jObject;
+            }
             request.RequestUri = new Uri(payload.uri);
             if (payload.metod == (int)connMetod.POST) // Метод POST
             {

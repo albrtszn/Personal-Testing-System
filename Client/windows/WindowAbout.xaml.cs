@@ -23,7 +23,7 @@ namespace Client.windows
         public WindowAbout()
         {
             InitializeComponent();
-            VersionTB.Text = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            VersionTB.Content = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         }
 
@@ -31,5 +31,6 @@ namespace Client.windows
         {
             this.Close();
         }
+
     }
 }

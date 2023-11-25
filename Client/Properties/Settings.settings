@@ -2,11 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Client.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="hostUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">fitpsu.online</Value>
-    </Setting>
     <Setting Name="protocol" Type="System.String" Scope="User">
       <Value Profile="(Default)">https</Value>
+    </Setting>
+    <Setting Name="hostUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">fitpsu.online</Value>
     </Setting>
   </Settings>
 </SettingsFile>

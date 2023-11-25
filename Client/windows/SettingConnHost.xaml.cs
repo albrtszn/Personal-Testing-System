@@ -68,14 +68,26 @@ namespace Client
                 Properties.Settings.Default.protocol = "https";
                 ConnectHost.proсHost = "https";
             }
-            Properties.Settings.Default.hostUrl = serverName.Text;
-            Properties.Settings.Default.Save();
+            string output = "Ошибка соединения!";
 
-
-            ConnectHost conn = new ConnectHost();
-
-            string output = await conn.Ping();
-            Console.WriteLine(output);
+            if (serverName.Text != "")
+            {
+                Properties.Settings.Default.hostUrl = serverName.Text;
+               
+                ConnectHost conn = new ConnectHost();
+                output = await conn.Ping();
+            }        
+            
+            if (output.Contains("Ошибка соединения!"))
+            {
+                statusConn.Foreground = Brushes.Red;
+            }
+            else
+            {
+                statusConn.Foreground = Brushes.Green;
+                Properties.Settings.Default.Save();
+            }
+            
             statusConn.Text = output;
 
         }

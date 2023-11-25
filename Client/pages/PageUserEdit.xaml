@@ -6,72 +6,231 @@
       xmlns:local="clr-namespace:Client.pages"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="700" d:DesignWidth="800"
+            d:DesignHeight="850" 
+      d:DesignWidth="1120"
       Title="PageUserEdit"
-      Background="White"
+      Background="#EDEDED"
       >
 
-    <Grid>
+    <Grid Margin="40 60 40 40">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Border Background="AliceBlue" Margin="30 30 30 15" CornerRadius="20" Height="auto">
-            <Grid Margin="20 0 20 0" Height="auto">
-                <StackPanel  Height="auto">
-                    <TextBlock Text="Информация о пользователе" HorizontalAlignment="Center" FontSize="15" Margin="0 10 0 0"/>
-                    <TextBox x:Name="addLastName" materialDesign:HintAssist.Hint="Фамилия" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-                             Text="{Binding LastName}"></TextBox>
-                    <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Имя" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                              Text="{Binding FirstName}"
-                             ></TextBox>
-                    <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Отчество" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Text="{Binding SecondName}"
-                             ></TextBox>
-                    <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Дата рождения" FontSize="15" Margin="15 5 15 10" Padding="5" 
-                                Text="{Binding DateOfBirth}"
-                                ></DatePicker>
-                    <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Номер телефона" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Text="{Binding Phone}"
-                             ></TextBox>
-                    <TextBox x:Name="addLogin" materialDesign:HintAssist.Hint="Логин" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Text="{Binding Login}"
-                             ></TextBox>
-                    <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Пароль" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                              Text="{Binding Password}"
-                             ></TextBox>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox x:Name="profileCB" Grid.Column="0" materialDesign:HintAssist.Hint="Профиль" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                              IsReadOnly="True"
-                             ></TextBox>
-                        <TextBox x:Name="groupeCB" Grid.Column="1" materialDesign:HintAssist.Hint="Группа должностей" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                              IsReadOnly="True"
-                             ></TextBox>
-                        <TextBox x:Name="subdivisionComboBox" Grid.Column="2" materialDesign:HintAssist.Hint="Должность" FontSize="15" Margin="15 5 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                IsReadOnly="True"  
-                             ></TextBox>
+        <TextBlock Grid.Column="0" Text="Информация о пользователе" HorizontalAlignment="Left" FontSize="30" Margin="0 0 0 0" FontFamily="Roboto" Foreground="#555555"/>
 
+        <Border Grid.Row="1" Background="#FFFFFF" Margin="0 30 0 0" CornerRadius="5" Height="356" MinWidth="1040">
+            <Grid Margin="20 30 20 0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                      
-                    </Grid>
+                <Label Grid.Row="0" Content="ФИО" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold"/>
+                <Label Grid.Row="2" Content="Дата рождения" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="4" Grid.Column="2" Content="Дата регистрации" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="4" Content="Номер телефона" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
 
+                <TextBox Grid.Row="1" x:Name="addLastName" 
+                         Text="{Binding LastName}"
+                         materialDesign:HintAssist.Hint="Фамилия" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
 
-                </StackPanel>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="addFirstName" 
+                         Text="{Binding FirstName}"
+                         materialDesign:HintAssist.Hint="Имя" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                        
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="10 0 10 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                     />
 
+                <TextBox Grid.Row="1" Grid.Column="2" x:Name="addSecondName" 
+                         Text="{Binding SecondName}"
+                         materialDesign:HintAssist.Hint="Отчество" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="10 0 0 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                     />
+
+                <TextBox Grid.Row="3" Grid.Column="0" x:Name="addDate" 
+                         Text="{Binding DateOfBirth}"
+                         materialDesign:HintAssist.Hint="Дата рождения" 
+                         FontSize="16" 
+                         
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="0 0 10 0" 
+                         Padding="17 0 17 0" 
+                         VerticalContentAlignment="Center" BorderThickness="1,1,1,1" SnapsToDevicePixels="True"
+                     />
+                
+                <TextBox Grid.Row="5" Grid.Column="3" x:Name="DataRegUpdate" 
+                        
+                         materialDesign:HintAssist.Hint="Дата регистрации" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                     />
+                
+                <TextBox Grid.Row="5" x:Name="addPhone" 
+                          Text="{Binding Phone}"
+                         materialDesign:HintAssist.Hint="9 цифр" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
             </Grid>
         </Border>
-        <Grid Grid.Row="1" Margin="50 0 50 0">
-            <Button x:Name="BT_update" Background="#2E333A" Content="Обнавить" FontSize="15" Width="100" VerticalAlignment="Top" HorizontalAlignment="Right" BorderBrush="Transparent" Click="Button_Click_update" />
-            <Button HorizontalAlignment="Left" Background="#2E333A" Content="Назад" FontSize="15" Width="100" VerticalAlignment="Top" BorderBrush="Transparent" Click="Button_Click_Back" />
-            <TextBox x:Name="DataRegUpdate" materialDesign:HintAssist.Hint="Дата регистрации (обновления)" FontSize="15" HorizontalAlignment="Center"  VerticalAlignment="Top" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         
-                     IsReadOnly="True"  
-                             ></TextBox>
+
+        <Border Grid.Row="2" Background="#FFFFFF" Margin="0 20 0 0" CornerRadius="5" Height="248" MinWidth="1040">
+            <Grid Margin="20 30 20 0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Профиль" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold"/>
+                <Label Grid.Row="2" Content="Логин" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="2" Grid.Column="1" Content="Пароль" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 30 0 0"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Группа специализации" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 0 0 0"/>
+                <Label Grid.Row="0" Grid.Column="2" Content="Должность" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 0 0 0"/>
+
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="addPassword" 
+                         Text="{Binding Password}"
+                         materialDesign:HintAssist.Hint="Пароль" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="10 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
+
+                <TextBox Grid.Row="3" Grid.Column="0" x:Name="addLogin" 
+                         Text="{Binding Login}"
+                         materialDesign:HintAssist.Hint="Логин" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="profileCB"
+                         materialDesign:HintAssist.Hint="Профиль" 
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="0 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                          />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="groupeCB"
+                         materialDesign:HintAssist.Hint="Группа специализации" 
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="10 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                          />
+                <TextBox Grid.Row="1" Grid.Column="2" x:Name="subdivisionComboBox"
+                         materialDesign:HintAssist.Hint="Должность" 
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="10 0 0 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                          />
+            </Grid>
+        </Border>
+        
+
+       
+        <Grid Grid.Row="3" Margin="130 20 130 0">
+            <Button x:Name="BT_update" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" FontFamily="Roboto" Content="ОБНОВИТЬ" FontSize="15" Width="120" Height="40" VerticalAlignment="Top" HorizontalAlignment="Right" BorderBrush="Transparent" Click="Button_Click_update" />
+            <Button HorizontalAlignment="Left" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" FontFamily="Roboto" Content="НАЗАД" FontSize="15" Width="120" Height="40" VerticalAlignment="Top" BorderBrush="Transparent" Click="Button_Click_Back" />
         </Grid>
     </Grid>
 </Page>

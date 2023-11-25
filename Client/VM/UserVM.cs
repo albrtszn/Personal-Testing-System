@@ -75,6 +75,26 @@ namespace Client.VM
         public static readonly DependencyProperty FilterTextProperty =
             DependencyProperty.Register("FilterText", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
 
+        public string QuickSearch
+        {
+            get { return (string)GetValue(QuickSearchProperty); }
+            set { SetValue(QuickSearchProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FilterText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty QuickSearchProperty =
+            DependencyProperty.Register("QuickSearch", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
+
+        public string FilterProf
+        {
+            get { return (string)GetValue(FilterProfProperty); }
+            set { SetValue(FilterProfProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FilterText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FilterProfProperty =
+            DependencyProperty.Register("FilterProf", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
+
         private static void FilterText_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var curr = d as UserVM;
@@ -221,16 +241,26 @@ namespace Client.VM
             bool B = false;
             bool C = true;
             bool D = true;
-           
+            bool E = true;
+
             if (curr != null)
             {
-                A = string.IsNullOrEmpty(FilterText) || curr.employee.FirstName.Contains(FilterText) || (curr.employee.LastName.Contains(FilterText)) || (curr.employee.SecondName.Contains(FilterText));
-                C = string.IsNullOrEmpty(FilterSub) || curr.sub.Contains(FilterSub);
-                D = string.IsNullOrEmpty(FilterDateB) || curr.employee.DateOfBirth.Contains(FilterDateB); 
-                B = string.IsNullOrEmpty(FilterPhone) || curr.employee.Phone.Contains(FilterPhone);
-                result = A && C && D && B; 
-            }
+                if (!string.IsNullOrEmpty(QuickSearch))
+                {
+                    result = string.IsNullOrEmpty(QuickSearch) || curr.employee.FirstName.ToUpper().Contains(QuickSearch.ToUpper()) || curr.employee.LastName.ToUpper().Contains(QuickSearch.ToUpper()) || curr.employee.SecondName.ToUpper().Contains(QuickSearch.ToUpper());
+                }
+                else
+                {
 
+                    A = string.IsNullOrEmpty(FilterText) || curr.employee.FirstName.ToUpper().Contains(FilterText.ToUpper()) || curr.employee.LastName.ToUpper().Contains(FilterText.ToUpper()) || curr.employee.SecondName.ToUpper().Contains(FilterText.ToUpper());
+                    C = string.IsNullOrEmpty(FilterSub) || curr.sub.ToUpper().Contains(FilterSub.ToUpper());
+                    D = string.IsNullOrEmpty(FilterDateB) || curr.employee.DateOfBirth.Contains(FilterDateB);
+                    B = string.IsNullOrEmpty(FilterPhone) || curr.employee.Phone.Contains(FilterPhone);
+                    E = string.IsNullOrEmpty(FilterProf) || curr.prof.ToUpper().Contains(FilterProf.ToUpper());
+                    result = A && C && D && B && E;
+
+                }
+            }
 
 
             return result;

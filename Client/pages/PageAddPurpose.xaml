@@ -12,7 +12,7 @@
 
     <Grid >
         <StackPanel>
-            <TextBlock Text="Список тестов для назвачения" HorizontalAlignment="Center" FontSize="20"/>
+            <TextBlock Text="Список тестов для назначения" HorizontalAlignment="Center" FontSize="20"/>
         </StackPanel>
 
         <Grid Background="White" Margin="0 30 0 0">
@@ -33,7 +33,7 @@
                     <DataGridTextColumn Header="Наименование теста" IsReadOnly="True" Binding="{Binding test.Name}"/>
                     <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
                     <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
-                    <DataGridCheckBoxColumn x:Name="CB_Active" Header="Выбрать для назвачения" Binding="{Binding checkBox}"/>
+                    <DataGridCheckBoxColumn x:Name="CB_Active" Header="Выбрать для назначения" Binding="{Binding checkBox}"/>
                     <DataGridTextColumn Header="Назвачен" IsReadOnly="True" Binding="{Binding DatatimePurpose}"/>
                 </DataGrid.Columns>
             </DataGrid>

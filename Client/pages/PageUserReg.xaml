@@ -6,47 +6,262 @@
       xmlns:local="clr-namespace:Client.forms"
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      d:DesignHeight="750" d:DesignWidth="800"
+      d:DesignHeight="850" 
+      d:DesignWidth="1120"
       Title="PageUserReg"
-      Background="White">
+      Background="#EDEDED">
 
-    <Grid Margin="20 0 20 0">
+    <Grid Margin="40 60 40 40">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Border Background="AliceBlue" Margin="50 30 50 15" CornerRadius="20" Height="auto">
-            <StackPanel>
-                <TextBlock Text="Регистрация нового пользователя" HorizontalAlignment="Center" FontSize="25" Margin="0 10 0 0"/>
-                <TextBox x:Name="addLastName" materialDesign:HintAssist.Hint="Введите фамилию" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <TextBox x:Name="addFirstName" materialDesign:HintAssist.Hint="Введите имя" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <TextBox x:Name="addSecondName" materialDesign:HintAssist.Hint="Введите отчество" FontSize="20" Margin="15 5 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <DatePicker x:Name="addDate" materialDesign:HintAssist.Hint="Введите дату рождения" FontSize="20" Margin="15 5 15 0" Padding="5"></DatePicker>
-                <TextBox x:Name="addPhone" materialDesign:HintAssist.Hint="Введите номер телефона (2 цифры код и 7 цифр номер)" FontSize="20" Margin="15 0 15 5" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <TextBox x:Name="addPassword" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="15 0 15 10" Padding="5" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <Label Content="Профиль" Margin="20 5 0 0" Padding="0"/>
-                <ComboBox x:Name="profileCB"   FontSize="20" Margin="15 0 15 10" Padding="5" SelectedIndex="0">
+        <TextBlock Text="Регистрация нового пользователя" HorizontalAlignment="Left" FontSize="30" Margin="0 0 0 0" FontFamily="Roboto" Foreground="#555555"/>
+        <Border Grid.Row="1" Background="#FFFFFF" Margin="0 30 0 0" CornerRadius="5" Height="356" MinWidth="1040">
+            <Grid Margin="20 30 20 0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="ФИО" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold"/>
+                <Label Grid.Row="2" Content="Дата рождения" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="4" Content="Номер телефона" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <TextBox Grid.Row="1" x:Name="addLastName" 
+                         materialDesign:HintAssist.Hint="Фамилия" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
+
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="addFirstName" 
+                         materialDesign:HintAssist.Hint="Имя" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="10 0 10 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                     />
+
+                <TextBox Grid.Row="1" Grid.Column="2" x:Name="addSecondName" 
+                         materialDesign:HintAssist.Hint="Отчество" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="10 0 0 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                     />
+
+                <TextBox Grid.Row="3" Grid.Column="2" x:Name="addDate3" 
+                         materialDesign:HintAssist.Hint="Год" 
+                         FontSize="16" 
+                         BorderThickness="1" 
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="50"
+                         Margin="10 0 0 0" 
+                         Padding="17 0 0 0" 
+                         VerticalContentAlignment="Center"
+                     />
+                
+                <ComboBox Grid.Row="3" Grid.Column="0" x:Name="addDate1"   
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="0 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="01"/>
+                    <ComboBoxItem Content="02"/>
+                    <ComboBoxItem Content="03"/>
+                    <ComboBoxItem Content="04"/>
+                    <ComboBoxItem Content="05"/>
+                    <ComboBoxItem Content="06"/>
+                    <ComboBoxItem Content="07"/>
+                    <ComboBoxItem Content="08"/>
+                    <ComboBoxItem Content="09"/>
+                    <ComboBoxItem Content="10"/>
+                    <ComboBoxItem Content="11"/>
+                    <ComboBoxItem Content="12"/>
+                    <ComboBoxItem Content="13"/>
+                    <ComboBoxItem Content="14"/>
+                    <ComboBoxItem Content="15"/>
+                    <ComboBoxItem Content="16"/>
+                    <ComboBoxItem Content="17"/>
+                    <ComboBoxItem Content="18"/>
+                    <ComboBoxItem Content="19"/>
+                    <ComboBoxItem Content="20"/>
+                    <ComboBoxItem Content="21"/>
+                    <ComboBoxItem Content="22"/>
+                    <ComboBoxItem Content="23"/>
+                    <ComboBoxItem Content="24"/>
+                    <ComboBoxItem Content="25"/>
+                    <ComboBoxItem Content="26"/>
+                    <ComboBoxItem Content="27"/>
+                    <ComboBoxItem Content="28"/>
+                    <ComboBoxItem Content="29"/>
+                    <ComboBoxItem Content="30"/>
+                    <ComboBoxItem Content="31"/>
+                </ComboBox>
+
+                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="addDate2"   
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="10 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="Январь"/>
+                    <ComboBoxItem Content="Февраль"/>
+                    <ComboBoxItem Content="Март"/>
+                    <ComboBoxItem Content="Апрель"/>
+                    <ComboBoxItem Content="Май"/>
+                    <ComboBoxItem Content="Июнь"/>
+                    <ComboBoxItem Content="Июль"/>
+                    <ComboBoxItem Content="Август"/>
+                    <ComboBoxItem Content="Сентябрь"/>
+                    <ComboBoxItem Content="Октябрь"/>
+                    <ComboBoxItem Content="Ноябрь"/>
+                    <ComboBoxItem Content="Декабрь"/>
+
+                </ComboBox>
+                <TextBox Grid.Row="5" x:Name="addPhone" 
+                         materialDesign:HintAssist.Hint="9 цифр" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Background="#FFFFFF" Margin="0 20 0 0" CornerRadius="5" Height="248" MinWidth="1040">
+            <Grid Margin="20 30 20 0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Профиль" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold"/>
+                <Label Grid.Row="2" Content="Пароль" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Группа специализации" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 0 0 0"/>
+                <Label Grid.Row="0" Grid.Column="2" Content="Должность" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 0 0 0"/>
+
+                <TextBox Grid.Row="3" x:Name="addPassword" 
+                         materialDesign:HintAssist.Hint="Пароль" 
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Foreground="Black" 
+                         BorderBrush="#C2C2C2"
+                         BorderThickness="1" 
+                         FontSize="16" 
+                         FontFamily="Roboto" 
+                         Margin="0 0 10 0" 
+                         Padding="17 0 0 0" 
+                         Height="50"
+                         VerticalContentAlignment="Center"
+                  />
+
+                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="profileCB"   
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="0 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                          SelectedIndex="0">
                     <ComboBoxItem Content="Механик"/>
                     <ComboBoxItem Content="Технолог" />
                 </ComboBox>
-                <Label Content="Группа специализации" Margin="20 5 0 0" Padding="0"/>
-                <ComboBox x:Name="groupeCB"  FontSize="20" Margin="15 0 15 10" Padding="5" SelectedIndex="0" SelectionChanged="groupeCB_SelectionChanged" >
+
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="groupeCB" SelectionChanged="groupeCB_SelectionChanged" 
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="10 0 10 0" 
+                          Padding="17 0 20 0" 
+                          Height="50"
+                          SelectedIndex="0">
                     <ComboBoxItem Content="Группа 1. Рабочие"/>
                     <ComboBoxItem Content="Группа 2. Инженерные и руководящие начального уровня"/>
                     <ComboBoxItem Content="Группа 3. Руководящие среднего уровня"/>
                     <ComboBoxItem Content="Группа 4. Руководящие высшего уровня"/>
                 </ComboBox>
-                <Label Content="Должность" Margin="20 5 0 0" Padding="0"/>
-                <ComboBox x:Name="subdivisionComboBox" FontSize="20" Margin="15 0 15 20" Padding="5" SelectedIndex="-1"
-                          ItemsSource="{Binding ElementName=list}" DisplayMemberPath="Name"  SelectedItem="{Binding SelectedValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                          
-                          
-                
-            </StackPanel>
+
+                <ComboBox Grid.Row="1" Grid.Column="2" x:Name="subdivisionComboBox" FontSize="16"  SelectedIndex="-1"
+                          ItemsSource="{Binding ElementName=list}" DisplayMemberPath="Name"  SelectedItem="{Binding SelectedValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="10 0 0 0" 
+                          Padding="17 0 20 0" 
+                          Height="50" 
+                          />
+
+            </Grid>
             
         </Border>
 
-        <Button Grid.Row="1" Background="#2E333A" Content="Добавить" FontSize="20" Width="150" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" Height="40"/>
+        <Button Grid.Row="4" Background="#F25C4F" Content="ДОБАВИТЬ" 
+                FontSize="16" 
+                FontFamily="Roboto"
+                Width="152" 
+                Margin="0 20 0 0"
+                materialDesign:ButtonAssist.CornerRadius="20"
+                HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" Height="40"/>
 
     </Grid>
 </Page>

@@ -3,45 +3,105 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:svg1="https://github.com/dotnetprojects/SVGImage"
         Title="AutWindow" 
-        Width="600"
-        Height="350"
+        Width="980"
+        Height="570"
         WindowStyle="None"
         Background="Transparent"    
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
-        ResizeMode="NoResize">
-
-    <Grid Margin="20">
-
-        <Grid.Effect>
-            <DropShadowEffect BlurRadius="30" ShadowDepth="1" Opacity="0.4"></DropShadowEffect>
-        </Grid.Effect>
-
+        ResizeMode="NoResize"
+        Foreground="Transparent"
+        BorderBrush="Transparent"
+        BorderThickness="0"
+        
+        >
 
 
-        <Border x:Name="borderAut" Background="White" VerticalAlignment="top" Padding="40" CornerRadius="20" Height="310">
-            <StackPanel>
-                <TextBlock Text="Авторизация" FontSize="30" Margin="0 0 0 10" HorizontalAlignment="Center"/>
-                <TextBox x:Name="autLogin" materialDesign:HintAssist.Hint="Введите логин" FontSize="20" Margin="0 0 0 10"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
-                <PasswordBox x:Name="autPass" materialDesign:HintAssist.Hint="Введите пароль" FontSize="20" Margin="0 0 0 20" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" KeyDown="autPass_KeyDown"/>
+    <Grid Background="Transparent" >
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="580"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Background="White" CornerRadius="16 0 0 16" />
+
+        <Label Content="Competencies Exam" FontSize="9.918" Foreground="Black" FontFamily="/Fonts/#Terminator Cyr" Margin="62 26 0 0"/>
+        <Image Source="/Images/kap.png" Width="32" Height="32" Margin="26 16 0 0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        
+        
+        <Label Content="Авторизация" FontSize="30" HorizontalAlignment="Center" Foreground="Black" FontFamily="Roboto" Margin="0 140 0 0"/>
+        
+        <Button x:Name="BtnAut" Background="#F25C4F" Content="ВОЙТИ" FontSize="15" FontFamily="Roboto" Width="120" Height="38" 
+                VerticalAlignment="Bottom" HorizontalAlignment="Center" VerticalContentAlignment="Center" Margin="0 0 0 103" 
+                Click="Button_Click" 
+                Foreground="White"
+                BorderBrush="Transparent" 
+                materialDesign:ButtonAssist.CornerRadius="20"
+                Padding="0 2 0 0"
+                />
+
+        <Label Content="Логин" FontSize="11.8" Foreground="#787575" FontFamily="Roboto" Margin="160 224 0 0" Width="34" Padding="0" Height="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <Label Content="Пароль" FontSize="11.8" Foreground="#787575" FontFamily="Roboto" Margin="160 312 0 0" Width="42" Padding="0" Height="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        
+        <TextBox x:Name="autLogin" materialDesign:HintAssist.Hint="Введите логин" FontSize="15.42" BorderThickness="1" Foreground="Black" VerticalAlignment="Top" HorizontalAlignment="Left" CaretBrush="{x:Null}" BorderBrush="#C2C2C2"
+                     
+                     materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                     Height="48.12"
+                     VerticalContentAlignment="Center"
+                     Width="260"
+                     Margin="160 243 0 00"
+                     Padding="17 0 17 0"
+                     />
+        
+
+
+            <PasswordBox x:Name="autPass" materialDesign:HintAssist.Hint="Введите пароль" 
+                         Style="{StaticResource MaterialDesignRevealPasswordBox}"
+                         FontSize="15.42"  Foreground="Black" KeyDown="autPass_KeyDown" 
+                         VerticalAlignment="Top" HorizontalAlignment="Left" CaretBrush="{x:Null}" BorderBrush="#C2C2C2"
+                          Width="260" Height="48.12" BorderThickness="1"
+                         
+                        
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                               VerticalContentAlignment="Center"
+                                             Margin="160 331 0 0"
+                     Padding="17 0 17 0 "
+                         />
+   
+
+        <Grid Grid.Column="1">
+            <Grid.OpacityMask>
+                <VisualBrush Visual="{Binding ElementName=mask}"/>
+            </Grid.OpacityMask>
+
+            <Border Name="mask" Grid.Column="1" Background="Black" CornerRadius="0 16 16 0"/>
+            <Image Source="/Images/backAutWin.png" VerticalAlignment="Bottom"/>
+            <Image Source="/Images/backAutWin2.png" />
+            <Image Source="/Images/NaftanAut.png" Width="159.83" Height="139.27" Margin="120,78,120,349"/>
+
+            <StackPanel Margin="0 482 0 0">
+                <Label Content="© ОАО «НАФТАН»" Foreground="#787575" FontSize="10" Margin="0" Padding="0" HorizontalAlignment="Center"/>
+                <Label Content="© УО «Полоцкий государственный университет" Foreground="#787575" FontSize="10" Margin="0" Padding="0" HorizontalAlignment="Center"/>
+                <Label Content="имени Евфросинии Полоцкой»" Foreground="#787575" FontSize="10" Margin="0 0 0 5" Padding="0" HorizontalAlignment="Center"/>
+                <Label x:Name="VerL" Content="Версия " Foreground="#787575" FontSize="10" Margin="0" Padding="0" HorizontalAlignment="Center"/>
             </StackPanel>
 
-        </Border>
-
-        <Grid>
-            <Button x:Name="BtnAut" Background="#2E333A" Content="Войти" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 25" Click="Button_Click"/>
-            <!-- <ToggleButton VerticalAlignment="Bottom" Margin="0 0 30 25" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignSwitchToggleButton}"></ToggleButton> -->
-            <Label x:Name="VerL" Content="Версия:" VerticalAlignment="Bottom" Margin="40 0 0 0"/>
+            <Button  Click="CloseApp" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0 5 5 0">
+                <materialDesign:PackIcon Kind="Close" Width="25" Height="25"  Foreground="#787575" />
+            </Button>
         </Grid>
-        <!--<materialDesign:PackIcon Kind="Close" HorizontalAlignment="Right" Width="20" Height="20" Margin="10" MouseLeftButtonDown="closeApp" Opacity="0.4" /> -->
-        <Button  Click="CloseApp" Width="30" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Margin="0 5 5 0">
-            <materialDesign:PackIcon Kind="Close" Width="25" Height="25"  Foreground="#2E333A"/>
-        </Button>
-        
+
+
+
+
     </Grid>
+
 </Window>
 

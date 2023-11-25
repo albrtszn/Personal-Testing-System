@@ -30,7 +30,7 @@ namespace Client.pages
             profileCB.Text = GlobalRes.GetSubdivision(user.IdSubdivision).Profile;
             groupeCB.Text = GlobalRes.GetSubdivision(user.IdSubdivision).NameGroupPositions2;
             subdivisionComboBox.Text = GlobalRes.GetSubdivision(user.IdSubdivision).Name;
-            DataRegUpdate.Text = user.RegistrationDate;
+            DataRegUpdate.Text = user.RegistrationDate.ToString();
         }
 
         private void Button_Click_Back(object sender, RoutedEventArgs e)
@@ -41,14 +41,14 @@ namespace Client.pages
         private async void Button_Click_update(object sender, RoutedEventArgs e)
         {
             BT_update.IsEnabled = false;
-            user.RegistrationDate = System.DateTime.Now.ToShortDateString();    
+            
             string tmp = JsonConvert.SerializeObject(user);
             ConnectHost conn = new ConnectHost();
             JToken jObject = await conn.UpdateEmployee(tmp);
             if (jObject != null)
             {
                 MessageBox.Show("Данные пользователя успешно обновлены");
-                DataRegUpdate.Text = user.RegistrationDate;
+                
             }
             else
             {

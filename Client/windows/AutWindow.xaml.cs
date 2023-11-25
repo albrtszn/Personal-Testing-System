@@ -17,8 +17,14 @@ namespace Client
         public AutWindow()
         {
             InitializeComponent();
-            ConnectHost.urlHost = Properties.Settings.Default.hostUrl;
-            ConnectHost.proсHost = Properties.Settings.Default.protocol;
+            if (Client.Properties.Settings.Default.hostUrl == "")
+            {
+
+                Client.Properties.Settings.Default.hostUrl = "fitpsu.online";
+                Client.Properties.Settings.Default.Save();
+            }
+            ConnectHost.urlHost = Client.Properties.Settings.Default.hostUrl;
+            ConnectHost.proсHost = Client.Properties.Settings.Default.protocol;
             VerL.Content = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
 
         }

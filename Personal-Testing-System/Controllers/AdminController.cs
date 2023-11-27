@@ -1,5 +1,6 @@
 ﻿using DataBase;
 using DataBase.Repository.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
@@ -10,6 +11,7 @@ using PdfSharpCore;
 using PdfSharpCore.Pdf;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Hubs;
+using Personal_Testing_System.MetaData;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
 using System.ComponentModel.DataAnnotations;
@@ -290,6 +292,46 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpGet("GetProfilesPage")]
+        public async Task<IActionResult> GetProfilesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            logger.LogInformation($"/admin-api/GetProfiles");
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetProfiles : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetProfiles",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+
+                    var Allprofiles = (await ms.Profile.GetAllProfileDtos())
+                                                    .OrderBy(x => x.Id);
+
+                    var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allprofiles.Count(), pageParams.ItemsPerPage.Value);
+                    Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                    var profiles = Allprofiles
+                        .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                        .Take(pageParams.ItemsPerPage.Value)
+                        .ToList();
+
+                    return Ok(profiles);
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("AddProfile")]
         public async Task<IActionResult> AddProfile([FromHeader] string Authorization, [FromBody] AddProfileModel? profile)
         {
@@ -425,6 +467,46 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                     });
                     return Ok(await ms.GroupPosition.GetAllGroupPositionDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetGroupPositionsPage")]
+        public async Task<IActionResult> GetGroupPositionsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            logger.LogInformation($"/admin-api/GetGroupPositions");
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetGroupPositions : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetGroupPositions",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+
+                    var AllgroupPositions = (await ms.GroupPosition.GetAllGroupPositionDtos())
+                                                    .OrderBy(x => x.Id);
+
+                    var pageHeader = new PageHeader(pageParams.PageNumber.Value, AllgroupPositions.Count(), pageParams.ItemsPerPage.Value);
+                    Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                    var groupPositions = AllgroupPositions
+                        .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                        .Take(pageParams.ItemsPerPage.Value)
+                        .ToList();
+
+                    return Ok(groupPositions);
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -567,6 +649,46 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now,
                     });
                     return Ok(await ms.Subdivision.GetAllSubdivisionDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetSubdivisionsPage")]
+        public async Task<IActionResult> GetSubdivisionsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            logger.LogInformation($"/admin-api/GetSubdivisions");
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetSubdivisions : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetSubdivisions",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+
+                    var Allsubs = (await ms.Subdivision.GetAllSubdivisionDtos())
+                                                    .OrderBy(x => x.Id);
+
+                    var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allsubs.Count(), pageParams.ItemsPerPage.Value);
+                    Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                    var subs = Allsubs
+                        .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                        .Take(pageParams.ItemsPerPage.Value)
+                        .ToList();
+
+                    return Ok(subs);
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -716,7 +838,120 @@ namespace Personal_Testing_System.Controllers
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now
                         });
-                        return Ok(await ms.Employee.GetAllEmployeeDtos());
+                        List<Employee>? employees = await ms.Employee.GetAllEmployees();
+                        List<GetEmployeeModel> models = new List<GetEmployeeModel>();
+                        foreach (var employee in employees)
+                        {
+                            int countOfPurposes = (await ms.TestPurpose.GetAllTestPurposes())
+                                .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+
+                            int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
+                                .Where(x => x!=null && x.IdEmployee != null&& !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+
+                            int IdGroupPosition = (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value)).IdGroupPositions.Value;
+                            int countOfTestsToPurpose = 0;
+                            if (IdGroupPosition != 0) {
+                                countOfTestsToPurpose = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroups())
+                                    .Where(x => x != null && x.IdGroupPositions != null && x.IdGroupPositions.Equals(IdGroupPosition))
+                                    .Count();
+                            }
+                            models.Add(new GetEmployeeModel
+                            {
+                                Id = employee.Id,
+                                FirstName = employee.FirstName,
+                                SecondName = employee.SecondName,
+                                LastName = employee.LastName,
+                                Login = employee.Login,
+                                Password = employee.Password,
+                                Phone = employee.Phone,
+                                DateOfBirth = employee.DateOfBirth.ToString(),
+                                IdSubdivision = employee.IdSubdivision,
+                                RegistrationDate = employee.RegistrationDate.ToString(),
+                                CountOfPurposes = countOfPurposes,
+                                CountOfResults = countOfResults,
+                                CountOfTestsToPurpose = countOfTestsToPurpose,
+                            });
+                        }
+                        return Ok(models);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetEmployeesPage")]
+        public async Task<IActionResult> GetEmployeesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetEmployees ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetEmployees",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Allemployees = (await ms.Employee.GetAllEmployees());
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allemployees.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var employees = Allemployees
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        List<GetEmployeeModel> models = new List<GetEmployeeModel>();
+                        foreach(var employee in employees)
+                        {
+                            int countOfPurposes = (await ms.TestPurpose.GetAllTestPurposes())
+                                .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+                           
+                            int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
+                                .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+                            
+                            int IdGroupPosition = (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value)).IdGroupPositions.Value;
+                            int countOfTestsToPurpose = 0;
+                            if (IdGroupPosition != 0) {
+                                countOfTestsToPurpose = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroups())
+                                   .Where(x => x != null && x.IdGroupPositions != null && x.IdGroupPositions.Equals(IdGroupPosition))
+                                   .Count();
+                            }
+                            models.Add(new GetEmployeeModel
+                            {
+                                Id = employee.Id,
+                                FirstName = employee.FirstName,
+                                SecondName = employee.SecondName,
+                                LastName = employee.LastName,
+                                Login = employee.Login,
+                                Password = employee.Password,
+                                Phone = employee.Phone,
+                                DateOfBirth = employee.DateOfBirth.ToString(),
+                                IdSubdivision = employee.IdSubdivision,
+                                RegistrationDate = employee.RegistrationDate.ToString(),
+                                CountOfPurposes = countOfPurposes,
+                                CountOfResults = countOfResults,
+                                CountOfTestsToPurpose = countOfTestsToPurpose,
+                            });
+                        }
+
+                        return Ok(models);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -748,9 +983,39 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Сотрудника={id.Id}"
                         });
-                        EmployeeDto? model = await ms.Employee.GetEmployeeDtoById(id.Id); ;
-                        if (model != null)
+                        Employee? employee = await ms.Employee.GetEmployeeById(id.Id); ;
+                        if (employee != null)
                         {
+                            int countOfPurposes = (await ms.TestPurpose.GetAllTestPurposes())
+                                .Where(x => x!= null && x.IdEmployee != null && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+
+                            int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
+                                .Where(x => x != null && x.IdEmployee != null && x.IdEmployee.Equals(employee.Id))
+                                .Count();
+
+                            int IdGroupPosition = (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value)).IdGroupPositions.Value;
+                            int countOfTestsToPurpose = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroups())
+                                .Where(x => x != null && x.IdGroupPositions != null && x.IdGroupPositions.Equals(IdGroupPosition))
+                                .Count();
+
+                            GetEmployeeModel model = new GetEmployeeModel
+                            {
+                                Id = employee.Id,
+                                FirstName = employee.FirstName,
+                                SecondName = employee.SecondName,
+                                LastName = employee.LastName,
+                                Login = employee.Login,
+                                Password = employee.Password,
+                                Phone = employee.Phone,
+                                DateOfBirth = employee.DateOfBirth.ToString(),
+                                IdSubdivision = employee.IdSubdivision,
+                                RegistrationDate = employee.RegistrationDate.ToString(),
+                                CountOfPurposes = countOfPurposes,
+                                CountOfResults = countOfResults,
+                                CountOfTestsToPurpose = countOfTestsToPurpose,
+                            };
+
                             return Ok(model);
                         }
                         return NotFound(new { message = "Сотрудник не найден" });
@@ -770,7 +1035,7 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) &&
                 employee.IdSubdivision.HasValue && employee.IdSubdivision != 0 &&
                 await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null && 
-                !employee.Phone.IsNullOrEmpty() && !employee.RegistrationDate.IsNullOrEmpty())
+                !employee.Phone.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -791,6 +1056,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Имя сотрудника ={employee.FirstName}, фамилия={employee.SecondName}, отчество={employee.LastName}"
                         });
+                        
                         await ms.Employee.SaveEmployee(employee);
                         return Ok(new { message = "Сотрудник добавлен" });
                     }
@@ -801,14 +1067,14 @@ namespace Personal_Testing_System.Controllers
         }
 
         [HttpPost("UpdateEmployee")]
-        public async Task<IActionResult> UpdateEmployee([FromHeader] string Authorization, [FromBody] EmployeeDto? employee)
+        public async Task<IActionResult> UpdateEmployee([FromHeader] string Authorization, [FromBody] UpdateEmployeeModel? employee)
         {
             if (!Authorization.IsNullOrEmpty() && employee != null && !string.IsNullOrEmpty(employee.Id) &&
                 !string.IsNullOrEmpty(employee.FirstName) && !string.IsNullOrEmpty(employee.SecondName) &&
                 !string.IsNullOrEmpty(employee.LastName) && !string.IsNullOrEmpty(employee.Login) &&
                 !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue &&
                 await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null &&
-                !employee.Phone.IsNullOrEmpty() && !employee.RegistrationDate.IsNullOrEmpty())
+                !employee.Phone.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -823,7 +1089,7 @@ namespace Personal_Testing_System.Controllers
                         {
                             await ms.Log.SaveLog(new Log
                             {
-                                UrlPath = "admin-api/AddEmployee",
+                                UrlPath = "admin-api/UpdateEmployee",
                                 UserId = token.IdAdmin,
                                 UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                                 DataTime = DateTime.Now,
@@ -911,6 +1177,46 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpGet("GetAdminsPage")]
+        public async Task<IActionResult> GetAdminsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetAdmins ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetAdmins",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Alladmins = (await ms.Admin.GetAllAdminDtos());
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alladmins.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var admins = Alladmins
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(admins);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
 
         [HttpPost("GetAdmin")]
         public async Task<IActionResult> GetAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
@@ -950,7 +1256,7 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && admin != null && !string.IsNullOrEmpty(admin.Id) &&
                 !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
-                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
+                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password))// && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -992,7 +1298,7 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && admin != null &&
                 !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
-                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) && admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
+                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) )//&& admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -1022,8 +1328,8 @@ namespace Personal_Testing_System.Controllers
 
         }
 
-        [HttpPost("DeleteAdmins")]
-        public async Task<IActionResult> DeleteAdmins([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        [HttpPost("DeleteAdmin")]
+        public async Task<IActionResult> DeleteAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
             if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
@@ -1087,6 +1393,48 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                         });
                         return Ok(await ms.TestType.GetAllCompetenceDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetCompetencesPage")]
+        public async Task<IActionResult> GetCompetencesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetences");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var Alcompetences = (await ms.TestType.GetAllCompetenceDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alcompetences.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var competences = Alcompetences
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(competences);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -1268,6 +1616,48 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpGet("GetCompetenciesForGroupsPage")]
+        public async Task<IActionResult> GetCompetenciesForGroupsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenciesForGroups");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenciesForGroups",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var AllcompsForGroups = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroupDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, AllcompsForGroups.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var compsForGroups = AllcompsForGroups
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(compsForGroups);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("GetCompetenciesForGroup")]
         public async Task<IActionResult> GetCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -1291,7 +1681,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id компетенции теста={id.Id}"
                         });
-                        if (await ms.CompetenciesForGroup.GetCompetenciesForGroupDtoById(id.Id.Value) != null)
+                        if (await ms.CompetenciesForGroup.GetCompetenciesForGroupById(id.Id.Value) != null)
                         {
                             CompetenciesForGroupDto? dto = (await ms.CompetenciesForGroup.GetCompetenciesForGroupDtoById(id.Id.Value));
                             return Ok(dto);
@@ -1385,7 +1775,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteCompetenciesForGroup")]
         public async Task<IActionResult> DeleteCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
-            if (!Authorization.IsNullOrEmpty() && id != null)
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -1405,7 +1795,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id компетенциидля группы теста={id.Id}"
                         });
-                        if (id.Id.HasValue && id.Id != 0 && await ms.CompetenciesForGroup.DeleteCompetenciesForGroupById(id.Id.Value) != null)
+                        if (id.Id != 0 && await ms.CompetenciesForGroup.GetCompetenciesForGroupById(id.Id.Value) != null)
                         {
                             await ms.CompetenciesForGroup.DeleteCompetenciesForGroupById(id.Id.Value);
                             return Ok(new { message = "Компетенция для группы удалена" });
@@ -1443,6 +1833,47 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
                         return Ok(await ms.Test.GetAllTestGetModels());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetTestsPage")]
+        public async Task<IActionResult> GetTestsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetTests ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetTests",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Alltests = (await ms.Test.GetAllTestGetModels());
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alltests.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var tests = Alltests
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(tests);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -1611,9 +2042,9 @@ namespace Personal_Testing_System.Controllers
                                         secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
                                     }
 
-                                    Random rand = new Random();
+                                    /*Random rand = new Random();
                                     firstPartDtos = firstPartDtos.OrderBy(x => rand.Next()).ToList();
-                                    secondPartDtos = secondPartDtos.OrderBy(x => rand.Next()).ToList();
+                                    secondPartDtos = secondPartDtos.OrderBy(x => rand.Next()).ToList();*/
 
                                     createQuestionDto.Answers.AddRange(firstPartDtos);
                                     createQuestionDto.Answers.AddRange(secondPartDtos);
@@ -1623,6 +2054,84 @@ namespace Personal_Testing_System.Controllers
                             testDto.Questions.OrderBy(x => x.Number);
                             return Ok(testDto);
                         }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("GetEntityTest")]
+        public async Task<IActionResult> GetEntityTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetEntityTest :id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetEntityTest",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Теста={id.Id}"
+                        });
+
+                        if (await ms.Test.GetTestById(id.Id) == null) 
+                            return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        var test = await ms.Test.GetTestDtoById(id.Id);
+
+                        return Ok(test);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateEntityTest")]
+        public async Task<IActionResult> UpdateEntityTest([FromHeader] string Authorization, [FromBody] TestDto? test)
+        {
+            if (!Authorization.IsNullOrEmpty() && test != null && !string.IsNullOrEmpty(test.Id) && !string.IsNullOrEmpty(test.Name) &&
+                test.Weight != null && test.Weight.HasValue && test.IdCompetence != null && test.IdCompetence != 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateEntityTest :id={test.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateEntityTest",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Теста={test.Id}"
+                        });
+
+                        if (await ms.Test.GetTestById(test.Id) == null)
+                            return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        if (await ms.TestType.GetCompetenceById(test.IdCompetence.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Компетенция не найдена" });
+
+                        await ms.Test.SaveTest(test);
+
+                        return Ok(test);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -2136,10 +2645,10 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
-                        logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                        logger.LogInformation($"/admin-api/GetWordTest :id={id.Id}");
                         await ms.Log.SaveLog(new Log
                         {
-                            UrlPath = "admin-api/GetPdfTest",
+                            UrlPath = "admin-api/GetWordTest",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
@@ -2272,10 +2781,10 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
-                        logger.LogInformation($"/admin-api/GetPdfTest :id={id.Id}");
+                        logger.LogInformation($"/admin-api/GetWordCorrectTest :id={id.Id}");
                         await ms.Log.SaveLog(new Log
                         {
-                            UrlPath = "admin-api/GetPdfTest",
+                            UrlPath = "admin-api/GetWordCorrectTest",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
@@ -2434,6 +2943,9 @@ namespace Personal_Testing_System.Controllers
                             int countOfQuestions = 1;
                             foreach (AddQuestionModel quest in test.Questions)
                             {
+                                if (quest.IdQuestionType == null || !quest.IdQuestionType.HasValue || await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) == null)
+                                    continue;
+
                                 logger.LogInformation($"quest -> text={quest.Text} idType={quest.IdQuestionType} count={quest.Answers.Count}");
                                 string idQuestion = Guid.NewGuid().ToString();
                                 if (!quest.ImagePath.IsNullOrEmpty() && postModel.Files != null && postModel.Files.Count != 0)
@@ -2503,98 +3015,106 @@ namespace Personal_Testing_System.Controllers
                                     SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
                                     FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();*/
 
-                                    AnswerDto answerDto = answer.ToObject<AnswerDto>();
-                                    SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
-                                    FirstSecondPartDto firstSecondPartDto = answer.ToObject<FirstSecondPartDto>();
-
-                                    if (answerDto is AnswerDto && answerDto.Correct != null)
-                                    {
-                                        logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
-
-                                        if (!answerDto.ImagePath.IsNullOrEmpty() && postModel.Files != null && postModel.Files.Count != 0)
+                                    if (quest.IdQuestionType.Value == 1 || quest.IdQuestionType.Value == 2) {
+                                        AnswerDto answerDto = answer.ToObject<AnswerDto>();
+                                        if (answerDto is AnswerDto && answerDto.Correct != null)
                                         {
-                                            IFormFile file = postModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
-                                            string ext = Path.GetExtension(answerDto.ImagePath);
-                                            if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                            logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
+
+                                            if (!answerDto.ImagePath.IsNullOrEmpty() && postModel.Files != null && postModel.Files.Count != 0)
                                             {
-                                                if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath))
+                                                IFormFile file = postModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
+                                                string ext = Path.GetExtension(answerDto.ImagePath);
+                                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                                 {
-                                                    string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", answerDto.ImagePath);
-                                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                    if (!System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answerDto.ImagePath).PhysicalPath))
                                                     {
-                                                        await file.CopyToAsync(upload);
-                                                    }
+                                                        string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", answerDto.ImagePath);
+                                                        using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                        {
+                                                            await file.CopyToAsync(upload);
+                                                        }
 
-                                                    await ms.Answer.SaveAnswer(new Answer
-                                                    {
-                                                        Text = answerDto.Text,
-                                                        IdQuestion = idQuestion,
-                                                        Correct = answerDto.Correct,
-                                                        Weight = answerDto.Weight,
-                                                        Number = Convert.ToByte(countOfAnswer),
-                                                        ImagePath = file.FileName
-                                                    });
-                                                }
-                                                else
-                                                {
-                                                    string imagePath = Guid.NewGuid().ToString() + ext;
-                                                    string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", imagePath);
-                                                    using (var upload = new FileStream(saveImage, FileMode.Create))
-                                                    {
-                                                        await file.CopyToAsync(upload);
+                                                        await ms.Answer.SaveAnswer(new Answer
+                                                        {
+                                                            Text = answerDto.Text,
+                                                            IdQuestion = idQuestion,
+                                                            Correct = answerDto.Correct,
+                                                            Weight = answerDto.Weight,
+                                                            Number = Convert.ToByte(countOfAnswer),
+                                                            ImagePath = file.FileName
+                                                        });
                                                     }
-
-                                                    await ms.Answer.SaveAnswer(new Answer
+                                                    else
                                                     {
-                                                        Text = answerDto.Text,
-                                                        IdQuestion = idQuestion,
-                                                        Correct = answerDto.Correct,
-                                                        Weight = answerDto.Weight,
-                                                        Number = Convert.ToByte(countOfAnswer),
-                                                        ImagePath = imagePath
-                                                    });
+                                                        string imagePath = Guid.NewGuid().ToString() + ext;
+                                                        string saveImage = Path.Combine(environment.WebRootPath + "\\images\\", imagePath);
+                                                        using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                        {
+                                                            await file.CopyToAsync(upload);
+                                                        }
+
+                                                        await ms.Answer.SaveAnswer(new Answer
+                                                        {
+                                                            Text = answerDto.Text,
+                                                            IdQuestion = idQuestion,
+                                                            Correct = answerDto.Correct,
+                                                            Weight = answerDto.Weight,
+                                                            Number = Convert.ToByte(countOfAnswer),
+                                                            ImagePath = imagePath
+                                                        });
+                                                    }
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            await ms.Answer.SaveAnswer(new Answer
+                                            else
                                             {
-                                                Text = answerDto.Text,
-                                                IdQuestion = idQuestion,
-                                                Correct = answerDto.Correct,
-                                                Weight = answerDto.Weight,
-                                                Number = Convert.ToByte(countOfAnswer),
-                                                ImagePath = answerDto.ImagePath
+                                                await ms.Answer.SaveAnswer(new Answer
+                                                {
+                                                    Text = answerDto.Text,
+                                                    IdQuestion = idQuestion,
+                                                    Correct = answerDto.Correct,
+                                                    Weight = answerDto.Weight,
+                                                    Number = Convert.ToByte(countOfAnswer),
+                                                    ImagePath = answerDto.ImagePath
+                                                });
+                                            }
+                                        }
+                                    }
+                                    if (quest.IdQuestionType.Value == 4)
+                                    {
+                                        SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
+                                        if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
+                                        {
+                                            logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
+                                            await ms.Subsequence.SaveSubsequence(new Subsequence
+                                            {
+                                                Text = subsequenceDto.Text,
+                                                Number = subsequenceDto.Number,
+                                                IdQuestion = idQuestion
                                             });
                                         }
                                     }
-                                    if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
+                                    if (quest.IdQuestionType.Value == 3)
                                     {
-                                        logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                                        await ms.Subsequence.SaveSubsequence(new Subsequence
-                                        {
-                                            Text = subsequenceDto.Text,
-                                            Number = subsequenceDto.Number,
-                                            IdQuestion = idQuestion
-                                        });
-                                    }
-                                    if (firstSecondPartDto is FirstSecondPartDto &&
+                                        FirstSecondPartDto firstSecondPartDto = answer.ToObject<FirstSecondPartDto>();
+
+                                        if (firstSecondPartDto is FirstSecondPartDto &&
                                         !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
-                                    {
-                                        logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
-                                        string firstPartId = Guid.NewGuid().ToString();
-                                        await ms.FirstPart.SaveFirstPart(new FirstPart
                                         {
-                                            Id = firstPartId,
-                                            Text = firstSecondPartDto.FirstPartText,
-                                            IdQuestion = idQuestion
-                                        });
-                                        await ms.SecondPart.SaveSecondPart(new SecondPart
-                                        {
-                                            Text = firstSecondPartDto.SecondPartText,
-                                            IdFirstPart = firstPartId
-                                        });
+                                            logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
+                                            string firstPartId = Guid.NewGuid().ToString();
+                                            await ms.FirstPart.SaveFirstPart(new FirstPart
+                                            {
+                                                Id = firstPartId,
+                                                Text = firstSecondPartDto.FirstPartText,
+                                                IdQuestion = idQuestion
+                                            });
+                                            await ms.SecondPart.SaveSecondPart(new SecondPart
+                                            {
+                                                Text = firstSecondPartDto.SecondPartText,
+                                                IdFirstPart = firstPartId
+                                            });
+                                        }
                                     }
                                 }
                             }
@@ -2847,6 +3367,121 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("GetQuestionsInTestPage")]
+        public async Task<IActionResult> GetQuestionsInTestPage([FromHeader] string Authorization, [FromBody] StringIdModel? id, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id) && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetTests ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetTests",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        if (await ms.Test.GetTestById(id.Id) == null)
+                            return NotFound(new { message = "Ошибка. Тест не найден" });
+
+                        var AllquestionsIntest = (await ms.Question.GetAllQuestions())
+                                                 .Where(x => x.IdTest.Equals(id.Id))
+                                                 .OrderBy(x=>x.Number);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, AllquestionsIntest.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var questions = AllquestionsIntest
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        List<QuestionModel> questionModels = new List<QuestionModel>();
+                        foreach (var quest in questions)
+                        {
+                            QuestionModel createQuestionDto = new QuestionModel
+                            {
+                                Id = quest.Id,
+                                IdQuestionType = quest.IdQuestionType,
+                                Text = quest.Text,
+                                ImagePath = quest.ImagePath,
+                                Number = Convert.ToInt32(quest.Number),
+                                Weight = quest.Weight,
+                                Answers = new List<object>() { }
+                            };
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath))
+                                {
+                                    byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + quest.ImagePath).PhysicalPath);
+                                    string base64 = Convert.ToBase64String(array);
+                                    createQuestionDto.Base64Image = base64;
+                                }
+                            }
+
+                            if ((await ms.Answer.GetAnswerDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<Answer> list = await ms.Answer.GetAnswersByQuestionId(quest.Id);
+                                foreach (Answer answer in list)
+                                {
+                                    AnswerModel model = new AnswerModel
+                                    {
+                                        IdAnswer = answer.Id,
+                                        Text = answer.Text,
+                                        IdQuestion = answer.IdQuestion,
+                                        Number = answer.Number,
+                                        Weight = answer.Weight,
+                                        Correct = answer.Correct
+                                    };
+                                    if (!answer.ImagePath.IsNullOrEmpty())
+                                    {
+                                        if (System.IO.File.Exists(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath))
+                                        {
+                                            byte[] array = System.IO.File.ReadAllBytes(environment.WebRootFileProvider.GetFileInfo("/images/" + answer.ImagePath).PhysicalPath);
+                                            string base64 = Convert.ToBase64String(array);
+                                            model.Base64Image = base64;
+                                            model.ImagePath = answer.ImagePath;
+                                        }
+                                    }
+                                    createQuestionDto.Answers.Add(model);
+                                }
+                            }
+                            if ((await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                createQuestionDto.Answers.AddRange(await ms.Subsequence.GetSubsequenceDtosByQuestionId(quest.Id));
+                            }
+                            if ((await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id)).Count != 0)
+                            {
+                                List<FirstPartDto> firstPartDtos = await ms.FirstPart.GetAllFirstPartDtosByQuestionId(quest.Id);
+                                List<SecondPartDto> secondPartDtos = new List<SecondPartDto>();
+
+                                foreach (var firstPart in firstPartDtos)
+                                {
+                                    secondPartDtos.Add(await ms.SecondPart.GetSecondPartDtoByFirstPartId(firstPart.IdFirstPart));
+                                }
+
+
+                                createQuestionDto.Answers.AddRange(firstPartDtos);
+                                createQuestionDto.Answers.AddRange(secondPartDtos);
+                            }
+                            questionModels.Add(createQuestionDto);
+                        }
+                        return Ok(questionModels);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
 
         [HttpPost("AddQuestionInTest")]
         public async Task<IActionResult> AddQuestionInTest([FromHeader] string Authorization, [FromForm] AddPostQuestioModel? addQuestModel)
@@ -2877,7 +3512,7 @@ namespace Personal_Testing_System.Controllers
                                 Params = $"Id Теста={quest.IdTest}, Кол-во ответов={quest.Answers.Count}"
                             });
 
-                            if (await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) == null)
+                            if (quest.IdQuestionType == null || !quest.IdQuestionType.HasValue || await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) == null)
                                 return BadRequest(new { message = "Ошибка. Нет такого типа вопроса" });
 
                             if (await ms.Test.GetTestById(quest.IdTest) == null)
@@ -2917,86 +3552,257 @@ namespace Personal_Testing_System.Controllers
                             int answerNumber = 1;
                             foreach (JObject answer in quest.Answers)
                             {
-                                AnswerDto answerDto = answer.ToObject<AnswerDto>();
                                 SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
                                 FirstSecondPartDto firstSecondPartDto = answer.ToObject<FirstSecondPartDto>();
 
-                                if (answerDto is AnswerDto && answerDto.Correct != null)
+                                if (quest.IdQuestionType.Value == 1 || quest.IdQuestionType == 2)
                                 {
-                                    logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
-
-                                    if (!answerDto.ImagePath.IsNullOrEmpty())
+                                    AnswerDto answerDto = answer.ToObject<AnswerDto>();
+                                    if (answerDto is AnswerDto && answerDto.Correct != null)
                                     {
-                                        if (addQuestModel.Files != null && addQuestModel.Files.Count != 0 &&
-                                            !System.IO.File.Exists(Path.Combine(environment.WebRootPath + "/images/", answerDto.ImagePath)))
+                                        logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
+
+                                        if (!answerDto.ImagePath.IsNullOrEmpty())
                                         {
-                                            IFormFile file = addQuestModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
-                                            string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
-                                            string ext = Path.GetExtension(saveImage);
-                                            if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                            if (addQuestModel.Files != null && addQuestModel.Files.Count != 0 &&
+                                                !System.IO.File.Exists(Path.Combine(environment.WebRootPath + "/images/", answerDto.ImagePath)))
                                             {
-                                                using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                IFormFile file = addQuestModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
+                                                string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
+                                                string ext = Path.GetExtension(saveImage);
+                                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                                 {
-                                                    await file.CopyToAsync(upload);
+                                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                    {
+                                                        await file.CopyToAsync(upload);
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    if (answerDto.IdAnswer.HasValue)
-                                    {
-                                        await ms.Answer.SaveAnswer(new Answer
+                                        if (answerDto.IdAnswer.HasValue)
                                         {
-                                            Id = answerDto.IdAnswer.Value,
-                                            Number = answerNumber,
-                                            Text = answerDto.Text,
-                                            IdQuestion = questId,
-                                            Correct = answerDto.Correct,
-                                            ImagePath = answerDto.ImagePath,
-                                            Weight = answerDto.Weight
-                                        });
-                                        answerNumber++;
-                                    }
-                                    else
-                                    {
-                                        await ms.Answer.SaveAnswer(new Answer
+                                            await ms.Answer.SaveAnswer(new Answer
+                                            {
+                                                Id = answerDto.IdAnswer.Value,
+                                                Number = answerNumber,
+                                                Text = answerDto.Text,
+                                                IdQuestion = questId,
+                                                Correct = answerDto.Correct,
+                                                ImagePath = answerDto.ImagePath,
+                                                Weight = answerDto.Weight
+                                            });
+                                            answerNumber++;
+                                        }
+                                        else
                                         {
-                                            Text = answerDto.Text,
-                                            IdQuestion = questId,
-                                            Correct = answerDto.Correct,
-                                            Number = answerNumber,
-                                            ImagePath = answerDto.ImagePath,
-                                            Weight = answerDto.Weight
-                                        });
-                                        answerNumber++;
+                                            await ms.Answer.SaveAnswer(new Answer
+                                            {
+                                                Text = answerDto.Text,
+                                                IdQuestion = questId,
+                                                Correct = answerDto.Correct,
+                                                Number = answerNumber,
+                                                ImagePath = answerDto.ImagePath,
+                                                Weight = answerDto.Weight
+                                            });
+                                            answerNumber++;
+                                        }
                                     }
                                 }
-                                if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
+                                if (quest.IdQuestionType.Value == 4)
                                 {
-                                    logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                                    await ms.Subsequence.SaveSubsequence(new Subsequence
+                                    if (subsequenceDto is SubsequenceDto && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                                     {
-                                        Id = subsequenceDto.IdSubsequence,
-                                        Text = subsequenceDto.Text,
-                                        Number = subsequenceDto.Number,
-                                        IdQuestion = questId
-                                    });
+                                        logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
+                                        await ms.Subsequence.SaveSubsequence(new Subsequence
+                                        {
+                                            Id = subsequenceDto.IdSubsequence,
+                                            Text = subsequenceDto.Text,
+                                            Number = subsequenceDto.Number,
+                                            IdQuestion = questId
+                                        });
+                                    }
                                 }
-                                if (firstSecondPartDto is FirstSecondPartDto && firstSecondPartDto != null &&
-                                    !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
+                                if (quest.IdQuestionType.Value == 3)
                                 {
-                                    logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
-                                    string firstPartId = Guid.NewGuid().ToString();
-                                    await ms.FirstPart.SaveFirstPart(new FirstPart
+                                    if (firstSecondPartDto is FirstSecondPartDto && firstSecondPartDto != null &&
+                                        !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
                                     {
-                                        Id = firstPartId,
-                                        Text = firstSecondPartDto.FirstPartText,
-                                        IdQuestion = questId
-                                    });
-                                    await ms.SecondPart.SaveSecondPart(new SecondPart
+                                        logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
+                                        string firstPartId = Guid.NewGuid().ToString();
+                                        await ms.FirstPart.SaveFirstPart(new FirstPart
+                                        {
+                                            Id = firstPartId,
+                                            Text = firstSecondPartDto.FirstPartText,
+                                            IdQuestion = questId
+                                        });
+                                        await ms.SecondPart.SaveSecondPart(new SecondPart
+                                        {
+                                            Text = firstSecondPartDto.SecondPartText,
+                                            IdFirstPart = firstPartId
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        return Ok(new { message = "Добавление вопроса успешно" });
+                    }
+                    return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+                }
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("UpdateQuestionInTest")]
+        public async Task<IActionResult> UpdateQuestionInTest([FromHeader] string Authorization, [FromForm] AddPostQuestioModel? addQuestModel)
+        {
+            if (addQuestModel != null && !string.IsNullOrEmpty(addQuestModel.Question))
+            {
+                UpdateQuestionInTest? quest = JsonConvert.DeserializeObject<UpdateQuestionInTest>(addQuestModel.Question);
+                if (!Authorization.IsNullOrEmpty() && quest != null && !string.IsNullOrEmpty(quest.IdQuestion) && !string.IsNullOrEmpty(quest.IdTest) && !quest.Text.IsNullOrEmpty() &&
+                    quest.IdQuestionType.HasValue && quest.Answers != null && quest.Answers.Count != 0 && quest.Weight.HasValue)
+                {
+                    TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                    if (token != null)
+                    {
+                        if (await ms.IsTokenAdminExpired(token))
+                        {
+                            return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                        }
+                        else
+                        {
+                            logger.LogInformation($"/admin-api/UpdateQuestionInTest quest: idTest={quest.IdTest} text={quest.Text}, idQuestionType={quest.IdQuestionType}," +
+                                      $"countOfQuestions={quest.Answers.Count}");
+                            await ms.Log.SaveLog(new Log
+                            {
+                                UrlPath = "admin-api/UpdateQuestionInTest",
+                                UserId = token.IdAdmin,
+                                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                                DataTime = DateTime.Now,
+                                Params = $"Id Теста={quest.IdTest}, Кол-во ответов={quest.Answers.Count}"
+                            });
+
+                            if (await ms.Question.GetQuestionById(quest.IdQuestion) == null)
+                                return BadRequest(new { message = "Ошибка. Такого вопроса нет" });
+
+                            if (quest.IdQuestionType == null || !quest.IdQuestionType.HasValue || await ms.QuestionType.GetQuestionTypeById(quest.IdQuestionType.Value) == null)
+                                return BadRequest(new { message = "Ошибка. Нет такого типа вопроса" });
+
+                            if (await ms.Test.GetTestById(quest.IdTest) == null)
+                                return BadRequest(new { message = "Ошибка. Такого теста не существует" });
+
+                            if (!quest.ImagePath.IsNullOrEmpty())
+                            {
+                                if (addQuestModel.Files != null && addQuestModel.Files.Count != 0 &&
+                                    !System.IO.File.Exists(Path.Combine(environment.WebRootPath, quest.ImagePath)))
+                                {
+                                    IFormFile file = addQuestModel.Files.First(f => f.FileName.Equals(quest.ImagePath));
+                                    string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
+                                    string ext = Path.GetExtension(saveImage);
+                                    if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
                                     {
-                                        Text = firstSecondPartDto.SecondPartText,
-                                        IdFirstPart = firstPartId
-                                    });
+                                        using (var upload = new FileStream(saveImage, FileMode.Create))
+                                        {
+                                            await file.CopyToAsync(upload);
+                                        }
+                                    }
+                                }
+                            }
+
+                            await ms.Question.SaveQuestion(new Question
+                            {
+                                Id = quest.IdQuestion,
+                                Text = quest.Text,
+                                IdQuestionType = quest.IdQuestionType,
+                                IdTest = quest.IdTest,
+                                ImagePath = quest.ImagePath,
+                                Weight = quest.Weight
+                            });
+
+                            int answerNumber = 1;
+                            foreach (JObject answer in quest.Answers)
+                            {
+                                SubsequenceDto subsequenceDto = answer.ToObject<SubsequenceDto>();
+                                FirstSecondPartDto firstSecondPartDto = answer.ToObject<FirstSecondPartDto>();
+
+                                if (quest.IdQuestionType.Value == 1 || quest.IdQuestionType == 2)
+                                {
+                                    AnswerDto answerDto = answer.ToObject<AnswerDto>();
+                                    if (answerDto is AnswerDto && answerDto.Correct != null)
+                                    {
+                                        logger.LogInformation($"answerDto -> text={answerDto.Text}, correct={answerDto.Correct}");
+
+                                        if (!answerDto.ImagePath.IsNullOrEmpty())
+                                        {
+                                            if (addQuestModel.Files != null && addQuestModel.Files.Count != 0 &&
+                                                !System.IO.File.Exists(Path.Combine(environment.WebRootPath + "/images/", answerDto.ImagePath)))
+                                            {
+                                                IFormFile file = addQuestModel.Files.First(f => f.FileName.Equals(answerDto.ImagePath));
+                                                string saveImage = Path.Combine(environment.WebRootPath + "/images/", file.FileName);
+                                                string ext = Path.GetExtension(saveImage);
+                                                if (ext.Equals(".jpg") || ext.Equals(".jpeg") || ext.Equals(".png"))
+                                                {
+                                                    using (var upload = new FileStream(saveImage, FileMode.Create))
+                                                    {
+                                                        await file.CopyToAsync(upload);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (await ms.Answer.GetAnswerById(answerDto.IdAnswer.Value) != null)
+                                        {
+                                            await ms.Answer.SaveAnswer(new Answer
+                                            {
+                                                Id = answerDto.IdAnswer.Value,
+                                                Number = answerNumber,
+                                                Text = answerDto.Text,
+                                                IdQuestion = quest.IdQuestion,
+                                                Correct = answerDto.Correct,
+                                                ImagePath = answerDto.ImagePath,
+                                                Weight = answerDto.Weight
+                                            });
+                                            answerNumber++;
+                                        }
+                                    }
+                                }
+                                if (quest.IdQuestionType.Value == 4)
+                                {
+                                    if (subsequenceDto is SubsequenceDto && subsequenceDto.IdSubsequence != null && subsequenceDto.IdSubsequence != 0 && subsequenceDto.Number != null && subsequenceDto.Number != 0)
+                                    {
+                                        logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
+                                        if (await ms.Subsequence.GetSubsequenceById(subsequenceDto.IdSubsequence) != null) {
+                                            await ms.Subsequence.SaveSubsequence(new Subsequence
+                                            {
+                                                Id = subsequenceDto.IdSubsequence,
+                                                Text = subsequenceDto.Text,
+                                                Number = subsequenceDto.Number,
+                                                IdQuestion = quest.IdQuestion
+                                            });
+                                        }
+                                    }
+                                }
+                                if (quest.IdQuestionType.Value == 3)
+                                {
+                                    if (firstSecondPartDto is FirstSecondPartDto && firstSecondPartDto != null && firstSecondPartDto.IdFirstPart != null && firstSecondPartDto.IdSecondPart != null &&
+                                        firstSecondPartDto.IdSecondPart.Value != 0 && firstSecondPartDto.IdSecondPart != 0 && 
+                                        !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
+                                    {
+                                        logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
+                                        if (await ms.FirstPart.GetFirstPartById(firstSecondPartDto.IdFirstPart) != null && await ms.SecondPart.GetSecondPartById(firstSecondPartDto.IdSecondPart.Value) != null)
+                                        {
+                                            await ms.FirstPart.SaveFirstPart(new FirstPart
+                                            {
+                                                Id = firstSecondPartDto.IdFirstPart,
+                                                Text = firstSecondPartDto.FirstPartText,
+                                                IdQuestion = quest.IdQuestion
+                                            });
+                                            await ms.SecondPart.SaveSecondPart(new SecondPart
+                                            {
+                                                Id = firstSecondPartDto.IdSecondPart.Value,
+                                                Text = firstSecondPartDto.SecondPartText,
+                                                IdFirstPart = firstSecondPartDto.IdFirstPart
+                                            });
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -3011,7 +3817,7 @@ namespace Personal_Testing_System.Controllers
         [HttpPost("DeleteQuestionInTest")]
         public async Task<IActionResult> DeleteQuestionInTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
-            if (!Authorization.IsNullOrEmpty() && !string.IsNullOrEmpty(id.Id))
+            if (!Authorization.IsNullOrEmpty() && id!=null && !string.IsNullOrEmpty(id.Id))
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -3022,7 +3828,7 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
-                        Question quest = await ms.Question.GetQuestionById(id.Id);
+                        Question? quest = await ms.Question.GetQuestionById(id.Id);
                         if (quest == null)
                         {
                             return NotFound(new { message = "Ошибка. Такого вопроса нет" });
@@ -3045,7 +3851,7 @@ namespace Personal_Testing_System.Controllers
                                 System.IO.File.Delete(path);
                             }
                         }
-                        List<Answer> answers = await ms.Answer.GetAnswersByQuestionId(id.Id);
+                        List<Answer>? answers = await ms.Answer.GetAnswersByQuestionId(id.Id);
                         await ms.Answer.DeleteAnswersByQuestion(id.Id);
                         foreach (Answer answer in answers)
                         {
@@ -3062,6 +3868,13 @@ namespace Personal_Testing_System.Controllers
                         await ms.DeleteFirstAndSecondPartsByQuestion(id.Id);
                         await ms.Question.DeleteQuestionById(id.Id);
 
+                        int number = 1;
+                        foreach(var question in (await ms.Question.GetQuestionsByTest(quest.IdTest)).OrderBy(x => x.Number).ToList())
+                        {
+                            question.Number = Convert.ToByte(number);
+                            await ms.Question.SaveQuestion(question);
+                            number++;
+                        }
                         return Ok(new { message = "Вопрос удален" });
                     }
                 }
@@ -3139,6 +3952,48 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpGet("GetPurposesPage")]
+        public async Task<IActionResult> GetPurposesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetPurposess ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetPurposess",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Allpurposes = (await ms.TestPurpose.GetAllPurposeAdminModels())
+                                                    .OrderByDescending(x => x.DatatimePurpose);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allpurposes.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var purposes = Allpurposes
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(purposes);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("GetPurposesByEmployeeId")]
         public async Task<IActionResult> GetPurposesByEmployeeId([FromHeader] string Authorization, [FromBody] StringIdModel id)
         {
@@ -3164,7 +4019,7 @@ namespace Personal_Testing_System.Controllers
                         });
 
                         List<TestPurposeDto> purposes = (await ms.TestPurpose.GetAllTestPurposeDtos())
-                                         .Where(x => x.IdEmployee.Equals(id.Id)).ToList();
+                                         .Where(x => x!= null && x.IdEmployee != null && x.IdTest != null && x.IdEmployee.Equals(id.Id)).ToList();
 
                         if (purposes.Count == 0)
                         {
@@ -3194,6 +4049,69 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpPost("GetPurposesPageByEmployeeId")]
+        public async Task<IActionResult> GetPurposesPageByEmployeeId([FromHeader] string Authorization, [FromBody] StringIdModel id, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetPurposessByEmployeeId id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetPurposesByEmployeeId",
+                            UserId = $"",
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id Сотрудника={id.Id}"
+                        });
+
+                        var Allpurposess = (await ms.TestPurpose.GetAllTestPurposeDtos())
+                                                    .Where(x => x.IdEmployee.Equals(id.Id))
+                                                    .OrderByDescending(x => x.DatatimePurpose);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allpurposess.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var purposes = Allpurposess
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        if (Allpurposess.Count() == 0)
+                        {
+                            return BadRequest(new { message = "Нет назначенных тестов" });
+                        }
+                        else
+                        {
+                            List<PurposeModel> models = new List<PurposeModel>();
+                            foreach (TestPurposeDto purpose in purposes)
+                            {
+                                PurposeModel model = new PurposeModel
+                                {
+                                    Id = purpose.Id,
+                                    IdEmployee = id.Id,
+                                    Test = await ms.Test.GetTestGetModelById(purpose.IdTest),
+                                    DatatimePurpose = purpose.DatatimePurpose
+                                };
+                                models.Add(model);
+                            }
+                            return Ok(models);
+                        }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("AddPurpose")]
         public async Task<IActionResult> AddPurpose([FromHeader] string Authorization, [FromBody] AddTestPurposeModel? purpose)
         {
@@ -3210,16 +4128,16 @@ namespace Personal_Testing_System.Controllers
                     else
                     {
                         if (await ms.Test.GetTestById(purpose.IdTest) == null)
-                            return BadRequest(new { message = "Ошибка. Пользователя с эти Id нет" });
+                            return BadRequest(new { message = "Ошибка. Такого теста нет" });
 
-                        Employee employee = await ms.Employee.GetEmployeeById(purpose.IdEmployee);
+                        Employee? employee = await ms.Employee.GetEmployeeById(purpose.IdEmployee);
                         if (employee == null)
                             return NotFound(new { message = "Ошибка. Такого сотрудника нет" });
 
                         if (await ms.TestPurpose.GetTestPurposeByEmployeeTestId(purpose.IdTest, purpose.IdEmployee) != null)
                             return BadRequest(new { message = "Ошибка. Этот тест уже назначен этому пользованелю" });
 
-                        Subdivision subdivision = await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value);
+                        Subdivision? subdivision = await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value);
                         if (subdivision != null)
                         {
                             if (await ms.CompetenciesForGroup.GetCompetenciesForGroupByEmployeeTestId(purpose.IdTest, subdivision.IdGroupPositions.Value) == null)
@@ -3390,7 +4308,7 @@ namespace Personal_Testing_System.Controllers
          *  Result
          */
         //todo edit query GetResults
-        [HttpPost("GetResults")]
+        [HttpGet("GetResults")]
         public async Task<IActionResult> GetResults([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty())
@@ -3476,10 +4394,52 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [HttpGet("GetResultsPage")]
+        public async Task<IActionResult> GetResultsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResults ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResults",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Allresults = (await ms.GetAllEmployeeResultModels())
+                                                    .OrderByDescending(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allresults.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var results = Allresults
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(results);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpPost("GetResultsByEmployee")]
         public async Task<IActionResult> GetResultsByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
         {
-            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id) )
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -3504,7 +4464,60 @@ namespace Personal_Testing_System.Controllers
                     }
 
                     List<EmployeeResultModel>? results = await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+
                     if (results != null && results.Count != 0)
+                    {
+                        return Ok(results);
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Результатов нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("GetResultsPageByEmployee")]
+        public async Task<IActionResult> GetResultsPageByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id) && pageParams != null && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetTestResultsByEmployee");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetTestResultsByEmployee",
+                        UserId = $"{token.IdAdmin}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"EmployeeId={id.Id}"
+                    });
+
+                    if (await ms.Employee.GetEmployeeById(id.Id) == null)
+                    {
+                        return NotFound(new { message = "Ошибка. Такого пользователя нет" });
+                    }
+
+                    var allResults = (await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id))
+                                                    .OrderByDescending(x => x.Id);
+
+                    var pageHeader = new PageHeader(pageParams.PageNumber.Value, allResults.Count(), pageParams.ItemsPerPage.Value);
+                    Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                    var results = allResults
+                        .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                        .Take(pageParams.ItemsPerPage.Value)
+                        .ToList();
+
+                    if (allResults != null && allResults.Count() != 0)
                     {
                         return Ok(results);
                     }
@@ -3532,10 +4545,10 @@ namespace Personal_Testing_System.Controllers
                     }
                     else
                     {
-                        logger.LogInformation($"/admin-api/GetResult");
+                        logger.LogInformation($"/admin-api/GetEmployeeResultAnswers");
                         await ms.Log.SaveLog(new Log
                         {
-                            UrlPath = "admin-api/GetResult",
+                            UrlPath = "admin-api/GetEmployeeResultAnswers",
                             UserId = token.IdAdmin,
                             UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                             DataTime = DateTime.Now,
@@ -3801,6 +4814,48 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
                         return Ok(await ms.Log.GetAllLogDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpGet("GetLogsPage")]
+        public async Task<IActionResult> GetLogsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams != null && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/Getlogs ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/Getlogs",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        var Alllogs = (await ms.Log.GetAllLogDtos())
+                                                    .OrderByDescending(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alllogs.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var logs = Alllogs
+                            .Skip((pageParams.PageNumber.Value -1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(logs);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });

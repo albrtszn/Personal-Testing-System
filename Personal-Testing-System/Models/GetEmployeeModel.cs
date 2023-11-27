@@ -1,7 +1,8 @@
 ﻿namespace Personal_Testing_System.Models
 {
-    public class AddEmployeeModel
+    public class GetEmployeeModel
     {
+        public string? Id { get; set; }
         public string? FirstName { get; set; }
         public string? SecondName { get; set; }
         public string? LastName { get; set; }
@@ -9,6 +10,10 @@
         public string? Password { get; set; }
         public string? DateOfBirth { get; set; }
         public int? IdSubdivision { get; set; }
-        public string? Phone{ get; set; }
+        public string? Phone { get; set; }
+        public string? RegistrationDate { get; set; }
+        public int? CountOfPurposes { get; set; }
+        public int? CountOfResults { get; set; }
+        public int? CountOfTestsToPurpose { get; set; }
     }
 }

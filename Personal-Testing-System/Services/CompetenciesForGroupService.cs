@@ -54,7 +54,8 @@ namespace Personal_Testing_System.Services
 
         public async Task<CompetenciesForGroup> GetCompetenciesForGroupByEmployeeTestId(string idTest, int groupPositionId)
         {
-            CompetenciesForGroup testForGroup = (await CompetenciesForGroupRepo.GetAllCompetenciesForGroups()).Find(x => x.IdTest.Equals(idTest) && x.IdGroupPositions.Equals(groupPositionId));
+            CompetenciesForGroup? testForGroup = (await CompetenciesForGroupRepo.GetAllCompetenciesForGroups())
+                .Find(x => x!= null && x.IdTest !=null && x.IdGroupPositions != null && x.IdTest.Equals(idTest) && x.IdGroupPositions.Equals(groupPositionId));
             return testForGroup;
         }
 

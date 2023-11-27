@@ -36,7 +36,7 @@ namespace Personal_Testing_System.Services
 
         public async Task<TokenEmployee?> GetTokenEmployeeByEmployeeId(string id)
         {
-            return (await GetAllTokenEmployees()).Find(x => x.IdEmployee.Equals(id));
+            return (await GetAllTokenEmployees()).Find(x => x!= null && x.IdEmployee != null && x.IdEmployee.Equals(id));;
         }
 
         public async Task<TokenEmployee?> GetTokenEmployeeByToken(string token)

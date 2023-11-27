@@ -36,7 +36,7 @@ namespace Personal_Testing_System.Services
 
         public async Task<TokenAdmin?> GetTokenAdminByAdminId(string id)
         {
-            return (await GetAllTokenAdmins()).Find(x => x.IdAdmin.Equals(id));
+            return (await GetAllTokenAdmins()).Find(x => x != null && x.IdAdmin != null && x.IdAdmin.Equals(id));
         }
 
         public async Task<TokenAdmin?> GetTokenAdminByToken(string token)

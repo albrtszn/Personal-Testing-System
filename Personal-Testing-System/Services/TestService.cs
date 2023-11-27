@@ -29,6 +29,34 @@ namespace Personal_Testing_System.Services
             };
         }
 
+        private async Task<TestDto> ConvertToTestDto(Test test)
+        {
+            return new TestDto
+            {
+                Id = test.Id,
+                Name = test.Name,
+                Weight = test.Weight,
+                IdCompetence = test.IdCompetence,
+                Description = test.Description,
+                Instruction = test.Instruction,
+                Generation = test.Generation
+            };
+        }
+
+        private async Task<Test> ConvertToTest(TestDto test)
+        {
+            return new Test
+            {
+                Id = test.Id,
+                Name = test.Name,
+                Weight = test.Weight,
+                IdCompetence = test.IdCompetence,
+                Description = test.Description,
+                Instruction = test.Instruction,
+                Generation = test.Generation
+            };
+        }
+
         public async Task<bool> DeleteTestById(string id)
         {
             return await TestRepo.DeleteTestById(id);
@@ -61,6 +89,10 @@ namespace Personal_Testing_System.Services
             return await TestRepo.GetTestById(id);
         }
 
+        public async Task<TestDto> GetTestDtoById(string id)
+        {
+            return await ConvertToTestDto(await TestRepo.GetTestById(id));
+        }
 
         public async Task<TestGetModel> GetTestGetModelById(string id)
         {
@@ -72,6 +104,11 @@ namespace Personal_Testing_System.Services
         public async Task<bool> SaveTest(Test TestToSave)
         {
             return await TestRepo.SaveTest(TestToSave);
+        }
+
+        public async Task<bool> SaveTest(TestDto TestDtoToSave)
+        {
+            return await TestRepo.SaveTest(await ConvertToTest(TestDtoToSave));
         }
     }
 }

@@ -68,7 +68,7 @@ namespace Personal_Testing_System.Services
         {
             List<TestPurpose> list = await GetAllTestPurposes();
             if (list == null || list.Count == 0) return null;
-            return list.Find(x => x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId));
+            return list.Find(x => x!=null && x.IdTest != null && x.IdEmployee != null && x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId));
         }
 
         public async Task<List<TestPurpose>> GetAllTestPurposes()

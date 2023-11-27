@@ -51,7 +51,15 @@ namespace Personal_Testing_System.Services
         //Model
         private async Task<EmployeeModel?> ConvertToEmployeeModel(Employee employee)
         {
-            SubdivisionDto? subdivision = await subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
+            SubdivisionDto? subdivision = null;
+            if (employee != null && employee.IdSubdivision != null)
+            {
+                subdivision = await subdivisionRepo.GetSubdivisionDtoById(employee.IdSubdivision.Value);
+            }
+            else
+            {
+                return null;
+            }
             return new EmployeeModel
             {
                 Id = employee.Id,
@@ -80,7 +88,24 @@ namespace Personal_Testing_System.Services
                 DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
                 IdSubdivision = employeeDto.IdSubdivision,
                 Phone = employeeDto.Phone,
-                RegistrationDate = DateOnly.Parse(employeeDto.RegistrationDate)
+                RegistrationDate = DateOnly.FromDateTime(DateTime.Now)
+        };
+        }
+
+        private Employee ConvertToEmployee(UpdateEmployeeModel employeeDto)
+        {
+            return new Employee
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = employeeDto.FirstName,
+                SecondName = employeeDto.SecondName,
+                LastName = employeeDto.LastName,
+                Login = employeeDto.Login,
+                Password = employeeDto.Password,
+                DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
+                IdSubdivision = employeeDto.IdSubdivision,
+                Phone = employeeDto.Phone,
+                RegistrationDate = DateOnly.FromDateTime(DateTime.Now)
             };
         }
 
@@ -141,6 +166,11 @@ namespace Personal_Testing_System.Services
         public async Task<bool> SaveEmployee(AddEmployeeModel EmployeeDtoToAdd)
         {
             return await EmployeeRepo.SaveEmployee(ConvertToEmployee(EmployeeDtoToAdd));
+        }
+
+        public async Task<bool> SaveEmployee(UpdateEmployeeModel EmployeeToSave)
+        {
+            return await EmployeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
         }
     }
 }

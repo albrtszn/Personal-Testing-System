@@ -119,13 +119,15 @@ namespace Personal_Testing_System.Services
             }
 
             DateTime? dateTime = tokenEmployee.IssuingTime.Value;
-            if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)
+            if (dateTime.Value.AddHours(hoursToExpireEmployeeToken) <= DateTime.Now)// && DateTime.Now.Subtract(dateTime.Value).TotalHours >= 24)
             {
                 await TokenEmployee.DeleteTokenEmployeeById(tokenEmployee.Id);
                 return true;
             }
             else
             {
+                tokenEmployee.IssuingTime = DateTime.Now;
+                await TokenEmployee.SaveTokenEmployee(tokenEmployee);
                 return false;
             }
         }
@@ -147,6 +149,8 @@ namespace Personal_Testing_System.Services
             }
             else
             {
+                tokenAdmin.IssuingTime = DateTime.Now;
+                await TokenAdmin.SaveTokenAdmin(tokenAdmin);
                 return false;
             }
         }
@@ -234,6 +238,7 @@ namespace Personal_Testing_System.Services
          */
         private async Task<ResultModel> GetResultModelById(Result result)
         {
+            if (result == null) return null;
             return new ResultModel
             {
                 Id = result.Id,
@@ -276,7 +281,9 @@ namespace Personal_Testing_System.Services
         public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();
-            List<EmployeeResult> employeeResults = (await EmployeeResult.GetAllEmployeeResults()).Where(x => x.IdEmployee.Equals(employeeId)).ToList();
+            List<EmployeeResult> employeeResults = (await EmployeeResult.GetAllEmployeeResults())
+                .Where(x => x!= null && x.IdEmployee !=null && x.IdEmployee.Equals(employeeId))
+                .ToList();
             foreach (EmployeeResult res in employeeResults)
             {
                 list.Add(await ConvertToEmployeeResultModel(res));

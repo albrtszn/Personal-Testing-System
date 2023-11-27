@@ -60,7 +60,10 @@ namespace Personal_Testing_System.Services
 
         public async Task<SubdivisionDto> GetSubdivisionDtoById(int id)
         {
-            return ConvertToSubdivisionDto(await SubdivisionRepo.GetSubdivisionById(id));
+            var sub = await SubdivisionRepo.GetSubdivisionById(id);
+            if (sub == null)
+                return null;
+            return ConvertToSubdivisionDto(sub);
         }
 
         public async Task<bool> SaveSubdivision(Subdivision SubdivisionToSave)

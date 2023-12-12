@@ -22,9 +22,12 @@ namespace Client.classDTO
         public static CompetenceDto[] itemsCompetence;
         public static GroupPositionDto[] itemsGroupPosition;
         public static string[] itemsProfile = { "Механик", "Технолог"};
-        
+
+        public static AdminDto[] itemsUserAdmin;
         public static UserEmployee[] itemsUserEmployee;
         public static bool flagUpdateEmployee = true;
+        public static bool flagUpdateAdmin = true;
+        
         public static int indexItemsUserEmployee = 0;
 
         public GlobalRes()
@@ -162,6 +165,23 @@ namespace Client.classDTO
             itemsUserEmployee = tmpUserEmployee;
 
             flagUpdateEmployee = false;
+        }
+
+        public static async void getUserAdmin()
+        {
+            AdminDto[] admins;
+            ConnectHost conn = new ConnectHost();
+            JToken jObject = await conn.GetAdmins();
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            admins = JsonConvert.DeserializeObject<AdminDto[]>(jObject.ToString(), jsonSettings);
+
+           
+            itemsUserAdmin = admins;
+
+            flagUpdateAdmin = false;
         }
 
     }

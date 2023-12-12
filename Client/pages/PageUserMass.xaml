@@ -1,0 +1,51 @@
+﻿<Page x:Class="Client.pages.PageUserMass"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
+      Title="PageUserMass"
+      Background="#EDEDED"
+      >
+
+    <Grid Margin="40 40 40 40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Text="Сообщение для администратора" HorizontalAlignment="Left" FontSize="30" Margin="0 0 0 0" FontFamily="Roboto" Foreground="#555555"/>
+
+        <Border Grid.Row="1" Background="#FFFFFF" Margin="0 20 0 0" CornerRadius="5" MinHeight="500" Height="auto" MinWidth="1040">
+                <TextBox Grid.Row="1" x:Name="addTextMass" 
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        
+                        SpellCheck.IsEnabled="True" Language="ru-ru"
+                        VerticalScrollBarVisibility="Auto"
+                        
+                        materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                        Foreground="Black" 
+                        BorderBrush="#C2C2C2"
+                        BorderThickness="1" 
+                        FontSize="18" 
+                        FontFamily="Roboto" 
+                        Margin="10 10 10 10" 
+                        Padding="5" 
+                        Height="auto"
+                       TextWrapping="Wrap"
+                 />
+        </Border>
+
+      
+       <Button x:Name="BT_sendMass" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" 
+               Grid.Row="2" Margin="0 30 0 0"
+               FontFamily="Roboto" Content="ОТПРАВИТЬ" FontSize="18" Width="160" Height="40" VerticalAlignment="Top" HorizontalAlignment="Center" BorderBrush="Transparent" Click="Button_Click" />
+            
+       
+    </Grid>
+</Page>

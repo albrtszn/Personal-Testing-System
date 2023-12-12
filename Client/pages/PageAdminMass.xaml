@@ -1,0 +1,111 @@
+﻿<Page x:Class="Client.pages.PageAdminMass"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
+      Title="PageAdminMass"
+       Background="#EDEDED"
+      >
+    <Page.Resources>
+        <Geometry x:Key="tabler_editGeometry1">F1 M24,24z M0,0z M7,7L6,7C5.46957,7 4.96086,7.21071 4.58579,7.58579 4.21071,7.96086 4,8.46957 4,9L4,18C4,18.5304 4.21071,19.0391 4.58579,19.4142 4.96086,19.7893 5.46957,20 6,20L15,20C15.5304,20 16.0391,19.7893 16.4142,19.4142 16.7893,19.0391 17,18.5304 17,18L17,17</Geometry>
+        <Geometry x:Key="tabler_editGeometry2">F1 M24,24z M0,0z M16,5.00011L19,8.00011 M20.385,6.58511C20.7788,6.19126 21.0001,5.65709 21.0001,5.10011 21.0001,4.54312 20.7788,4.00895 20.385,3.61511 19.9912,3.22126 19.457,3 18.9,3 18.343,3 17.8088,3.22126 17.415,3.61511L9,12.0001 9,15.0001 12,15.0001 20.385,6.58511z</Geometry>
+        <DrawingGroup x:Key="tabler_editDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry1}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry2}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingImage x:Key="tabler_editDrawingImage" Drawing="{StaticResource tabler_editDrawingGroup}" />
+
+        <Geometry x:Key="mdi_note_add_outlineGeometry">F1 M24,24z M0,0z M5,19L5,5 12,5 12,12 19,12 19,13C19.7,13,20.37,13.13,21,13.35L21,9 15,3 5,3C3.89,3,3,3.89,3,5L3,19C3,19.5304 3.21071,20.0391 3.58579,20.4142 3.96086,20.7893 4.46957,21 5,21L13.35,21C13.13,20.37,13,19.7,13,19L5,19z M14,4.5L19.5,10 14,10 14,4.5z M23,18L23,20 20,20 20,23 18,23 18,20 15,20 15,18 18,18 18,15 20,15 20,18 23,18z</Geometry>
+        <DrawingGroup x:Key="mdi_note_add_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource mdi_note_add_outlineGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="mdi_note_add_outlineDrawingImage" Drawing="{StaticResource mdi_note_add_outlineDrawingGroup}" />
+
+        <Geometry x:Key="ic_round_delete_outlineGeometry">F1 M24,24z M0,0z M6,19C6,20.1,6.9,21,8,21L16,21C17.1,21,18,20.1,18,19L18,9C18,7.9,17.1,7,16,7L8,7C6.9,7,6,7.9,6,9L6,19z M9,9L15,9C15.55,9,16,9.45,16,10L16,18C16,18.55,15.55,19,15,19L9,19C8.45,19,8,18.55,8,18L8,10C8,9.45,8.45,9,9,9z M15.5,4L14.79,3.29C14.61,3.11,14.35,3,14.09,3L9.91,3C9.65,3,9.39,3.11,9.21,3.29L8.5,4 6,4C5.45,4 5,4.45 5,5 5,5.55 5.45,6 6,6L18,6C18.55,6 19,5.55 19,5 19,4.45 18.55,4 18,4L15.5,4z</Geometry>
+        <DrawingGroup x:Key="ic_round_delete_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource ic_round_delete_outlineGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="ic_round_delete_outlineDrawingImage" Drawing="{StaticResource ic_round_delete_outlineDrawingGroup}" />
+    </Page.Resources>
+    <Grid Margin="40 40 40 40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Text="Сообщения от пользователей" HorizontalAlignment="Left" FontSize="30" Margin="0 0 0 0" FontFamily="Roboto" Foreground="#555555"/>
+
+        <DataGrid Grid.Row="1" x:Name="DG_Mess" 
+           Margin="0 15 0 0"   
+                  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
+                                CellStyle="{DynamicResource DataGridCellStyle1}"
+          RowStyle="{DynamicResource DataGridRowStyle1}" 
+          ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+          Style="{DynamicResource DataGridStyle1}"
+          ItemsSource="{Binding mess}" 
+          >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Дата" IsReadOnly="True" Binding="{Binding DateAndTime}" Width="150">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="ФИО" IsReadOnly="True" Binding="{Binding IdEmployee}" MinWidth="250">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+
+
+                <DataGridTextColumn Header="Краткое сообщение" IsReadOnly="True" Binding="{Binding MessageText}" MinWidth="350" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Статус" IsReadOnly="True" Width="120" Binding="{Binding StatusRead}"/>
+                <DataGridTemplateColumn Header="Операция" Width="120" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Margin="0 0 20 0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
+                                                          Command="{Binding DataContext.CmdEditAdmin, ElementName=myPageUsers}"
+                                                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
+                                                          >
+                                    <Image Source="{StaticResource tabler_editDrawingImage}" Width="18" Height="18"/>
+                                </Button>
+                                <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
+                                                          Command="{Binding DataContext.CmdDeletAdmin, ElementName=myPageUsers}"
+                                                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
+                                                          >
+                                    <Image Source="{StaticResource ic_round_delete_outlineDrawingImage}" Width="24" Height="24"/>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Page>

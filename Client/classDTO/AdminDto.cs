@@ -14,6 +14,6 @@ namespace Client
         public string LastName { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public int IdSubdivision { get; set; }
+       
     }
 }

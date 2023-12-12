@@ -26,11 +26,13 @@ namespace Client.VM
         public RelayCommand CmdAddPurpose { get; }
         public RelayCommand CmdDeletUser { get; }
         public RelayCommand CmdEditUser { get; }
-
+        public RelayCommand CmdDeletAdmin { get; }
+        public RelayCommand CmdEditAdmin { get; }
+        public RelayCommand CmdAddAdmin { get; }
 
         public static UserEmployee SelectedItems { get; set; }
-
-
+        public static AdminDto SelectedItemsAdmin { get; set; }
+        
 
         public string FilterPhone
         {
@@ -63,6 +65,19 @@ namespace Client.VM
         // Using a DependencyProperty as the backing store for FilterText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilterSubProperty =
             DependencyProperty.Register("FilterSub", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
+
+
+
+        public string FilterTextAdmin
+        {
+            get { return (string)GetValue(FilterTextAdminProperty); }
+            set { SetValue(FilterTextAdminProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FilterTextAdmin.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FilterTextAdminProperty =
+            DependencyProperty.Register("FilterTextAdmin", typeof(string), typeof(UserVM), new PropertyMetadata("", FilterText_Changed));
+
 
 
         public string FilterText
@@ -115,17 +130,38 @@ namespace Client.VM
         public static readonly DependencyProperty ItemsProperty =
             DependencyProperty.Register("Items", typeof(ICollectionView), typeof(UserVM), new PropertyMetadata(null));
 
+
+
+        public ICollectionView ItemsAdmin
+        {
+            get { return (ICollectionView)GetValue(ItemsAdminProperty); }
+            set { SetValue(ItemsAdminProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ItemsAdmin.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ItemsAdminProperty =
+            DependencyProperty.Register("ItemsAdmin", typeof(ICollectionView), typeof(UserVM), new PropertyMetadata(null));
+
+
+
         public UserVM(object myOwner) 
         {
             myGlobal = myOwner as PageUsers;
 
 
             GetUsers();
-
+            GetAdmins();
             this.CmdAddPurpose = new RelayCommand(FuncAddPurpose);
             this.CmdDeletUser = new RelayCommand(FuncDeletUser);
             this.CmdEditUser = new RelayCommand(FuncEditUser);
-            
+            this.CmdDeletAdmin = new RelayCommand(FuncDeletAdmin);
+            this.CmdEditAdmin = new RelayCommand(FuncEditAdmin);
+            this.CmdAddAdmin = new RelayCommand(FuncAddAdmin);
+        }
+
+        void FuncAddAdmin(object param)
+        {
+            myGlobal.NavigationService.Navigate(new PageAdminReg());
         }
 
         void FuncEditUser(object param)
@@ -136,6 +172,14 @@ namespace Client.VM
 
         }
 
+        void FuncEditAdmin(object param)
+        {
+            AdminDto tmp = param as AdminDto;
+            SelectedItemsAdmin = tmp;
+            myGlobal.NavigationService.Navigate(new PageAdminEdit(tmp));
+        }
+
+
         void FuncDeletUser(object param)
         {
             UserEmployee tmp_user = param as UserEmployee;
@@ -144,7 +188,12 @@ namespace Client.VM
             SelectedItems = null;
             GlobalRes.flagUpdateEmployee = true;
         }
-        
+
+        void FuncDeletAdmin(object param)
+        {
+
+        }
+
         void FuncAddPurpose(object param)
         {
             UserEmployee tmp = param as UserEmployee;
@@ -231,6 +280,33 @@ namespace Client.VM
             Items = CollectionViewSource.GetDefaultView(GlobalRes.itemsUserEmployee);
             Items.Filter = Filters;
             
+        }
+
+        public async void GetAdmins()
+        {
+            AdminDto[] admins;
+            ConnectHost conn = new ConnectHost();
+            JToken jObject = null;
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+
+            if (GlobalRes.flagUpdateAdmin == true)
+            {
+                jObject = await conn.GetAdmins();
+                admins = JsonConvert.DeserializeObject<AdminDto[]>(jObject.ToString(), jsonSettings);
+
+
+                GlobalRes.itemsUserAdmin = admins;
+                SelectedItemsAdmin = admins[0];
+                GlobalRes.flagUpdateAdmin = false;
+            }
+
+            ItemsAdmin = CollectionViewSource.GetDefaultView(GlobalRes.itemsUserAdmin);
+           
+
         }
 
         private bool Filters(object obj)

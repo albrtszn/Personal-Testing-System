@@ -4,21 +4,29 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
       Title="PageSubdivision"
-      Background="White">
+      Background="#EDEDED">
 
     <Grid >
-        <StackPanel>
-            <TextBlock Text="Вакантные должности" HorizontalAlignment="Center" FontSize="20"/>
-        </StackPanel>
-        <Grid Background="White" Margin="0 30 0 0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="119*"/>
-                <ColumnDefinition Width="281*"/>
-            </Grid.ColumnDefinitions>
-            <DataGrid x:Name="dataGridSubdivision" Margin="5,5,5,5"  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False" Grid.ColumnSpan="2">
+        <Grid Background="Transparent" Margin="0 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Label Content="Вакантные должности" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" Margin="40 40 0 0"/>
+            <DataGrid Grid.Row="1" x:Name="dataGridSubdivision" 
+                       Margin="40 15 40 30"   d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
+                                            CellStyle="{DynamicResource DataGridCellStyle1}"
+                      RowStyle="{DynamicResource DataGridRowStyle1}" 
+                      ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                      Style="{DynamicResource DataGridStyle1}"
+                      ItemsSource="{Binding ItemsTests}" 
+                      >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}" Width="300">
                         <DataGridTextColumn.ElementStyle>
@@ -39,8 +47,12 @@
 
                 </DataGrid.Columns>
             </DataGrid>
-
         </Grid>
+
+        
+
+
+        
 
 
 

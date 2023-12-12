@@ -39,6 +39,22 @@ namespace Client.forms
         {
             this.DataContext = new VM.UserVM(this);
         }
+        private bool isButtonClick = false;
+
+        private void ShowFilter(object sender, RoutedEventArgs e)
+        {
+            if (isButtonClick)
+            {
+                BorderFilter.Visibility = Visibility.Collapsed;
+                isButtonClick = false;
+            }
+            else
+            {
+                BorderFilter.Visibility = Visibility.Visible;
+                isButtonClick = true;
+            }
+        }
+
 
     }
 }

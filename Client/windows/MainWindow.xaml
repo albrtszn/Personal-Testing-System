@@ -190,83 +190,17 @@
             <DrawingImage x:Key="Frame_69DrawingImage" Drawing="{StaticResource Frame_69DrawingGroup}" />
 
 
-            <Style x:Key="MaterialDesignListBoxItem" TargetType="{x:Type ListBoxItem}">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-                <Setter Property="Padding" Value="8"/>
-                <Setter Property="SnapsToDevicePixels" Value="True"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ClipToBounds="{TemplateBinding ClipToBounds}" Margin="{TemplateBinding Margin}" CornerRadius="20">
-                                <Grid>
-                                    <Border x:Name="MouseOverBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" CornerRadius="20"/>
-                                    <Border x:Name="SelectedBorder" Background="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" Opacity="0" CornerRadius="20"/>
-                                    <wpf:Ripple x:Name="Ripple" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" Focusable="False" Feedback="{TemplateBinding Foreground, Converter={StaticResource BrushRoundConverter}}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" RecognizesAccessKey="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                </Grid>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value=".56"/>
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" TargetName="MouseOverBorder" Value="#323551"/>
-                                    <Setter Property="Opacity" TargetName="MouseOverBorder" Value="1"/>
-
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource redStyle}" />
+            <Geometry x:Key="messageGeometry">F1 M24,24z M0,0z M8,9L16,9 M8,13L14,13 M18,4C18.7956,4 19.5587,4.31607 20.1213,4.87868 20.6839,5.44129 21,6.20435 21,7L21,15C21,15.7956 20.6839,16.5587 20.1213,17.1213 19.5587,17.6839 18.7956,18 18,18L13,18 8,21 8,18 6,18C5.20435,18 4.44129,17.6839 3.87868,17.1213 3.31607,16.5587 3,15.7956 3,15L3,7C3,6.20435 3.31607,5.44129 3.87868,4.87868 4.44129,4.31607 5.20435,4 6,4L18,4z</Geometry>
+            <DrawingGroup x:Key="messageDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Geometry="{StaticResource messageGeometry}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB7,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingImage x:Key="messageDrawingImage" Drawing="{StaticResource messageDrawingGroup}" />
 
 
-                                </Trigger>
-                                <DataTrigger Binding="{Binding (wpf:ListBoxItemAssist.ShowSelection), RelativeSource={RelativeSource Mode=Self}}" Value="False">
-                                    <Setter Property="Visibility" TargetName="MouseOverBorder" Value="Collapsed"/>
-                                    <Setter Property="Feedback" TargetName="Ripple" Value="Transparent"/>
-                                    <Setter Property="Visibility" TargetName="SelectedBorder" Value="Collapsed"/>
-                                </DataTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-                <Setter Property="wpf:ListBoxItemAssist.ShowSelection" Value="{Binding (wpf:ListBoxItemAssist.ShowSelection), RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
-            </Style>
-            <Style x:Key="ListBoxStyle1" TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                <Setter Property="ItemContainerStyle" Value="{StaticResource MaterialDesignListBoxItem}"/>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-                <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBox}">
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ClipToBounds="False" SnapsToDevicePixels="true">
-                                <ScrollViewer ClipToBounds="False" Focusable="false" Padding="{TemplateBinding Padding}">
-                                    <ItemsPresenter ClipToBounds="False" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                </ScrollViewer>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsGrouping" Value="true"/>
-                                        <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
-                                </MultiTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="wpf:ScrollViewerAssist.IsAutoHideEnabled" Value="True"/>
-            </Style>
-            <Storyboard x:Key="Storyboard1"/>
         </ResourceDictionary>
 
     </Window.Resources>
@@ -327,7 +261,9 @@
                     <RowDefinition Height="191"/>
                 </Grid.RowDefinitions>
 
-                <ListBox Style="{DynamicResource ListBoxStyle1}" Width="300" HorizontalAlignment="Center" FontSize="15" FontFamily="Roboto" Foreground="#EDEDED" Margin="0 241 0 0">
+                <ListBox Style="{DynamicResource ListBoxStyle1}" Width="300" HorizontalAlignment="Center" FontSize="15" FontFamily="Roboto" Foreground="#EDEDED" Margin="0 241 0 0"
+                         SelectedIndex="0"
+                         >
 
                     <ListBoxItem x:Name="LB1" Selected="item0_Selected" Width="280" Height="46" >
                         <Grid>
@@ -399,12 +335,22 @@
                             <TextBlock Grid.Column="1" Text="Результаты тестов" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
                         </Grid>
                     </ListBoxItem>
+                    <ListBoxItem x:Name="LB7" Selected="itemMessage_Selected" Width="280" Height="46" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
+                            <Image Source="{StaticResource messageDrawingImage}" Width="20" Height="20"/>
+                            <TextBlock Grid.Column="1" Text="Сообщения от пользователей" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
+                        </Grid>
+                    </ListBoxItem>
                 </ListBox>
 
 
 
-                <ListBox x:Name="ListSetting" Grid.Row="1"  Width="300" HorizontalAlignment="Center" FontSize="16" FontFamily="Roboto" Foreground="#EDEDED" >
+                <ListBox x:Name="ListSetting" Style="{DynamicResource ListBoxStyle2}" Grid.Row="1"  Width="300" HorizontalAlignment="Center" FontSize="16" FontFamily="Roboto" Foreground="#EDEDED" >
                     <ListViewItem Selected="Setting" Width="280" Height="46">
                         <Grid>
                             <Grid.ColumnDefinitions>

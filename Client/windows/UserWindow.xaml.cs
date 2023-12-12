@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Client.classDTO;
+using Client.forms;
+using Client.pages;
+using Client.windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +28,10 @@ namespace Client
             InitializeComponent();
 
 
-            textBlock_UserName.Text = AutWindow.employee.LastName + " " + AutWindow.employee.FirstName + " " + AutWindow.employee.SecondName;
-
+            textBlock_UserName1.Text = AutWindow.employee.LastName;
+            textBlock_UserName2.Text = AutWindow.employee.FirstName + " " + AutWindow.employee.SecondName;
+            textBlock_UserName3.Text = AutWindow.employee.subdivision.Name;
+                
 
         }
 
@@ -72,5 +78,84 @@ namespace Client
 
         }
 
+        private void ListView_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+        }
+
+        private void Setting(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            this.Hide(); // Скрываем нынешнее окно
+
+            // Создаем объект на основе определенного окан
+            SettingConnHost windowSetting = new SettingConnHost(this);
+            // Показываем новое окно
+            windowSetting.Show();
+
+        }
+
+        private void ListViewItem_Selected_Exit(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            AutWindow autWindow = new AutWindow();
+            autWindow.Show();
+            this.Close();
+        }
+
+        private void ListViewItem_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+        }
+
+        private void About(object sender, RoutedEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            WindowAbout windowAbout = new WindowAbout();
+            // Показываем новое окно
+            windowAbout.Show();
+        }
+
+        private void WindowMaximizeApp(object sender, RoutedEventArgs e)
+        {
+
+            if (isMaximazed)
+            {
+                this.WindowState = WindowState.Normal;
+                this.Width = 1440;
+                this.Height = 900;
+                isMaximazed = false;
+            }
+            else
+            {
+                this.WindowState = WindowState.Maximized;
+
+                isMaximazed = true;
+            }
+
+        }
+
+        private void WindowMinimizeApp(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void item0_Selected(object sender, RoutedEventArgs e)
+        {
+            if (FrameUserData != null)
+            {
+                FrameUserData.Navigate(new PageUserHome());
+            }
+        }
+
+        private void item1_Selected(object sender, RoutedEventArgs e)
+        {
+            FrameUserData.Navigate(new PageUserInfo());
+        }
+
+        private void selecAddMass(object sender, RoutedEventArgs e)
+        {
+            FrameUserData.Navigate(new PageUserMass());
+        }
     }
 }

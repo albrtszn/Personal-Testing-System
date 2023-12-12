@@ -6,43 +6,118 @@
       xmlns:local="clr-namespace:Client.pages"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="900" d:DesignWidth="1000"
+      d:DesignHeight="850" 
+      d:DesignWidth="1120"
       Title="PageAddPurpose"
-      Background="White">
+      Background="#EDEDED"
+      >
 
     <Grid >
-        <StackPanel>
-            <TextBlock Text="Список тестов для назначения" HorizontalAlignment="Center" FontSize="20"/>
-        </StackPanel>
 
-        <Grid Background="White" Margin="0 30 0 0">
+
+        <Grid Background="Transparent" Margin="0 0 0 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" >
-                <Label Content="Пользователь:" Margin="5" FontSize="15" VerticalAlignment="Bottom"/>
-                <TextBox Text="{Binding emp.LastName}" FontSize="15" Margin="5" IsReadOnly="True" Background="#00000000" />
-                <TextBox Text="{Binding emp.FirstName}" FontSize="15" Margin="5" />
-                <TextBox Text="{Binding emp.SecondName}" FontSize="15" Margin="5" />
 
-            </StackPanel>
-            <DataGrid x:Name="DGTests" Grid.Row="1" Margin="5" ItemsSource="{Binding ItemsTests}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
+            <Label Content="Список тестов для назначения" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" Margin="40 40 0 0"/>
+            <Border Grid.Row="1" Margin="40 0 40 0"  Background="White" CornerRadius="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="ФИО" Foreground="#555555" FontFamily="Roboto" FontSize="16" FontWeight="DemiBold" Margin="20 20 0 0"/>
+                    <Border Grid.Row="1" Background="White" Height="50" BorderBrush="#C2C2C2" BorderThickness="1" CornerRadius="5" Margin="20 10 10 20"
+                            >
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding emp.LastName}" FontSize="16" Margin="5 0 0 0" Foreground="#555555" FontFamily="Roboto" VerticalAlignment="Center" Padding="0"/>
+                            <Label Content="{Binding emp.FirstName}" FontSize="16" Margin="5 0 0 0" Foreground="#555555" FontFamily="Roboto" VerticalAlignment="Center" Padding="0"/>
+                            <Label Content="{Binding emp.SecondName}" FontSize="16" Margin="5 0 0 0" Foreground="#555555" FontFamily="Roboto" VerticalAlignment="Center" Padding="0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Label Grid.Column="1" Content="Профиль" Foreground="#555555" FontFamily="Roboto" FontSize="16" FontWeight="DemiBold" Margin="10 20 10 0"/>
+                    <Border Grid.Row="1" Grid.Column="1" Background="White" Height="50" BorderBrush="#C2C2C2" BorderThickness="1" CornerRadius="5" Margin="10 10 10 20"
+                            >
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding subView.Name}" FontSize="16" Margin="5 0 0 0" Foreground="#555555" FontFamily="Roboto" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    
+                    <Label Grid.Column="2" Content="Должность" Foreground="#555555" FontFamily="Roboto" FontSize="16" FontWeight="DemiBold" Margin="10 20 20 0"/>
+                    <Border Grid.Row="1" Grid.Column="2" Background="White" Height="50" BorderBrush="#C2C2C2" BorderThickness="1" CornerRadius="5" Margin="10 10 20 20"
+                            >
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding subView.Profile}" FontSize="16" Margin="5 0 0 0" Foreground="#555555" FontFamily="Roboto" VerticalAlignment="Center"/>
+                          
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <DataGrid x:Name="DGTests" 
+                      Grid.Row="2" 
+                      Margin="40 15 40 30" 
+                     
+                      CellStyle="{DynamicResource DataGridCellStyle1}"
+                      RowStyle="{DynamicResource DataGridRowStyle1}" 
+                      ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                      Style="{DynamicResource DataGridStyle1}"
+                      ItemsSource="{Binding ItemsTests}" 
+                      d:ItemsSource="{d:SampleData ItemCount=3}" 
+                      AutoGenerateColumns="False"
+                       CanUserAddRows="False" CanUserResizeRows="False" CanUserDeleteRows="False"
+                      >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Наименование теста" IsReadOnly="True" Binding="{Binding test.Name}"/>
-                    <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
-                    <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
-                    <DataGridCheckBoxColumn x:Name="CB_Active" Header="Выбрать для назначения" Binding="{Binding checkBox}"/>
-                    <DataGridTextColumn Header="Назвачен" IsReadOnly="True" Binding="{Binding DatatimePurpose}"/>
+                    <DataGridTextColumn Header="Наименование теста" MinWidth="200" Width="2*"  IsReadOnly="True" Binding="{Binding test.Name}"/>
+                    <DataGridTextColumn Header="Кол. вопросов" MinWidth="160" Width="160" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
+                    <DataGridTextColumn Header="Группа компетенций" MinWidth="210" Width="2*" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
+                    <DataGridCheckBoxColumn x:Name="CB_Active" Binding="{Binding checkBox}" MinWidth="160" Width="*" >
+                        <DataGridCheckBoxColumn.Header>
+                            <TextBlock Text="Выбрать для назначения"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           
+                                           Margin="1"/>
+                        </DataGridCheckBoxColumn.Header>
+                        <!--<DataGridCheckBoxColumn.CellStyle>
+                            <Style>
+                                <Setter Property="CheckBox.HorizontalAlignment" Value="Center"/>
+                                <Setter Property="CheckBox.VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridCheckBoxColumn.CellStyle>-->
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn Header="Назвачен" MinWidth="130" Width="*" IsReadOnly="True" Binding="{Binding DatatimePurpose}"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
-                <Button Content="Назначить тесты" FontSize="15" Background="#2E333A" Command="{Binding CmdAddPurpose}" />
+            
+                <Button Grid.Row="3" Content="НАЗНАЧИТЬ ТЕСТЫ" FontSize="15" 
+                        Height="38"
+                        Width="175"
+                        materialDesign:ButtonAssist.CornerRadius="20"
+                        BorderBrush="Transparent"
+                        Background="#F25C4F" Command="{Binding CmdAddPurpose}"
+                        Margin="0 20 0 30"/>
 
 
-            </StackPanel>
-            <Button Grid.Row="2" Content="Назад" FontSize="15" Background="#2E333A" Command="{Binding CmdBackGo}" Width="100" HorizontalAlignment="Left" Margin="20 0 0 0"/>
+          
+            <Button Grid.Row="3" Content="НАЗАД" FontSize="15" 
+                    Height="38"
+                    BorderBrush="Transparent"
+                    materialDesign:ButtonAssist.CornerRadius="20"
+                    Background="#F25C4F" Command="{Binding CmdBackGo}" Width="100" HorizontalAlignment="Left" 
+                    Margin="40 20 0 30"/>
         </Grid>
 
 

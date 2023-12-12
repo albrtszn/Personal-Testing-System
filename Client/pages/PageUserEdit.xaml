@@ -6,13 +6,13 @@
       xmlns:local="clr-namespace:Client.pages"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-            d:DesignHeight="850" 
+      d:DesignHeight="750" 
       d:DesignWidth="1120"
       Title="PageUserEdit"
       Background="#EDEDED"
       >
 
-    <Grid Margin="40 60 40 40">
+    <Grid Margin="40 40 40 40">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Text="Информация о пользователе" HorizontalAlignment="Left" FontSize="30" Margin="0 0 0 0" FontFamily="Roboto" Foreground="#555555"/>
 
-        <Border Grid.Row="1" Background="#FFFFFF" Margin="0 30 0 0" CornerRadius="5" Height="356" MinWidth="1040">
+        <Border Grid.Row="1" Background="#FFFFFF" Margin="0 20 0 0" CornerRadius="5" Height="250" MinWidth="1040">
             <Grid Margin="20 30 20 0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -33,14 +33,12 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Content="ФИО" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold"/>
-                <Label Grid.Row="2" Content="Дата рождения" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
-                <Label Grid.Row="4" Grid.Column="2" Content="Дата регистрации" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
-                <Label Grid.Row="4" Content="Номер телефона" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
+                <Label Grid.Row="2" Grid.Column="1" Content="Дата рождения" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 30 0 0"/>
+                <Label Grid.Row="2" Grid.Column="2" Content="Дата регистрации" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 30 0 0"/>
+                <Label Grid.Row="2" Content="Номер телефона" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="0 30 0 0"/>
 
                 <TextBox Grid.Row="1" x:Name="addLastName" 
                          Text="{Binding LastName}"
@@ -87,7 +85,7 @@
                          VerticalContentAlignment="Center"
                      />
 
-                <TextBox Grid.Row="3" Grid.Column="0" x:Name="addDate" 
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="addDate" 
                          Text="{Binding DateOfBirth}"
                          materialDesign:HintAssist.Hint="Дата рождения" 
                          FontSize="16" 
@@ -97,12 +95,12 @@
 
                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
                          Height="50"
-                         Margin="0 0 10 0" 
+                         Margin="10 0 10 0" 
                          Padding="17 0 17 0" 
                          VerticalContentAlignment="Center" BorderThickness="1,1,1,1" SnapsToDevicePixels="True"
                      />
                 
-                <TextBox Grid.Row="5" Grid.Column="3" x:Name="DataRegUpdate" 
+                <TextBox Grid.Row="3" Grid.Column="3" x:Name="DataRegUpdate" 
                         
                          materialDesign:HintAssist.Hint="Дата регистрации" 
                          FontSize="16" 
@@ -112,13 +110,13 @@
                          
                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
                          Height="50"
-                         Margin="0 0 10 0" 
+                         Margin="10 0 0 0" 
                          Padding="17 0 0 0" 
                          VerticalContentAlignment="Center"
                          IsReadOnly="True"
                      />
                 
-                <TextBox Grid.Row="5" x:Name="addPhone" 
+                <TextBox Grid.Row="3" x:Name="addPhone" 
                           Text="{Binding Phone}"
                          materialDesign:HintAssist.Hint="9 цифр" 
                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
@@ -135,7 +133,7 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="2" Background="#FFFFFF" Margin="0 20 0 0" CornerRadius="5" Height="248" MinWidth="1040">
+        <Border Grid.Row="2" Background="#FFFFFF" Margin="0 40 0 0" CornerRadius="5" Height="248" MinWidth="1040">
             <Grid Margin="20 30 20 0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -199,7 +197,7 @@
                           />
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="groupeCB"
                          materialDesign:HintAssist.Hint="Группа специализации" 
-                          FontSize="16" 
+                          FontSize="15" 
                           Foreground="Black" 
                           BorderBrush="#C2C2C2"
                           BorderThickness="1" 
@@ -210,7 +208,7 @@
                          VerticalContentAlignment="Center"
                          IsReadOnly="True"
                           />
-                <TextBox Grid.Row="1" Grid.Column="2" x:Name="subdivisionComboBox"
+                <TextBox Grid.Row="1"  Grid.RowSpan="3" Grid.Column="2" x:Name="subdivisionComboBox"
                          materialDesign:HintAssist.Hint="Должность" 
                           FontSize="16" 
                           Foreground="Black" 
@@ -218,9 +216,9 @@
                           BorderThickness="1" 
                           materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
                           Margin="10 0 0 0" 
-                          Padding="17 0 20 0" 
-                          Height="50"
-                         VerticalContentAlignment="Center"
+                          Padding="17 13 20 0" 
+                          TextWrapping="Wrap"
+                         VerticalContentAlignment="Top"
                          IsReadOnly="True"
                           />
             </Grid>
@@ -228,7 +226,7 @@
         
 
        
-        <Grid Grid.Row="3" Margin="130 20 130 0">
+        <Grid Grid.Row="3" Margin="130 30 130 0">
             <Button x:Name="BT_update" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" FontFamily="Roboto" Content="ОБНОВИТЬ" FontSize="15" Width="120" Height="40" VerticalAlignment="Top" HorizontalAlignment="Right" BorderBrush="Transparent" Click="Button_Click_update" />
             <Button HorizontalAlignment="Left" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" FontFamily="Roboto" Content="НАЗАД" FontSize="15" Width="120" Height="40" VerticalAlignment="Top" BorderBrush="Transparent" Click="Button_Click_Back" />
         </Grid>

@@ -270,6 +270,61 @@ namespace Client
             return jObject;
         }
 
+        public async Task<JToken> AddAdmin(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/AddAdmin";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/AddAdmin";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> UpdateAdmin(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateAdmin";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateAdmin";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+        
+
+        public async Task<JToken> GetAdmins()
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetAdmins";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetAdmins";
+            }
+
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
 
         public async Task<JToken> GetEmployees()
         {
@@ -338,6 +393,26 @@ namespace Client
             else
             {
                 data_payload.uri = proсHost + "://" + urlHost + "/admin-api/PushTest";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+
+        public async Task<JToken> AddMessage(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/AddMessage";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/AddMessage";
             }
 
             data_payload.payload = pay_data;
@@ -441,6 +516,26 @@ namespace Client
             var jObject = await ProcessRequest(data_payload);
             return jObject;
         }
+
+        public async Task<JToken> GetMesssages()
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetMesssages";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetMesssages";
+            }
+
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+        
 
         public async Task<string> Ping()
         {

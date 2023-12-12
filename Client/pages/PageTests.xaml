@@ -4,43 +4,91 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" 
+      d:DesignWidth="1120"
       Title="PageTests"
-      Background="White">
+      Background="#EDEDED">
 
     <Grid >
-        <StackPanel>
-            <TextBlock Text="Список тестов" HorizontalAlignment="Center" FontSize="20"/>
-        </StackPanel>    
-            
-        <Grid Background="White" Margin="0 30 0 0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="35"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Фильтр:" Margin="5"/>
-                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" Padding="0"/>
-            </StackPanel>
-            <DataGrid x:Name="DGTests" Grid.Row="1" Margin="5" ItemsSource="{Binding ItemsTests}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Номер" IsReadOnly="True" Binding="{Binding number}"/>
-                    <DataGridTextColumn Header="Наименование теста (копметенции)" IsReadOnly="True" Binding="{Binding test.Name}"/>
-                    <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
-                    <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
-                <Button Content="Показать выбранный тест" FontSize="15" Background="#2E333A" Click="Button_Click" >
-                    
-                </Button>
-            </StackPanel>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Label Content="Перечень тестов для прохождения" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" 
+                   Margin="40 40 0 0"/>
+            <Border Width="260" Height="40" 
+                    HorizontalAlignment="Right" 
+                    Margin="0 40 40 0"
+                    BorderThickness="0 0 0 0"
+                    BorderBrush="#787575"
+                   >
+                <TextBox x:Name="wef"
+             materialDesign:TextFieldAssist.HasClearButton="True"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             
+             FontSize="16" 
+             FontFamily="Roboto"
+             Padding="10 0 0 0"                         
+        
+             materialDesign:TextFieldAssist.HasLeadingIcon="True"
+             materialDesign:TextFieldAssist.LeadingIcon="Search"
+             materialDesign:TextFieldAssist.LeadingIconSize="20"
+             
+             materialDesign:HintAssist.IsFloating="False" 
+             Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+             Height="40" 
+             VerticalContentAlignment="Center"
+         >
+                    <materialDesign:HintAssist.Hint>
+                        <TextBlock  Text="поиск" FontSize="16" FontFamily="Roboto"/>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </Border>
         </Grid>
 
-        
+
+
+
+
+        <DataGrid Grid.Row="2" x:Name="DGTests"   ItemsSource="{Binding ItemsTests}" 
+                  d:ItemsSource="{d:SampleData ItemCount=30}" 
+                  AutoGenerateColumns="False"
+                      Margin="40 15 40 30" 
+                     
+                      CellStyle="{DynamicResource DataGridCellStyle1}"
+                      RowStyle="{DynamicResource DataGridRowStyle1}" 
+                      ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                      Style="{DynamicResource DataGridStyle1}"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер" IsReadOnly="True" Binding="{Binding number}"/>
+                <DataGridTextColumn Header="Наименование теста (копметенции)" IsReadOnly="True" Binding="{Binding test.Name}"/>
+                <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
+                <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="3" Content="Показать выбранный тест" FontSize="16" Background="#F25C4F" Click="Button_Click" 
+                        Height="38"
+                        Width="240"
+                materialDesign:ButtonAssist.CornerRadius="20"
+                BorderBrush="Transparent"
+                VerticalAlignment="Top"
+                Margin="0 0 0 30"
+                
+                />
+
+
+
+
+
+
+
 
 
     </Grid>

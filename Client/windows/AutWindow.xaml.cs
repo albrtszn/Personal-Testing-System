@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Client.classDTO;
 
 
 
@@ -11,7 +12,7 @@ namespace Client
 
     public partial class AutWindow : Window
     {
-        public static EmployeeDto employee = new EmployeeDto();
+        public static EmployeeLogin employee = new EmployeeLogin();
         public static AdminDto admin = new AdminDto();
 
         public AutWindow()
@@ -73,7 +74,7 @@ namespace Client
 
                 if (ConnectHost.userRole == 1)
                 {
-                    employee = JsonConvert.DeserializeObject<EmployeeDto>(jObject["Employee"].ToString(), jsonSettings);
+                    employee = JsonConvert.DeserializeObject<EmployeeLogin>(jObject["Employee"].ToString(), jsonSettings);
                     ConnectHost.token = jObject["TokenEmployee"].ToString();
                     this.Hide();
                     UserWindow userWindow = new UserWindow();

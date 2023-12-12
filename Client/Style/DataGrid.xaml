@@ -12,6 +12,25 @@
         x:Key="SortUP"
         Figures="M4.5539 6.11645C4.37003 6.29452 4.07514 6.29452 3.89127 6.11645C3.70291 5.93403 3.70291 5.63485 3.89127 5.45243L7.5113 1.94668C7.78209 1.68444 8.21791 1.68444 8.4887 1.94668L12.1087 5.45243C12.2971 5.63485 12.2971 5.93403 12.1087 6.11645C11.9249 6.29452 11.63 6.29452 11.4461 6.11645L8 2.77914L4.5539 6.11645ZM8.01653 2.76313L8.01643 2.76323L8.01653 2.76313Z" />
 
+    <Geometry x:Key="UnionDownGeometry">F1 M10,6z M0,0z M1.5539,0.883547C1.37003,0.705484 1.07514,0.705484 0.891275,0.883547 0.702908,1.06597 0.702909,1.36515 0.891275,1.54757L4.5113,5.05332C4.78209,5.31556,5.21791,5.31556,5.4887,5.05332L9.10873,1.54757C9.29709,1.36515 9.29709,1.06597 9.10873,0.883548 8.92486,0.705484 8.62997,0.705484 8.4461,0.883548L5,4.22086 1.5539,0.883547z M5.01653,4.23687L5.01643,4.23677 5.01653,4.23687z</Geometry>
+    <DrawingGroup x:Key="UnionDownDrawingGroup" ClipGeometry="M0,0 V6 H10 V0 H0 Z">
+        <GeometryDrawing Brush="#C2C2C2" Geometry="{StaticResource UnionDownGeometry}">
+            <GeometryDrawing.Pen>
+                <Pen Brush="#C2C2C2" Thickness="0.5" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+            </GeometryDrawing.Pen>
+        </GeometryDrawing>
+    </DrawingGroup>
+    <DrawingImage x:Key="UnionDownDrawingImage" Drawing="{StaticResource UnionDownDrawingGroup}" />
+    <Geometry x:Key="UnionUpGeometry">F1 M10,6z M0,0z M1.5539,5.11645C1.37003,5.29452 1.07514,5.29452 0.891275,5.11645 0.702908,4.93403 0.702909,4.63485 0.891275,4.45243L4.5113,0.946683C4.78209,0.684439,5.21791,0.684438,5.4887,0.946683L9.10873,4.45243C9.29709,4.63485 9.29709,4.93403 9.10873,5.11645 8.92486,5.29452 8.62997,5.29452 8.4461,5.11645L5,1.77914 1.5539,5.11645z M5.01653,1.76313L5.01643,1.76323 5.01653,1.76313z</Geometry>
+    <DrawingGroup x:Key="UnionUpDrawingGroup" ClipGeometry="M0,0 V6 H10 V0 H0 Z">
+        <GeometryDrawing Brush="#C2C2C2" Geometry="{StaticResource UnionUpGeometry}">
+            <GeometryDrawing.Pen>
+                <Pen Brush="#C2C2C2" Thickness="0.5" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+            </GeometryDrawing.Pen>
+        </GeometryDrawing>
+    </DrawingGroup>
+    <DrawingImage x:Key="UnionUpDrawingImage" Drawing="{StaticResource UnionUpDrawingGroup}" />
+    
 
     <DrawingGroup x:Key="Line_5DrawingGroup" ClipGeometry="M0,0 V20 H1 V0 H0 Z">
         <DrawingGroup.Transform>
@@ -68,7 +87,14 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type DataGrid}">
-					<Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" CornerRadius="5" SnapsToDevicePixels="True">
+					<Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Padding="{TemplateBinding Padding}" 
+                            CornerRadius="5" 
+                            SnapsToDevicePixels="True"
+                            Margin="0 0 0 0">
+                        
 						<ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
 							<ScrollViewer.Template>
 								<ControlTemplate TargetType="{x:Type ScrollViewer}">
@@ -86,13 +112,26 @@
 										<Button Command="{x:Static DataGrid.SelectAllCommand}" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
 										<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
 										<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.ColumnSpan="2" Grid.Row="1"/>
-										<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="1" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+										<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" 
+                                                   Orientation="Vertical" 
+                                                   Grid.Row="1" 
+                                                   Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" 
+                                                   ViewportSize="{TemplateBinding ViewportHeight}" 
+                                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                                   Style="{DynamicResource MyScrollBar}"/>
 										<Grid Grid.Column="1" Grid.Row="2">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
 												<ColumnDefinition Width="*"/>
 											</Grid.ColumnDefinitions>
-											<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+											<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" 
+                                                       Maximum="{TemplateBinding ScrollableWidth}" 
+                                                       Orientation="Horizontal" 
+                                                       Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                       ViewportSize="{TemplateBinding ViewportWidth}" 
+                                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                                       Style="{DynamicResource MyScrollBar2}"
+                                                       />
 										</Grid>
 									</Grid>
 								</ControlTemplate>
@@ -185,7 +224,7 @@
         <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}}"/>
         <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}}"/>
         <Setter Property="Padding" Value="5,0"/>
-        <Setter Property="BorderBrush" Value="Green"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="MinHeight" Value="50"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Template">
@@ -207,33 +246,34 @@
     </Style>
 
     <Style x:Key="DataGridColumnHeaderStyle1" TargetType="{x:Type DataGridColumnHeader}">
-        <Setter Property="Background" Value="#FFF"/>
+        <Setter Property="Background" Value="White"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontFamily" Value="Roboto"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="MinHeight" Value="25"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="MinHeight" Value="50"/>
+        <Setter Property="Margin" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
                     <Grid>
                         <Border Background="{TemplateBinding Background}"
-                                
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-
-                                Padding="{TemplateBinding Padding}"     
+                                Padding="5"     
                                 CornerRadius="5"
+                                
                                 >
                             <Grid Margin="{TemplateBinding Padding}" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <ContentPresenter HorizontalAlignment="Center"
+                                <ContentPresenter HorizontalAlignment="Left"
                                                   RecognizesAccessKey="True"/>
-                                <StackPanel Grid.Column="1" Margin="5 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
                                     <Path x:Name="SortUPIcon"
                                           Data="{DynamicResource SortUP}"
                                           Height="10"
@@ -248,11 +288,9 @@
                                           Stretch="Uniform"
                                           Width="10"/>
                                 </StackPanel>
+                                <Thumb Grid.Column="2" x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
                             </Grid>
-                            
                         </Border>
-                        
-                        <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="SortDirection" Value="Ascending">
@@ -270,6 +308,114 @@
 
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Color x:Key="BackgroundColor">Transparent</Color>
+    <Color x:Key="StandardColor">#C2C2C2</Color>
+
+    <SolidColorBrush x:Key="StandardBrush" Color="{StaticResource StandardColor}"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+
+    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="Grid">
+                        <Rectangle Name="Rectangle1"
+                                   Width="8"
+                                   Height="auto"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   Fill="{TemplateBinding Background}"
+                                   RadiusX="5"
+                                   RadiusY="5"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ScrollThumbs2" TargetType="{x:Type Thumb}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="Grid">
+                        <Rectangle Name="Rectangle1"
+                                   Width="Auto"
+                                   Height="8"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   Fill="{TemplateBinding Background}"
+                                   RadiusX="5"
+                                   RadiusY="5"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="MyScrollBar" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot"
+                          Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidth}}"
+                          Background="{TemplateBinding Background}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition MaxHeight="18"/>
+                            <RowDefinition Height="0.00001*"/>
+                            <RowDefinition MaxHeight="18"/>
+                        </Grid.RowDefinitions>
+                       <Track x:Name="PART_Track"
+                               Grid.Row="1"
+                               Focusable="False"
+                               IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb x:Name="Thumb"
+                                       Background="{DynamicResource StandardBrush}"
+                                       Style="{DynamicResource ScrollThumbs}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MyScrollBar2" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Height" Value="12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot"
+                          Height="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeight}}"
+                          Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                        </Grid.ColumnDefinitions>
+                        <Track x:Name="PART_Track"
+                               Grid.Column="1"
+                               Focusable="False"
+                               IsDirectionReversed="False">
+                            <Track.Thumb>
+                                <Thumb x:Name="Thumb"
+                                       Background="{DynamicResource StandardBrush}"
+                                       Style="{DynamicResource ScrollThumbs2}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

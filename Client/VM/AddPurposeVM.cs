@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.ComponentModel;
 using System.Security.Policy;
 using Client.pages;
+using ScottPlot.Plottable;
 
 namespace Client.VM
 {
@@ -34,6 +35,7 @@ namespace Client.VM
         }
 
         public static EmployeeDto emp { get; set; }
+        public static SubdivisionDto subView { get; set; }
         public static TestDto[] tests;
         public static PurposeDto[] purposes;
 
@@ -115,6 +117,8 @@ namespace Client.VM
         public async void LoadData()
         {
             emp = pages.PageAddPurpose.employee;
+            subView = GlobalRes.GetSubdivision(emp.IdSubdivision);
+
             string tmp_pay = "{\"Id\"" + ":\"" + pages.PageAddPurpose.employee.Id + "\"}";
 
             ConnectHost conn = new ConnectHost();

@@ -15,6 +15,8 @@ using System.Security.Policy;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Runtime.InteropServices.ComTypes;
+using Client.windows;
+using ScottPlot.Drawing.Colormaps;
 
 namespace Client.VM
 {
@@ -22,7 +24,7 @@ namespace Client.VM
     {
         private PageUserHome myGlobal; 
         public TestView[] alltest;
-        public static EmployeeDto emp { get; set; }
+        public static EmployeeLogin emp { get; set; }
         public static PurposeDto[] tests;
         public ResultDto[] resTest;
 
@@ -87,8 +89,10 @@ namespace Client.VM
                         break;
                     }
 
-                    myGlobal.NavigationService.Navigate(new PageRunTest(SelectedTest.test.Id));
-
+                    //myGlobal.NavigationService.Navigate(new PageRunTest(SelectedTest.test.Id));
+                    WindowRunTest windowRunTest = new WindowRunTest(SelectedTest.test.Id);
+                    windowRunTest.Show();
+                    windowRunTest.Closed += WindowRunTest_Closed;
                     break;
                 case MessageBoxResult.No:
                     // User pressed No button
@@ -101,6 +105,15 @@ namespace Client.VM
             }
 
 
+        }
+
+        private void WindowRunTest_Closed(object sender, EventArgs e)
+        {
+            Console.WriteLine("Нужно обновить данные завершенного теста");
+            SelectedTest.FlagEnd = "Завершен (" + System.DateTime.Now.ToShortTimeString() + ")";
+            SelectedTest.Active = false;
+            
+            ItemsTests.Refresh();
         }
 
         public ICollectionView ItemsTests

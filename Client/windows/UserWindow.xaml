@@ -4,44 +4,344 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
+        xmlns:convert="clr-namespace:Client.classDTO"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf" 
         Title="UserWindow" 
-        Width="1280"
-        Height="768"
+        
+        Width="1440"
+        Height="900"
         AllowsTransparency="True"
         Background="Transparent"    
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None"
-        >
-    <Border Background="White" MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+      
+    >
+    
+    <Window.Resources>
+        
+        <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+            <convert:MyValueConverter x:Key="myHome"/>
+            <SolidColorBrush x:Key="redStyle" Color="#F25C4F" />
+            <SolidColorBrush x:Key="whiteStyle" Color="#EDEDED" />
+
+            <Geometry x:Key="fluent_settings_16_regularGeometry">F1 M24,24z M0,0z M12,9.00006C11.2043,9.00006 10.4413,9.31613 9.87866,9.87874 9.31605,10.4413 8.99998,11.2044 8.99998,12.0001 8.99998,12.7957 9.31605,13.5588 9.87866,14.1214 10.4413,14.684 11.2043,15.0001 12,15.0001 12.7956,15.0001 13.5587,14.684 14.1213,14.1214 14.6839,13.5588 15,12.7957 15,12.0001 15,11.2044 14.6839,10.4413 14.1213,9.87874 13.5587,9.31613 12.7956,9.00006 12,9.00006z M10.5,12.0001C10.5,11.6022 10.658,11.2207 10.9393,10.9394 11.2206,10.6581 11.6022,10.5001 12,10.5001 12.3978,10.5001 12.7793,10.6581 13.0606,10.9394 13.3419,11.2207 13.5,11.6022 13.5,12.0001 13.5,12.3979 13.3419,12.7794 13.0606,13.0607 12.7793,13.342 12.3978,13.5001 12,13.5001 11.6022,13.5001 11.2206,13.342 10.9393,13.0607 10.658,12.7794 10.5,12.3979 10.5,12.0001z M15.927,6.59706C15.6503,6.64788 15.3648,6.58687 15.1331,6.42742 14.9014,6.26797 14.7424,6.02311 14.691,5.74656L14.301,3.62256C14.2819,3.51912 14.2324,3.4237 14.159,3.34839 14.0856,3.27308 13.9914,3.22128 13.8885,3.19956 12.6428,2.93543 11.3556,2.93543 10.11,3.19956 10.0071,3.22128 9.9129,3.27308 9.83946,3.34839 9.76602,3.4237 9.71661,3.51912 9.69748,3.62256L9.30898,5.74656C9.28061,5.89784 9.21979,6.04117 9.13071,6.16668 9.04162,6.29219 8.92639,6.39691 8.79295,6.47361 8.65951,6.55031 8.51103,6.59717 8.35773,6.61097 8.20444,6.62478 8.04997,6.60519 7.90498,6.55356L5.86648,5.82756C5.76756,5.79213 5.66038,5.78676 5.55842,5.81212 5.45646,5.83748 5.36428,5.89243 5.29348,5.97006 4.43911,6.91049 3.79392,8.02144 3.40048,9.22956 3.36802,9.32946 3.36609,9.43678 3.39495,9.53778 3.42381,9.63879 3.48214,9.72889 3.56248,9.79656L5.21548,11.1931C5.33293,11.2922 5.42733,11.4158 5.49208,11.5551 5.55684,11.6945 5.59039,11.8464 5.59039,12.0001 5.59039,12.1538 5.55684,12.3056 5.49208,12.445 5.42733,12.5844 5.33293,12.7079 5.21548,12.8071L3.56248,14.2036C3.48214,14.2712 3.42381,14.3613 3.39495,14.4623 3.36609,14.5633 3.36802,14.6707 3.40048,14.7706 3.79419,15.9789 4.43993,17.0899 5.29498,18.0301 5.36578,18.1077 5.45796,18.1626 5.55992,18.188 5.66188,18.2134 5.76906,18.208 5.86798,18.1726L7.90798,17.4466C8.05295,17.3944 8.20754,17.3744 8.36102,17.388 8.51449,17.4015 8.66318,17.4483 8.79676,17.5251 8.93034,17.6019 9.04561,17.7068 9.13458,17.8326 9.22355,17.9584 9.28408,18.102 9.31198,18.2536L9.69898,20.3776C9.73798,20.5876 9.90148,20.7556 10.1115,20.7991 11.3576,21.0633 12.6453,21.0633 13.8915,20.7991 13.994,20.7774 14.0878,20.7257 14.161,20.6507 14.2341,20.5757 14.2834,20.4806 14.3025,20.3776L14.6925,18.2536C14.7208,18.1023 14.7817,17.959 14.8708,17.8334 14.9598,17.7079 15.0751,17.6032 15.2085,17.5265 15.342,17.4498 15.4904,17.4029 15.6437,17.3891 15.797,17.3753 15.9515,17.3949 16.0965,17.4466L18.135,18.1726C18.3375,18.2446 18.564,18.1876 18.708,18.0301 19.5623,17.0896 20.2075,15.9787 20.601,14.7706 20.6334,14.6707 20.6354,14.5633 20.6065,14.4623 20.5777,14.3613 20.5193,14.2712 20.439,14.2036L18.786,12.8071C18.6683,12.7081 18.5737,12.5846 18.5088,12.4452 18.4439,12.3057 18.4102,12.1538 18.4102,12.0001 18.4102,11.8463 18.4439,11.6944 18.5088,11.555 18.5737,11.4156 18.6683,11.292 18.786,11.1931L20.439,9.79656C20.5193,9.72889 20.5777,9.63879 20.6065,9.53778 20.6354,9.43678 20.6334,9.32946 20.601,9.22956 20.2069,8.02109 19.5606,6.91008 18.705,5.97006 18.6342,5.89243 18.542,5.83748 18.44,5.81212 18.3381,5.78676 18.2309,5.79213 18.132,5.82756L16.092,6.55356C16.0378,6.57304,15.9821,6.58809,15.9255,6.59856L15.927,6.59706z M5.99698,7.46706L7.40248,7.96656C7.7522,8.09106 8.12478,8.13817 8.49449,8.10463 8.86419,8.07109 9.22221,7.95771 9.54382,7.7723 9.86543,7.58689 10.143,7.33389 10.3573,7.03076 10.5715,6.72763 10.7175,6.3816 10.785,6.01656L11.0505,4.56156C11.6805,4.48289,12.3179,4.48289,12.948,4.56156L13.215,6.01656C13.282,6.38184 13.4277,6.72819 13.6418,7.0316 13.856,7.33501 14.1336,7.58822 14.4553,7.77371 14.7771,7.9592 15.1353,8.07251 15.5052,8.10581 15.8751,8.13911 16.2478,8.0916 16.5975,7.96656L18,7.46556C18.3825,7.96656,18.7005,8.51256,18.945,9.09156L17.814,10.0471C17.5298,10.287 17.3014,10.5861 17.1447,10.9234 16.9881,11.2607 16.9069,11.6281 16.9069,12.0001 16.9069,12.372 16.9881,12.7394 17.1447,13.0767 17.3014,13.4141 17.5298,13.7131 17.814,13.9531L18.9465,14.9086C18.7011,15.4881,18.3836,16.0344,18.0015,16.5346L16.596,16.0336C16.2463,15.9091 15.8737,15.8619 15.504,15.8955 15.1343,15.929 14.7762,16.0424 14.4546,16.2278 14.133,16.4132 13.8555,16.6662 13.6412,16.9694 13.4269,17.2725 13.281,17.6185 13.2135,17.9836L12.9465,19.4386C12.3164,19.5173,11.679,19.5173,11.049,19.4386L10.7835,17.9836C10.7164,17.6183 10.5708,17.2719 10.3566,16.9685 10.1425,16.6651 9.86488,16.4119 9.54314,16.2264 9.22139,16.0409 8.86316,15.9276 8.49327,15.8943 8.12339,15.861 7.75068,15.9085 7.40098,16.0336L5.99998,16.5346C5.61783,16.0345,5.30032,15.4882,5.05498,14.9086L6.18598,13.9516C6.4699,13.7116 6.69807,13.4126 6.85458,13.0755 7.01109,12.7383 7.09217,12.371 7.09217,11.9993 7.09217,11.6276 7.01109,11.2603 6.85458,10.9232 6.69807,10.586 6.4699,10.287 6.18598,10.0471L5.05348,9.09156C5.29985,8.51248,5.61729,7.96629,5.99848,7.46556L5.99698,7.46706z</Geometry>
+            <DrawingGroup x:Key="fluent_settings_16_regularDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="#FFEDEDED" Geometry="{StaticResource fluent_settings_16_regularGeometry}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="fluent_settings_16_regularDrawingImage" Drawing="{StaticResource fluent_settings_16_regularDrawingGroup}" />
+
+            <Geometry x:Key="majesticons_logout_lineGeometry">F1 M24,24z M0,0z M13.7778,5L7.55556,5C7.143,5 6.74733,5.16389 6.45561,5.45561 6.16389,5.74733 6,6.143 6,6.55556L6,17.4444C6,17.857 6.16389,18.2527 6.45561,18.5444 6.74733,18.8361 7.143,19 7.55556,19L13.7778,19 M18.4444,12L15.3333,8.88889 M18.4444,12L15.3333,15.1111 M18.4444,12L10.6667,12</Geometry>
+            <DrawingGroup x:Key="majesticons_logout_lineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Geometry="{StaticResource majesticons_logout_lineGeometry}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FFEDEDED" Thickness="1.55556" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingImage x:Key="majesticons_logout_lineDrawingImage" Drawing="{StaticResource majesticons_logout_lineDrawingGroup}" />
+
+            <Geometry x:Key="mdi_information_outlineGeometry1">F1 M24,24z M0,0z M11.5,19.3C7.7515,19.3 4.7,16.2485 4.7,12.5 4.7,8.7515 7.7515,5.7 11.5,5.7 15.2485,5.7 18.3,8.7515 18.3,12.5 18.3,16.2485 15.2485,19.3 11.5,19.3z M11.5,4C10.3838,4 9.27846,4.21986 8.24719,4.64702 7.21592,5.07419 6.27889,5.70029 5.48959,6.48959 3.89553,8.08365 3,10.2457 3,12.5 3,14.7543 3.89553,16.9163 5.48959,18.5104 6.27889,19.2997 7.21592,19.9258 8.24719,20.353 9.27846,20.7801 10.3838,21 11.5,21 13.7543,21 15.9163,20.1045 17.5104,18.5104 19.1045,16.9163 20,14.7543 20,12.5 20,11.3838 19.7801,10.2785 19.353,9.24719 18.9258,8.21592 18.2997,7.27889 17.5104,6.48959 16.7211,5.70029 15.7841,5.07419 14.7528,4.64702 13.7215,4.21986 12.6162,4 11.5,4z M10.65,15.9C10.65,16.3694 11.0306,16.75 11.5,16.75 11.9694,16.75 12.35,16.3694 12.35,15.9L12.35,12.5C12.35,12.0306 11.9694,11.65 11.5,11.65 11.0306,11.65 10.65,12.0306 10.65,12.5L10.65,15.9z</Geometry>
+            <Geometry x:Key="mdi_information_outlineGeometry2">F1 M24,24z M0,0z M10.65,9.38333C10.65,8.91389 11.0306,8.53333 11.5,8.53333 11.9694,8.53333 12.35,8.91389 12.35,9.38333 12.35,9.85278 11.9694,10.2333 11.5,10.2333 11.0306,10.2333 10.65,9.85278 10.65,9.38333z</Geometry>
+            <DrawingGroup x:Key="mdi_information_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="#FFEDEDED" Geometry="{StaticResource mdi_information_outlineGeometry1}" />
+                <GeometryDrawing Brush="#FFEDEDED" Geometry="{StaticResource mdi_information_outlineGeometry2}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="mdi_information_outlineDrawingImage" Drawing="{StaticResource mdi_information_outlineDrawingGroup}" />
+
+            <Geometry x:Key="Frame_72Geometry">F0 M16,16z M0,0z M7,2L13,2C13.5523,2,14,2.44772,14,3L14,9C14,9.55228,13.5523,10,13,10L12,10 12,12 13,12C14.6569,12,16,10.6569,16,9L16,3C16,1.34315,14.6569,0,13,0L7,0C5.34315,0,4,1.34315,4,3L4,4 6,4 6,3C6,2.44772,6.44772,2,7,2z</Geometry>
+            <DrawingGroup x:Key="Frame_72DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <DrawingGroup.ClipGeometry>
+                        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,16,16" />
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource Frame_72Geometry}" />
+                    <GeometryDrawing>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF787575" Thickness="2" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry RadiusX="2" RadiusY="2" Rect="1,5,10,10" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+            <DrawingImage x:Key="Frame_72DrawingImage" Drawing="{StaticResource Frame_72DrawingGroup}" />
+            <Geometry x:Key="Frame_70Geometry">F1 M16,16z M0,0z M1,8L15,8</Geometry>
+            <DrawingGroup x:Key="Frame_70DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <GeometryDrawing Geometry="{StaticResource Frame_70Geometry}">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+            <DrawingImage x:Key="Frame_70DrawingImage" Drawing="{StaticResource Frame_70DrawingGroup}" />
+            <Geometry x:Key="Frame_69Geometry1">F1 M16,16z M0,0z M1.48508,1.62939L14.3557,14.5</Geometry>
+            <Geometry x:Key="Frame_69Geometry2">F1 M16,16z M0,0z M1.48508,14.3706L14.3557,1.49999</Geometry>
+            <DrawingGroup x:Key="Frame_69DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <DrawingGroup.ClipGeometry>
+                        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,16,16" />
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Geometry="{StaticResource Frame_69Geometry1}">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Geometry="{StaticResource Frame_69Geometry2}">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+            <DrawingImage x:Key="Frame_69DrawingImage" Drawing="{StaticResource Frame_69DrawingGroup}" />
+
+            <Geometry x:Key="supportGeometry1">F1 M24,24z M0,0z M11.5,19.3C7.7515,19.3 4.7,16.2485 4.7,12.5 4.7,8.7515 7.7515,5.7 11.5,5.7 15.2485,5.7 18.3,8.7515 18.3,12.5 18.3,16.2485 15.2485,19.3 11.5,19.3z M11.5,4C10.3838,4 9.27846,4.21986 8.24719,4.64702 7.21592,5.07419 6.27889,5.70029 5.48959,6.48959 3.89553,8.08365 3,10.2457 3,12.5 3,14.7543 3.89553,16.9163 5.48959,18.5104 6.27889,19.2997 7.21592,19.9258 8.24719,20.353 9.27846,20.7801 10.3838,21 11.5,21 13.7543,21 15.9163,20.1045 17.5104,18.5104 19.1045,16.9163 20,14.7543 20,12.5 20,11.3838 19.7801,10.2785 19.353,9.24719 18.9258,8.21592 18.2997,7.27889 17.5104,6.48959 16.7211,5.70029 15.7841,5.07419 14.7528,4.64702 13.7215,4.21986 12.6162,4 11.5,4z</Geometry>
+            <Geometry x:Key="supportGeometry2">F1 M24,24z M0,0z M11.3582,13C11.3456,12.7762 11.4059,12.5544 11.5302,12.3679 11.6546,12.1815 11.8361,12.0404 12.0475,11.9661 12.3066,11.867 12.5392,11.7091 12.7269,11.5049 12.9146,11.3007 13.0523,11.0557 13.1293,10.7892 13.2062,10.5227 13.2202,10.242 13.1702,9.96911 13.1202,9.69627 13.0076,9.43876 12.8411,9.21686 12.6747,8.99495 12.459,8.81471 12.2111,8.69031 11.9632,8.56592 11.6898,8.50078 11.4124,8.50001 11.135,8.49924 10.8612,8.56287 10.6126,8.68588 10.364,8.8089 10.1473,8.98794 9.97968,9.20892</Geometry>
+            <Geometry x:Key="supportGeometry3">F1 M24,24z M0,0z M10.5,16.35C10.5,15.8806 10.8806,15.5 11.35,15.5 11.8194,15.5 12.2,15.8806 12.2,16.35 12.2,16.8194 11.8194,17.2 11.35,17.2 10.8806,17.2 10.5,16.8194 10.5,16.35z</Geometry>
+            <DrawingGroup x:Key="supportDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="{Binding ElementName=LB3,Path=Foreground, Mode=OneWay}" Geometry="{StaticResource supportGeometry1}" />
+                <GeometryDrawing Geometry="{StaticResource supportGeometry2}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB3,Path=Foreground, Mode=OneWay}" Thickness="1.37857" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{Binding ElementName=LB3,Path=Foreground, Mode=OneWay}" Geometry="{StaticResource supportGeometry3}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="supportDrawingImage" Drawing="{StaticResource supportDrawingGroup}" />
+
+            <Geometry x:Key="listGeometry1">F1 M24,24z M0,0z M7.5,6.75L21,6.75 M7.5,12L21,12 M7.5,17.25L21,17.25</Geometry>
+            <Geometry x:Key="listGeometry2">F1 M24,24z M0,0z M3.75,7.5C4.16421,7.5 4.5,7.16421 4.5,6.75 4.5,6.33579 4.16421,6 3.75,6 3.33579,6 3,6.33579 3,6.75 3,7.16421 3.33579,7.5 3.75,7.5z</Geometry>
+            <Geometry x:Key="listGeometry3">F1 M24,24z M0,0z M3.75,12.75C4.16421,12.75 4.5,12.4142 4.5,12 4.5,11.5858 4.16421,11.25 3.75,11.25 3.33579,11.25 3,11.5858 3,12 3,12.4142 3.33579,12.75 3.75,12.75z</Geometry>
+            <Geometry x:Key="listGeometry4">F1 M24,24z M0,0z M3.75,18C4.16421,18 4.5,17.6642 4.5,17.25 4.5,16.8358 4.16421,16.5 3.75,16.5 3.33579,16.5 3,16.8358 3,17.25 3,17.6642 3.33579,18 3.75,18z</Geometry>
+            <DrawingGroup x:Key="listDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Geometry="{StaticResource listGeometry1}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB1,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource listGeometry2}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB1,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource listGeometry3}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB1,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource listGeometry4}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{Binding ElementName=LB1,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingImage x:Key="listDrawingImage" Drawing="{StaticResource listDrawingGroup}" />
+            <Geometry x:Key="personGeometry">F1 M24,24z M0,0z M8.75,8C8.75,9.79579 10.2042,11.25 12,11.25 13.7958,11.25 15.25,9.79579 15.25,8 15.25,6.20421 13.7958,4.75 12,4.75 10.2042,4.75 8.75,6.20421 8.75,8z M19.25,18C19.25,17.6105 19.0608,17.2138 18.6168,16.804 18.1677,16.3894 17.5097,16.0141 16.7223,15.6987 15.1464,15.0674 13.2412,14.75 12,14.75 10.7588,14.75 8.85356,15.0674 7.27765,15.6987 6.4903,16.0141 5.83232,16.3894 5.3832,16.804 4.93918,17.2138 4.75,17.6105 4.75,18L4.75,19C4.75,19.1358,4.86421,19.25,5,19.25L19,19.25C19.1358,19.25,19.25,19.1358,19.25,19L19.25,18z</Geometry>
+            <DrawingGroup x:Key="personDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <DrawingGroup.ClipGeometry>
+                        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,24,24" />
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Geometry="{StaticResource personGeometry}">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{Binding ElementName=LB2,Path=Foreground, Mode=OneWay}" Thickness="1.5" StartLineCap="Flat" EndLineCap="Flat" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+            <DrawingImage x:Key="personDrawingImage" Drawing="{StaticResource personDrawingGroup}" />
+            
+            <Geometry x:Key="Group_496Geometry">F1 M54,54z M0,0z M27,26.9998C31.6441,26.9998 35.4056,23.2383 35.4056,18.5941 35.4056,13.95 31.6441,10.1885 27,10.1885 22.3559,10.1885 18.5943,13.95 18.5943,18.5941 18.5943,23.2383 22.3559,26.9998 27,26.9998z M27,31.2026C21.3892,31.2026,10.1887,34.0185,10.1887,39.6083L10.1887,41.7097C10.1887,42.8655,11.1343,43.8111,12.2901,43.8111L41.7099,43.8111C42.8657,43.8111,43.8113,42.8655,43.8113,41.7097L43.8113,39.6083C43.8113,34.0185,32.6108,31.2026,27,31.2026z</Geometry>
+            <DrawingGroup x:Key="Group_496DrawingGroup" ClipGeometry="M0,0 V54 H54 V0 H0 Z">
+                <GeometryDrawing Brush="#FFC2C2C2">
+                    <GeometryDrawing.Geometry>
+                        <EllipseGeometry RadiusX="27" RadiusY="27" Center="27,27" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="{StaticResource Group_496Geometry}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="Group_496DrawingImage" Drawing="{StaticResource Group_496DrawingGroup}" />
+            <Geometry x:Key="Group_18386Geometry1">F0 M26,27z M0,0z M8.92143,1.04249C8.74362,0.810827 8.74362,0.46333 8.92143,0.231662 9.09924,-5.25451E-06 9.45483,-0.057915 9.75118,0.0579187 15.6189,3.0696 20.5383,7.64502 23.8574,13.205 24.7464,14.7109 25.2206,16.3905 25.2206,18.128 25.2206,22.5876 21.7237,26.2363 17.2192,26.4101 12.774,26.6418 8.92144,23.3405 8.44728,18.9388 8.26947,17.2592 8.68434,15.5796 9.57338,14.1317 12.2998,10.0775 12.0035,4.86501 8.92143,1.04249z</Geometry>
+            <Geometry x:Key="Group_18386Geometry2">F0 M26,27z M0,0z M0.514568,1.04249C0.336759,0.810827 0.336759,0.46333 0.514568,0.231662 0.692377,-5.25451E-06 1.04797,-0.057915 1.34432,0.0579187 7.21202,3.0696 12.1314,7.64502 15.4505,13.205 16.3396,14.7109 16.8137,16.3905 16.8137,18.128 16.8137,22.5876 13.3168,26.2363 8.81232,26.4101 4.3671,26.6418 0.514575,23.3405 0.0404177,18.9388 -0.137391,17.2592 0.277475,15.5796 1.16652,14.1317 3.89292,10.0775 3.59659,4.86501 0.514568,1.04249z</Geometry>
+            <DrawingGroup x:Key="Group_18386DrawingGroup" ClipGeometry="M0,0 V27 H26 V0 H0 Z">
+                <GeometryDrawing Brush="#FFF25C4F" Geometry="{StaticResource Group_18386Geometry1}" />
+                <GeometryDrawing Brush="#FFEDEDED" Geometry="{StaticResource Group_18386Geometry2}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="Group_18386DrawingImage" Drawing="{StaticResource Group_18386DrawingGroup}" />
+
+           
+        </ResourceDictionary>
+       
+    </Window.Resources>
+    
+    <Border Background="White" MouseDown="Border_MouseDown">
 
 
         <Grid >
-
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
+                <RowDefinition Height="50" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Grid Background="#2f2f2f" >
+            <Border Background="#141623" Grid.RowSpan="2"/>
+            <Image Source="/Images/backAdmin.png" Grid.RowSpan="2" Width="320" Height="630" VerticalAlignment="Top"/>
+            <Image Source="{StaticResource Group_18386DrawingImage}" Width="25.22" Height="26.42" Margin="37 23 0 0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label Content="Competencies Exam" FontSize="9.918" Foreground="#EDEDED" FontFamily="/Fonts/#Terminator Cyr" Margin="68.63 29 0 0"/>
+            <Rectangle Fill="#323551" Grid.Row="1" Grid.Column="0" Margin="20,48,0,0" Width="280" MinHeight="90" Height="{Binding ElementName=SPUser, Path=ActualHeight, Converter={StaticResource myHome}, ConverterParameter=20}" RadiusX="20" RadiusY="20" Opacity="0.5"  HorizontalAlignment="Left" VerticalAlignment="Top">
+                
+            </Rectangle>
+            <Image Source="{StaticResource Group_496DrawingImage}" Grid.RowSpan="2" Width="54" Height="54" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="35 115 0 0"/>
+            <StackPanel x:Name="SPUser" Grid.Row="1" VerticalAlignment="Top" Margin="100 65 25 0" >
+                <TextBlock x:Name="textBlock_UserName1" Grid.Row="1" Text="Иванов" VerticalAlignment="Top" Foreground="#EDEDED" FontSize="16"/>
+                <TextBlock x:Name="textBlock_UserName2" Grid.Row="1" Text="Иван Иванович" VerticalAlignment="Top" Foreground="#EDEDED" FontSize="16"/>
+                <TextBlock x:Name="textBlock_UserName3" Grid.Row="1" Text="Слесарь" VerticalAlignment="Top" Foreground="#808080" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
 
-                <TextBlock x:Name="textBlock_UserName" Text="Иванов Иван Иванович" VerticalAlignment="Center" Foreground="LightGray" FontSize="20" Margin="10 0 0 0"/>
+            <Grid Background="White" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 5 0" >
 
-                    <Button Click="CloseApp" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Red" Opacity="0.6">
-                        <materialDesign:PackIcon Kind="Close" Foreground="Black" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 25 0" Grid.Column="1">
+
+                    <Button Click="WindowMinimizeApp" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Transparent" Opacity="1" Margin="0 0 50 0">
+                        <Image Source="{StaticResource Frame_70DrawingImage}" Width="16" Height="16"/>
+                    </Button>
+
+                    <Button Click="WindowMaximizeApp" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Transparent" Opacity="1" Margin="0 0 50 0">
+                        <Image Source="{StaticResource Frame_72DrawingImage}" Width="16" Height="16"/>
+                    </Button>
+
+                    <Button Click="CloseApp" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Transparent" Opacity="1" Margin="0 0 5 0">
+                        <Image Source="{StaticResource Frame_69DrawingImage}" Width="16" Height="16"/>
                     </Button>
 
                 </StackPanel>
 
             </Grid>
 
-            <Grid Background="White" Grid.Row="1" >
-                <Frame x:Name="FrameUserData" Source="../pages/PageUserHome.xaml" NavigationUIVisibility="Hidden"></Frame>
+            <Grid Background="Transparent" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="230"/>
+                </Grid.RowDefinitions>
+
+                <ListBox Style="{DynamicResource ListBoxStyle1}" Width="300" HorizontalAlignment="Center" FontSize="15" FontFamily="Roboto" Foreground="#EDEDED" Margin="0 241 0 0"
+                         SelectedIndex="0"
+                         >
+
+                    <ListBoxItem x:Name="LB1" Selected="item0_Selected" Width="280" Height="46" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource listDrawingImage}" Width="20" Height="20"/>
+                            <TextBlock Grid.Column="1" Text="Перечень тестов" VerticalAlignment="Center" FontSize="16"  Margin="4.5 0 0 0"/>
+                        </Grid>
+                    </ListBoxItem>
+                    <ListBoxItem x:Name="LB2" Selected="item1_Selected" Width="280" Height="46" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource personDrawingImage}" Width="20" Height="20"/>
+                            <TextBlock Grid.Column="1" Text="Персональные данные" VerticalAlignment="Center"  Margin="4.5 0 0 0"/>
+                        </Grid>
+                    </ListBoxItem>
+
+
+                    <ListViewItem  x:Name="LB3" Width="280" Height="46" Selected="selecAddMass">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource supportDrawingImage}" Width="22" Height="22"/>
+                            <TextBlock Grid.Column="1" Text="Поддержка" VerticalAlignment="Center" Margin="4.5 0 0 0"/>
+                        </Grid>
+
+                    </ListViewItem>
+                </ListBox>
+
+
+
+                <ListBox x:Name="ListSetting" Style="{DynamicResource ListBoxStyle2}" Grid.Row="1"  Width="300" HorizontalAlignment="Center" FontSize="16" FontFamily="Roboto" Foreground="#EDEDED" 
+                         
+                         >
+
+                    
+                    <ListViewItem  Width="280" Height="46">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource fluent_settings_16_regularDrawingImage}" Width="22" Height="22"/>
+                            <TextBlock Grid.Column="1" Text="Настройка" VerticalAlignment="Center" Margin="4.5 0 0 0"/>
+                        </Grid>
+
+                    </ListViewItem>
+
+                    <ListViewItem Selected="About" Width="280" Height="46">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource mdi_information_outlineDrawingImage}" Width="22" Height="22"/>
+                            <TextBlock Grid.Column="1" Text="О приложении" VerticalAlignment="Center" Margin="4.5 0 0 0"/>
+                        </Grid>
+
+                    </ListViewItem>
+
+                    <ListViewItem Selected="ListViewItem_Selected_Exit" Width="280" Height="46">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource majesticons_logout_lineDrawingImage}" Width="16" Height="16"/>
+                            <TextBlock Grid.Column="1" Text="Завершить сеанс" VerticalAlignment="Center" Margin="4.5 0 0 0"/>
+                        </Grid>
+
+                    </ListViewItem>
+
+                </ListBox>
+
+
             </Grid>
+
+
+
+            <Grid Background="#EDEDED" Grid.Column="2" Grid.Row="1">
+
+                <Frame x:Name="FrameUserData" Source="../pages/PageUserHome.xaml" NavigationUIVisibility="Hidden"></Frame>
+
+            </Grid>
+
 
         </Grid>
     </Border>
 </Window>
+
+<!--<TextBlock x:Name="textBlock_UserName" Text="Иванов Иван Иванович" VerticalAlignment="Center" Foreground="LightGray" FontSize="20" Margin="10 0 0 0"/>-->
+

@@ -17,13 +17,15 @@ using System.Windows.Input;
 using System.IO;
 using System.Windows.Media.Imaging;
 using static Client.AutWindow;
+using Client.windows;
+using System.Windows.Threading;
 
 namespace Client.VM
 {
     public class PageRunTestVM: INotifyPropertyChanged
     {
-        private PageRunTest myGlobal;
-        public static EmployeeDto emp { get; set; }
+        private WindowRunTest myGlobal;
+        public static EmployeeLogin emp { get; set; }
         
         public OneTest test = new OneTest();
         public static OneQuestion Question = new OneQuestion();
@@ -31,9 +33,11 @@ namespace Client.VM
         public RelayCommand CmdEndTest { get; }
         public RelayCommand CmdNextQuestion { get; }
         public RelayCommand CmdPrevQuestion { get; }
+        public RelayCommand CmdThatExecuteNothing { get; }
 
         private PushTest pushTest = new PushTest();
 
+        private int _kolAnswer = 0;
         private int _kolQuestion;
         public int kolQuestion
         {
@@ -65,6 +69,17 @@ namespace Client.VM
             {
                 _selectedQuestion = value;
                 OnPropertyChanged(nameof(SelectedQuestion));
+            }
+        }
+
+        private string _timerContent;
+        public string timerContent
+        {
+            get { return _timerContent; }
+            set
+            {
+                _timerContent = value;
+                OnPropertyChanged(nameof(timerContent));
             }
         }
 
@@ -100,16 +115,69 @@ namespace Client.VM
                 OnPropertyChanged(nameof(TestInstruct));
             }
         }
-        
 
+        private int _timerTest = 600;
+     
 
         public PageRunTestVM(string idTest, object myOwner)
         {
-            myGlobal = myOwner as PageRunTest;
+            myGlobal = myOwner as WindowRunTest;
             LoadData(idTest);
             this.CmdNextQuestion = new RelayCommand(FuncNextQuestion);
             this.CmdPrevQuestion = new RelayCommand(FuncPrevQuestion);
             this.CmdEndTest = new RelayCommand(FuncEndTest);
+           
+            this.CmdThatExecuteNothing = new RelayCommand(FuncCmdThatExecuteNothing);
+
+            //  установка таймера
+
+            timerContent = TimeSpan.FromSeconds(_timerTest).ToString(@"hh\:mm\:ss");
+            
+            DispatcherTimer timer = new DispatcherTimer();
+
+            timer.Tick += dtTicker;
+
+            timer.Interval = TimeSpan.FromSeconds(1);
+
+            timer.Start();
+        }
+
+        private void dtTicker(object sender, EventArgs e) 
+        {
+            if (_timerTest > 0) 
+            {
+                _timerTest--;
+                timerContent = TimeSpan.FromSeconds(_timerTest).ToString(@"hh\:mm\:ss");
+
+            }
+            
+
+        }
+
+
+        void FuncCmdThatExecuteNothing(object param)
+        {
+            Console.WriteLine("Exit");
+        }
+
+        public void FuncRadioCheck()
+        {
+            if (IndexQuestion == _kolQuestion - 1)
+            {
+                myGlobal.BT_next.IsEnabled = false;
+                myGlobal.TestEnd.IsEnabled = true;
+                if (SelectedQuestion.PushAnswersID != -1)
+                {
+                    myGlobal.TestEnd.Visibility = Visibility.Visible;
+                }
+            }
+            else
+            {
+                if (SelectedQuestion.PushAnswersID != -1)
+                {
+                    myGlobal.BT_next.IsEnabled = true;
+                }
+            }
         }
 
         void FuncNextQuestion(object param)
@@ -117,13 +185,15 @@ namespace Client.VM
             if (IndexQuestion < _kolQuestion-1)
             {
                 IndexQuestion = IndexQuestion + 1;
+                if (_kolAnswer <= IndexQuestion)
+                {
+                    _kolAnswer = IndexQuestion;
+                    myGlobal.BT_next.IsEnabled = false;
+                }
                 SelectedQuestion = test.Questions[IndexQuestion];
+                
                 myGlobal.BT_prev.IsEnabled = true;
-            }
-
-            if (IndexQuestion == _kolQuestion - 1)
-            {
-                myGlobal.BT_next.IsEnabled = false;
+               
             }
 
         }
@@ -189,7 +259,7 @@ namespace Client.VM
 
                     SendData(tmp_pay);
 
-                    myGlobal.NavigationService.GoBack();
+                    myGlobal.Close();
                     MessageBox.Show("Результаты выполнения теста сохранены");
 
                     break;
@@ -197,9 +267,6 @@ namespace Client.VM
 
                     break;
             }
-
-            
-           
         }
 
         public async void SendData(string pay)
@@ -250,6 +317,7 @@ namespace Client.VM
 
             IndexQuestion = 0;
             SelectedQuestion = test.Questions[IndexQuestion];
+           
         }
 
         public BitmapImage LoadImage(string instr)

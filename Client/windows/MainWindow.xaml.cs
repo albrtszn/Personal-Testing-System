@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Threading;
 using System.Windows;
-
+using System.Net.WebSockets;
 using System.Windows.Input;
 using System.Windows.Media;
 using Client.classDTO;
 using Client.forms;
 using Client.pages;
 using Client.windows;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Client
 {
@@ -17,6 +20,8 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        ClientWebSocket websocket = new ClientWebSocket();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,14 +42,46 @@ namespace Client
                 textBlock_UserName2.Text = "Петр Петрович";
             }
 
+
+
+            
+
             Loaded += MainWindow_Loaded;
             
         }
 
+        public static async Task RunWebSocketClient()
+        {
+            ClientWebSocket websocket = new ClientWebSocket();
+            string url = "wss://fitpsu.online/notification-hub";
+            Console.WriteLine("Connecting to: " + url);
+            await websocket.ConnectAsync(new Uri(url), CancellationToken.None);
+            string message = "{\"protocol\":\"json\",\"version\":1}\u001e";
+            Console.WriteLine("Sending message: " + message);
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            
+            await websocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            
+            byte[] incomingData = new byte[1024];
+            while (true)
+            {
+                WebSocketReceiveResult result = await websocket.ReceiveAsync(new ArraySegment<byte>(incomingData), CancellationToken.None);
+                if (result.CloseStatus.HasValue)
+                {
+                    Console.WriteLine("Closed; Status: " + result.CloseStatus + ", " + result.CloseStatusDescription);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Received message: " + Encoding.UTF8.GetString(incomingData, 0, result.Count));
+                }
+            }
+        }
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            GlobalRes global = new GlobalRes(); 
-       
+            GlobalRes global = new GlobalRes();
+            RunWebSocketClient();
         }
 
         private void CloseApp(object sender, RoutedEventArgs e)
@@ -61,8 +98,11 @@ namespace Client
 
         private void item0_Selected(object sender, RoutedEventArgs e)
         {
-         
-            adminFrame.Navigate(new PageUsers());
+
+            if (adminFrame != null)
+            {
+                adminFrame.Navigate(new PageUsers());
+            }
         }
 
         private void item1_Selected(object sender, RoutedEventArgs e)
@@ -75,9 +115,12 @@ namespace Client
             adminFrame.Navigate(new PageSubdivision());
         }
 
-        private void item3_Selected(object sender, RoutedEventArgs e)
+        private async void item3_Selected(object sender, RoutedEventArgs e)
         {
             adminFrame.Navigate(new PageCompetence());
+        // отправка сообщения
+        //       await connection.InvokeAsync("Send", "{\"protocol\":\"json\",\"version\":1}\u001e");
+
         }
 
         private void itemTests_Selected(object sender, RoutedEventArgs e)
@@ -148,8 +191,8 @@ namespace Client
                 if (isMaximazed)
                 {
                     this.WindowState = WindowState.Normal;
-                    this.Width = 1280;
-                    this.Height = 768;
+                    this.Width = 1440;
+                    this.Height = 900;
                     isMaximazed = false;
                 }
                 else
@@ -164,6 +207,11 @@ namespace Client
         private void WindowMinimizeApp(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        private void itemMessage_Selected(object sender, RoutedEventArgs e)
+        {
+            adminFrame.Navigate(new PageAdminMass());
         }
     }
 

@@ -29,6 +29,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<CompetenciesForGroup> CompetenciesForGroups { get; set; }
 
+    public virtual DbSet<ElployeeResultSubcompetence> ElployeeResultSubcompetences { get; set; }
+
     public virtual DbSet<Employee> Employees { get; set; }
 
     public virtual DbSet<EmployeeAnswer> EmployeeAnswers { get; set; }
@@ -45,15 +47,21 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<Log> Logs { get; set; }
 
+    public virtual DbSet<Message> Messages { get; set; }
+
     public virtual DbSet<Profile> Profiles { get; set; }
 
     public virtual DbSet<Question> Questions { get; set; }
+
+    public virtual DbSet<QuestionSubcompetence> QuestionSubcompetences { get; set; }
 
     public virtual DbSet<QuestionType> QuestionTypes { get; set; }
 
     public virtual DbSet<Result> Results { get; set; }
 
     public virtual DbSet<SecondPart> SecondParts { get; set; }
+
+    public virtual DbSet<Subcompetence> Subcompetences { get; set; }
 
     public virtual DbSet<Subdivision> Subdivisions { get; set; }
 
@@ -113,6 +121,19 @@ public partial class EFDbContext : DbContext
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.CompetenciesForGroups)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__Competenc__idTes__640DD89F");
+        });
+
+        modelBuilder.Entity<ElployeeResultSubcompetence>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Elployee__3213E83F7306EB97");
+
+            entity.HasOne(d => d.IdResultNavigation).WithMany(p => p.ElployeeResultSubcompetences)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__ElployeeR__idRes__7CD98669");
+
+            entity.HasOne(d => d.IdSubcompetenceNavigation).WithMany(p => p.ElployeeResultSubcompetences)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__ElployeeR__idSub__7DCDAAA2");
         });
 
         modelBuilder.Entity<Employee>(entity =>
@@ -199,6 +220,15 @@ public partial class EFDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Log__3213E83F84029BA4");
         });
 
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Message__3213E83FA617EF6B");
+
+            entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.Messages)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Message__idEmplo__0E04126B");
+        });
+
         modelBuilder.Entity<Profile>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Profile__3213E83F54074B93");
@@ -213,6 +243,19 @@ public partial class EFDbContext : DbContext
                 .HasConstraintName("FK__Question__idQues__11158940");
 
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.Questions).HasConstraintName("FK__Question__idTest__1209AD79");
+        });
+
+        modelBuilder.Entity<QuestionSubcompetence>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3213E83F1A455150");
+
+            entity.HasOne(d => d.IdQuestionNavigation).WithOne(p => p.QuestionSubcompetence)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__EmployeeM__idQue__12C8C788");
+
+            entity.HasOne(d => d.IdSubcompetenceNavigation).WithMany(p => p.QuestionSubcompetences)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__EmployeeM__idSub__13BCEBC1");
         });
 
         modelBuilder.Entity<QuestionType>(entity =>
@@ -236,6 +279,11 @@ public partial class EFDbContext : DbContext
             entity.HasOne(d => d.IdFirstPartNavigation).WithOne(p => p.SecondPart)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__SecondPar__idFir__1E6F845E");
+        });
+
+        modelBuilder.Entity<Subcompetence>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Subcompe__3213E83FEE573FB4");
         });
 
         modelBuilder.Entity<Subdivision>(entity =>

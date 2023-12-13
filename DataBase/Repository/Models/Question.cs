@@ -50,5 +50,8 @@ public partial class Question
     public virtual Test? IdTestNavigation { get; set; }
 
     [InverseProperty("IdQuestionNavigation")]
+    public virtual QuestionSubcompetence? QuestionSubcompetence { get; set; }
+
+    [InverseProperty("IdQuestionNavigation")]
     public virtual ICollection<Subsequence> Subsequences { get; set; } = new List<Subsequence>();
 }

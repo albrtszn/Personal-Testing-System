@@ -44,7 +44,6 @@ namespace Personal_Testing_System.Controllers
         {
             return Ok(new { message = $"Ping: {HttpContext.Request.Host + HttpContext.Request.Path} {DateTime.Now}." });
         }
-
         [HttpGet("TestGetEmployees")]
         public async Task<IActionResult> TestGetEmployees()
         {
@@ -153,6 +152,104 @@ namespace Personal_Testing_System.Controllers
                     });
                     await ms.TokenEmployee.DeleteTokenEmployeeById(token.Id);
                     return Ok(new { message = "Выполнен выход из системы" });
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
+        }
+
+        [HttpGet("GetMessages")]
+        public async Task<IActionResult> GetMessages([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/GetMessages ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/GetMessages",
+                        UserId = token.IdEmployee,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    var messages = await ms.Message.GetMessageDtosByEmployee(token.IdEmployee);
+                    return Ok(messages.OrderByDescending(x => x.Id));
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
+        }
+
+        [HttpGet("GetMesssagesPage")]
+        public async Task<IActionResult> GetMesssagesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetMesssagesPage");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetMesssagesPage",
+                            UserId = token.IdEmployee,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var Allmessages = (await ms.Message.GetMessageDtosByEmployee(token.IdEmployee))
+                                                    .OrderByDescending(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allmessages.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var messages = Allmessages
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(messages);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> AddMessage([FromHeader] string Authorization, [FromBody] AddMessageModel message)
+        {
+            if (!Authorization.IsNullOrEmpty() && message != null && !message.MessageText.IsNullOrEmpty())
+            {
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/AddMessage ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/AddMessage",
+                        UserId = token.IdEmployee,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now
+                    });
+                    await ms.Message.SaveMessage(message, token.IdEmployee);
+                    return Ok(new { message = "Сообщение добавлено" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -582,7 +679,7 @@ namespace Personal_Testing_System.Controllers
                         return NotFound(new { message = "Ошибка. Такого теста нет"});
 
                     string resultId = Guid.NewGuid().ToString();
-                    await ms.Result.SaveResult(new Result
+                    Result result = new Result
                     {
                         Id = resultId,
                         IdTest = testResultModel.TestId,
@@ -590,13 +687,16 @@ namespace Personal_Testing_System.Controllers
                         StartTime = TimeOnly.Parse(testResultModel.StartTime),
                         EndTime = TimeOnly.Parse(testResultModel.EndTime),
                         Duration = (int)((TimeOnly.Parse(testResultModel.EndTime).ToTimeSpan().TotalMinutes) - (TimeOnly.Parse(testResultModel.StartTime).ToTimeSpan().TotalMinutes)),
-                    });
+                    };
+                    await ms.Result.SaveResult(result);
 
+                    Dictionary<int, int> scoreMap = new Dictionary<int, int>();
                     int score = 0;
                     foreach (QuestionResultModel question in testResultModel.Questions)
                     {
                         //todo question score
                         Question? quest= await ms.Question.GetQuestionById(question.QuestionId);
+                        QuestionSubcompetence? questSubcompetence = await ms.QuestionSubcompetence.GetQuestionSubcompetenceByQuestionId(quest.Id);
                         if (quest != null)
                         {
                             int subFlag = 0;
@@ -617,6 +717,18 @@ namespace Personal_Testing_System.Controllers
                                     {
                                         if (answerCheck.Weight.HasValue)
                                             score += answerCheck.Weight.Value;
+                                    }
+                                    //Subcompetence Score
+                                    if (questSubcompetence != null)
+                                    {
+                                        if (!scoreMap.ContainsKey(questSubcompetence.Id))
+                                        {
+                                            scoreMap.Add(questSubcompetence.Id, score);
+                                        }
+                                        else
+                                        {
+                                            scoreMap[questSubcompetence.Id] += score;
+                                        }
                                     }
 
                                     await ms.EmployeeAnswer.SaveEmployeeAnswer(new EmployeeAnswer
@@ -697,11 +809,32 @@ namespace Personal_Testing_System.Controllers
                         ScoreFrom = score, 
                         ScoreTo = testCheck.Weight.Value
                     });
+
+                    if (!scoreMap.IsNullOrEmpty())
+                    {
+                        foreach (var item in scoreMap)
+                        {
+                            Console.WriteLine($"key={item.Key}, value={item.Value}");
+                            if (item.Key != 0)
+                            {
+                                if (await ms.Subcompetence.GetSubcompetenceById(item.Key) != null)
+                                {
+                                    await ms.EmployeeResultSubcompetence.SaveEmployeeResultSubcompetence(new ElployeeResultSubcompetence()
+                                    {
+                                        IdSubcompetence = item.Key,
+                                        IdResult = resultId,
+                                        Result = item.Value
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                     //todo deletePurpose
                     //await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
                     Employee? employee = await ms.Employee.GetEmployeeById(token.IdEmployee);
                     if (employee != null) {
-                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.SecondName} {employee.FirstName} {employee.LastName} завершил тест '{testCheck.Name} с оценкой '{score}'.");
+                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.SecondName} {employee.FirstName} {employee.LastName} завершил тест '{testCheck.Name}'.");
                     }
 
                     return Ok(new { message = $"Тест выполнен. Оценка: {score}" });

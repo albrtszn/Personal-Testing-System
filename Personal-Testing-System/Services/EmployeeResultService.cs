@@ -59,6 +59,11 @@ namespace Personal_Testing_System.Services
             return (await GetAllEmployeeResultDtos()).Where(x => x.IdEmployee.Equals(id)).ToList();
         }
 
+        public async Task<EmployeeResult> GetEmployeeResultByResultId(string id)
+        {
+            return (await GetAllEmployeeResults()).FirstOrDefault(x => x!=null && x.IdResult !=null && x.IdResult.Equals(id));
+        }
+
         public async Task<EmployeeResult> GetEmployeeResultById(int id)
         {
             return await EmployeeResultRepo.GetEmployeeResultById(id);

@@ -29,7 +29,7 @@ public partial class Test
     public string? Description { get; set; }
 
     [Column("instruction")]
-    [StringLength(500)]
+    [StringLength(1000)]
     public string? Instruction { get; set; }
 
     [Column("generation")]

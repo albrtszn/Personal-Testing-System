@@ -35,6 +35,9 @@ public partial class Result
     public string? IdTest { get; set; }
 
     [InverseProperty("IdResultNavigation")]
+    public virtual ICollection<ElployeeResultSubcompetence> ElployeeResultSubcompetences { get; set; } = new List<ElployeeResultSubcompetence>();
+
+    [InverseProperty("IdResultNavigation")]
     public virtual ICollection<EmployeeAnswer> EmployeeAnswers { get; set; } = new List<EmployeeAnswer>();
 
     [InverseProperty("IdResultNavigation")]

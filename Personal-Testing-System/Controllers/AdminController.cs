@@ -14,6 +14,7 @@ using Personal_Testing_System.Hubs;
 using Personal_Testing_System.MetaData;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
+using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Globalization;
@@ -264,6 +265,8 @@ namespace Personal_Testing_System.Controllers
         /*
         *  Profile
         */
+        //[ApiExplorerSettings(GroupName = "Profiles")]
+        [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpGet("GetProfiles")]
         public async Task<IActionResult> GetProfiles([FromHeader] string Authorization)
         {
@@ -292,6 +295,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpGet("GetProfilesPage")]
         public async Task<IActionResult> GetProfilesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -332,6 +336,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpPost("AddProfile")]
         public async Task<IActionResult> AddProfile([FromHeader] string Authorization, [FromBody] AddProfileModel? profile)
         {
@@ -368,6 +373,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpPost("UpdateProfile")]
         public async Task<IActionResult> UpdateProfile([FromHeader] string Authorization, [FromBody] ProfileDto? profile)
         {
@@ -405,6 +411,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpPost("DeleteProfile")]
         public async Task<IActionResult> DeleteProfile([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -445,6 +452,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  GroupPosition
          */
+        [SwaggerOperation(Tags = new[] { "Admin/GetGroupPositions" })]
         [HttpGet("GetGroupPositions")]
         public async Task<IActionResult> GetGroupPositions([FromHeader] string Authorization)
         {
@@ -473,6 +481,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/GetGroupPositions" })]
         [HttpGet("GetGroupPositionsPage")]
         public async Task<IActionResult> GetGroupPositionsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -513,6 +522,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/GetGroupPositions" })]
         [HttpPost("AddGroupPosition")]
         public async Task<IActionResult> AddGroupPosition([FromHeader] string Authorization, [FromBody] AddGroupPositionModel? groupPos)
         {
@@ -549,6 +559,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/GetGroupPositions" })]
         [HttpPost("UpdateGroupPosition")]
         public async Task<IActionResult> UpdateGroupPositions([FromHeader] string Authorization, [FromBody] GroupPositionDto? groupPos)
         {
@@ -586,6 +597,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/GetGroupPositions" })]
         [HttpPost("DeleteGroupPosition")]
         public async Task<IActionResult> DeleteGroupPosition([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -627,6 +639,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Subdivision
          */
+        [SwaggerOperation(Tags = new[] { "Admin/Subdivision" })]
         [HttpGet("GetSubdivisions")]
         public async Task<IActionResult> GetSubdivisions([FromHeader] string Authorization)
         {
@@ -655,6 +668,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Subdivision" })]
         [HttpGet("GetSubdivisionsPage")]
         public async Task<IActionResult> GetSubdivisionsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -695,6 +709,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Subdivision" })]
         [HttpPost("AddSubdivision")]
         public async Task<IActionResult> AddSubdivision([FromHeader] string Authorization, [FromBody] SubdivisionModel? sub)
         {
@@ -735,6 +750,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Subdivision" })]
         [HttpPost("UpdateSubdivision")]
         public async Task<IActionResult> UpdateSubdivision([FromHeader] string Authorization, [FromBody] AddSubdivisionModel? sub)
         {
@@ -775,6 +791,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Subdivision" })]
         [HttpPost("DeleteSubdivision")]
         public async Task<IActionResult> DeleteSubdivision([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -816,6 +833,7 @@ namespace Personal_Testing_System.Controllers
          *  Employee
          */
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpGet("GetEmployees")]
         public async Task<IActionResult> GetEmployees([FromHeader] string Authorization)
         {
@@ -847,12 +865,13 @@ namespace Personal_Testing_System.Controllers
                                 .Count();
 
                             int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
-                                .Where(x => x!=null && x.IdEmployee != null&& !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
+                                .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
                                 .Count();
 
                             int IdGroupPosition = (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value)).IdGroupPositions.Value;
                             int countOfTestsToPurpose = 0;
-                            if (IdGroupPosition != 0) {
+                            if (IdGroupPosition != 0)
+                            {
                                 countOfTestsToPurpose = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroups())
                                     .Where(x => x != null && x.IdGroupPositions != null && x.IdGroupPositions.Equals(IdGroupPosition))
                                     .Count();
@@ -882,6 +901,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpGet("GetEmployeesPage")]
         public async Task<IActionResult> GetEmployeesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -916,19 +936,20 @@ namespace Personal_Testing_System.Controllers
                             .ToList();
 
                         List<GetEmployeeModel> models = new List<GetEmployeeModel>();
-                        foreach(var employee in employees)
+                        foreach (var employee in employees)
                         {
                             int countOfPurposes = (await ms.TestPurpose.GetAllTestPurposes())
                                 .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
                                 .Count();
-                           
+
                             int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
                                 .Where(x => x != null && x.IdEmployee != null && !string.IsNullOrEmpty(x.IdEmployee) && x.IdEmployee.Equals(employee.Id))
                                 .Count();
-                            
+
                             int IdGroupPosition = (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value)).IdGroupPositions.Value;
                             int countOfTestsToPurpose = 0;
-                            if (IdGroupPosition != 0) {
+                            if (IdGroupPosition != 0)
+                            {
                                 countOfTestsToPurpose = (await ms.CompetenciesForGroup.GetAllCompetenciesForGroups())
                                    .Where(x => x != null && x.IdGroupPositions != null && x.IdGroupPositions.Equals(IdGroupPosition))
                                    .Count();
@@ -959,6 +980,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpPost("GetEmployee")]
         public async Task<IActionResult> GetEmployee([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -987,7 +1009,7 @@ namespace Personal_Testing_System.Controllers
                         if (employee != null)
                         {
                             int countOfPurposes = (await ms.TestPurpose.GetAllTestPurposes())
-                                .Where(x => x!= null && x.IdEmployee != null && x.IdEmployee.Equals(employee.Id))
+                                .Where(x => x != null && x.IdEmployee != null && x.IdEmployee.Equals(employee.Id))
                                 .Count();
 
                             int countOfResults = (await ms.EmployeeResult.GetAllEmployeeResults())
@@ -1026,6 +1048,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpPost("AddEmployee")]
         public async Task<IActionResult> AddEmployee([FromHeader] string Authorization, [FromBody] AddEmployeeModel? employee)
         {
@@ -1034,7 +1057,6 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(employee.SecondName) && !string.IsNullOrEmpty(employee.LastName) &&
                 !string.IsNullOrEmpty(employee.Login) && !string.IsNullOrEmpty(employee.Password) &&
                 employee.IdSubdivision.HasValue && employee.IdSubdivision != 0 &&
-                await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null && 
                 !employee.Phone.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
@@ -1056,7 +1078,12 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Имя сотрудника ={employee.FirstName}, фамилия={employee.SecondName}, отчество={employee.LastName}"
                         });
-                        
+
+                        if (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) == null)
+                        {
+                            return BadRequest(new { message = "Ошибка. Такого отдела нет" });
+                        }
+
                         await ms.Employee.SaveEmployee(employee);
                         return Ok(new { message = "Сотрудник добавлен" });
                     }
@@ -1066,6 +1093,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpPost("UpdateEmployee")]
         public async Task<IActionResult> UpdateEmployee([FromHeader] string Authorization, [FromBody] UpdateEmployeeModel? employee)
         {
@@ -1073,7 +1101,6 @@ namespace Personal_Testing_System.Controllers
                 !string.IsNullOrEmpty(employee.FirstName) && !string.IsNullOrEmpty(employee.SecondName) &&
                 !string.IsNullOrEmpty(employee.LastName) && !string.IsNullOrEmpty(employee.Login) &&
                 !string.IsNullOrEmpty(employee.Password) && employee.IdSubdivision.HasValue &&
-                await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) != null &&
                 !employee.Phone.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
@@ -1095,6 +1122,10 @@ namespace Personal_Testing_System.Controllers
                                 DataTime = DateTime.Now,
                                 Params = $"Id сотрудника={employee.Id}, Имя сотрудника ={employee.FirstName}, фамилия={employee.SecondName}, отчество={employee.LastName}"
                             });
+                            if (await ms.Subdivision.GetSubdivisionById(employee.IdSubdivision.Value) == null)
+                            {
+                                return BadRequest(new { message = "Ошибка. Такого отдела нет" });
+                            }
                             await ms.Employee.SaveEmployee(employee);
                             return Ok(new { message = "Сотрудник обновлен" });
                         }
@@ -1109,6 +1140,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Employee" })]
         [HttpPost("DeleteEmployee")]
         public async Task<IActionResult> DeleteEmployee([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -1145,8 +1177,270 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
+         *  Messsage
+         */
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpGet("GetMesssages")]
+        public async Task<IActionResult> GetSMesssages([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSMesssages");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSMesssages",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        var messages = await ms.Message.GetAllMessageDtos();
+                        return Ok(messages.OrderByDescending(x => x.Id));
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpGet("GetMesssagesPage")]
+        public async Task<IActionResult> GetMesssagesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetMesssagesPage");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetMesssagesPage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var Allmessages= (await ms.Message.GetAllMessageDtos())
+                                                    .OrderByDescending(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allmessages.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var messages = Allmessages
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(messages);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpPost("GetMesssage")]
+        public async Task<IActionResult> GetMesssage([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetMesssage :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetMesssage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id сообщения ={id.Id}"
+                        });
+                        MessageDto? dto = await ms.Message.GetMessageDtoById(id.Id.Value);
+                        if (dto != null)
+                        {
+                            return Ok(dto);
+                        }
+                        return NotFound(new { message = "Ошибка. Сообщение не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        /*[SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpPost("AddMesssage")]
+        public async Task<IActionResult> AddSubcompetence([FromHeader] string Authorization, [FromBody] AddMessageModel? subcompetence)
+        {
+            if (!Authorization.IsNullOrEmpty() && subcompetence != null && !subcompetence.Name.IsNullOrEmpty() && !subcompetence.Name.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddMesssage :Name={subcompetence.Name}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddMesssage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Текст сообщения={subcompetence.Name}"
+                        });
+                        await ms.Subcompetence.SaveSubcompetence(subcompetence);
+                        return Ok(new { message = "Подкомпетенция добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }*/
+
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpPost("ChangeMesssageStatus")]
+        public async Task<IActionResult> ChangeMesssageStatus([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue )
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/ChangeMesssageStatus :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/ChangeMesssageStatus",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id сообщения={id.Id}"
+                        });
+                        if (await ms.Message.GetMessageById(id.Id.Value) != null)
+                        {
+                            await ms.Message.ChangeMessageStatus(id.Id.Value);
+                            return Ok(new { message = "Статус сообщения обновлен" });
+                        }
+                        return NotFound(new { message = "Ошибка. Сообщение не найдено" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpPost("UpdateMesssage")]
+        public async Task<IActionResult> UpdateMesssage([FromHeader] string Authorization, [FromBody] MessageDto? messageDto)
+        {
+            if (!Authorization.IsNullOrEmpty() && messageDto != null &&
+                messageDto.Id.HasValue && !messageDto.IdEmployee.IsNullOrEmpty() && messageDto.MessageText.IsNullOrEmpty() &&
+                messageDto.StatusRead.HasValue && !messageDto.DateAndTime.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateMesssage :Id={messageDto.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateMesssage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id сообщения={messageDto.Id}"
+                        });
+                        if (await ms.Message.GetMessageById(messageDto.Id.Value) != null)
+                        {
+                            await ms.Message.SaveMessage(messageDto);
+                            return Ok(new { message = "Подкомпетенция обновлена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Messsage" })]
+        [HttpPost("DeleteMesssage")]
+        public async Task<IActionResult> DeleteMesssage([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteMesssage :messageId={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteMesssage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id сообщения={id.Id}"
+                        });
+                        if (id.Id.HasValue && id.Id != 0 && await ms.Message.GetMessageById(id.Id.Value) != null)
+                        {
+                            await ms.Message.DeleteMessageById(id.Id.Value);
+                            return Ok(new { message = "Сообщение удалено" });
+                        }
+                        return NotFound(new { message = "Ошибка. Сообщение не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
          *  Admin
          */
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpGet("GetAdmins")]
         public async Task<IActionResult> GetAdmins([FromHeader] string Authorization)
         {
@@ -1177,6 +1471,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpGet("GetAdminsPage")]
         public async Task<IActionResult> GetAdminsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -1218,6 +1513,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpPost("GetAdmin")]
         public async Task<IActionResult> GetAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -1251,6 +1547,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpPost("UpdateAdmin")]
         public async Task<IActionResult> UpdateAdmin([FromHeader] string Authorization, [FromBody] AdminDto? admin)
         {
@@ -1293,12 +1590,13 @@ namespace Personal_Testing_System.Controllers
 
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpPost("AddAdmin")]
         public async Task<IActionResult> AddAdmin([FromHeader] string Authorization, [FromBody] AddAdminModel? admin)
         {
             if (!Authorization.IsNullOrEmpty() && admin != null &&
                 !string.IsNullOrEmpty(admin.FirstName) && !string.IsNullOrEmpty(admin.SecondName) && !string.IsNullOrEmpty(admin.LastName) &&
-                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password) )//&& admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
+                !string.IsNullOrEmpty(admin.Login) && !string.IsNullOrEmpty(admin.Password))//&& admin.IdSubdivision.HasValue && admin.IdSubdivision > 0)
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -1328,6 +1626,7 @@ namespace Personal_Testing_System.Controllers
 
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Admin" })]
         [HttpPost("DeleteAdmin")]
         public async Task<IActionResult> DeleteAdmin([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -1370,6 +1669,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Competence
          */
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpGet("GetCompetences")]
         public async Task<IActionResult> GetCompetences([FromHeader] string Authorization)
         {
@@ -1400,6 +1700,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpGet("GetCompetencesPage")]
         public async Task<IActionResult> GetCompetencesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -1442,6 +1743,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpPost("GetCompetence")]
         public async Task<IActionResult> GetCompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -1479,6 +1781,7 @@ namespace Personal_Testing_System.Controllers
 
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpPost("AddCompetence")]
         public async Task<IActionResult> AddCompetence([FromHeader] string Authorization, [FromBody] AddCompetenceModel? competence)
         {
@@ -1511,6 +1814,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpPost("UpdateCompetence")]
         public async Task<IActionResult> UpdateCompetence([FromHeader] string Authorization, [FromBody] CompetenceDto? competence)
         {
@@ -1548,6 +1852,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Competence" })]
         [HttpPost("DeleteCompetence")]
         public async Task<IActionResult> DeleteCompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -1584,8 +1889,453 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
+         *  Subcompetence
+         */
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpGet("GetSubcompetences")]
+        public async Task<IActionResult> GetSubcompetences([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetences");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.Subcompetence.GetAllSubcompetenceDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpGet("GetSubcompetencesPage")]
+        public async Task<IActionResult> GetSubcompetencesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetences");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var Alsubcompetences = (await ms.Subcompetence.GetAllSubcompetenceDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alsubcompetences.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var subcompetences = Alsubcompetences
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(subcompetences);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("GetSubcompetence")]
+        public async Task<IActionResult> GetSubcompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetence :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции ={id.Id}"
+                        });
+                        SubcompetenceDto? dto = await ms.Subcompetence.GetSubcompetenceDtoById(id.Id.Value);
+                        if (dto != null)
+                        {
+                            return Ok(dto);
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("AddSubcompetence")]
+        public async Task<IActionResult> AddSubcompetence([FromHeader] string Authorization, [FromBody] AddSubcompetenceModel? subcompetence)
+        {
+            if (!Authorization.IsNullOrEmpty() && subcompetence != null && !subcompetence.Name.IsNullOrEmpty() && !subcompetence.Name.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddSubompetence :Name={subcompetence.Name}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Название подкомпетенции теста={subcompetence.Name}"
+                        });
+                        await ms.Subcompetence.SaveSubcompetence(subcompetence);
+                        return Ok(new { message = "Подкомпетенция добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("UpdateSubcompetence")]
+        public async Task<IActionResult> UpdateSubcompetence([FromHeader] string Authorization, [FromBody] SubcompetenceDto? subcompetence)
+        {
+            if (!Authorization.IsNullOrEmpty() && subcompetence != null &&
+                subcompetence.Id.HasValue && !subcompetence.Name.IsNullOrEmpty() && subcompetence.Description.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateSubcompetence :Id={subcompetence.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции теста={subcompetence.Id}, Название={subcompetence.Name}"
+                        });
+                        if (await ms.TestType.GetCompetenceById(subcompetence.Id.Value) != null)
+                        {
+                            await ms.Subcompetence.SaveSubcompetence(subcompetence);
+                            return Ok(new { message = "Подкомпетенция обновлена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("DeleteSubcompetence")]
+        public async Task<IActionResult> DeleteSubcompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteSubcompetence :competenceId={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции теста={id.Id}"
+                        });
+                        if (id.Id.HasValue && id.Id != 0 && await ms.Subcompetence.GetSubcompetenceById(id.Id.Value) != null)
+                        {
+                            await ms.Subcompetence.DeleteSubcompetenceById(id.Id.Value);
+                            return Ok(new { message = "Подкомпетенция удалена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
+         *  QuestionSubcompetence
+         */
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpGet("GetQuestionSubcompetences")]
+        public async Task<IActionResult> GetQuestionSubcompetences([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetQuestionSubcompetences");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetQuestionSubcompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.QuestionSubcompetence.GetAllQuestionSubcompetenceDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpGet("GetQuestionSubcompetencePage")]
+        public async Task<IActionResult> GetQuestionSubcompetencePage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetQuestionSubcompetencePage");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetQuestionSubcompetencePage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var allQuestionSubcompetences = (await ms.QuestionSubcompetence.GetAllQuestionSubcompetenceDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, allQuestionSubcompetences.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var questionSubcompetences = allQuestionSubcompetences
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(questionSubcompetences);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("GetQuestionSubcompetence")]
+        public async Task<IActionResult> GetQuestionSubcompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetQuestionSubcompetence :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetQuestionSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции вопроса ={id.Id}"
+                        });
+                        QuestionSubcompetenceDto? dto = await ms.QuestionSubcompetence.GetQuestionSubcompetenceDtoById(id.Id.Value);
+                        if (dto != null)
+                        {
+                            return Ok(dto);
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция вопроса не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("AddQuestionSubcompetence")]
+        public async Task<IActionResult> AddQuestionSubcompetence([FromHeader] string Authorization, [FromBody] AddQuestionSubcompetenceModel? questionSubcompetence)
+        {
+            if (!Authorization.IsNullOrEmpty() && questionSubcompetence != null && !questionSubcompetence.IdQuestion.IsNullOrEmpty() && questionSubcompetence.IdSubcompetence.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddQuestionSubcompetence :idQuestion={questionSubcompetence.IdQuestion}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddQuestionSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"id вопроса={questionSubcompetence.IdQuestion}"
+                        });
+                        await ms.QuestionSubcompetence.SaveQuestionSubcompetence(questionSubcompetence);
+                        return Ok(new { message = "Подкомпетенция вопроса добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("UpdateQuestionSubcompetence")]
+        public async Task<IActionResult> UpdateQuestionSubcompetence([FromHeader] string Authorization, [FromBody] QuestionSubcompetenceDto? questionSubcompetence)
+        {
+            if (!Authorization.IsNullOrEmpty() && questionSubcompetence != null &&
+                questionSubcompetence.Id.HasValue && !questionSubcompetence.IdQuestion.IsNullOrEmpty() && questionSubcompetence.IdSubcompetence.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateQuestionSubcompetence :Id={questionSubcompetence.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateQuestionSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции вопроса={questionSubcompetence.Id}"
+                        });
+                        if (await ms.TestType.GetCompetenceById(questionSubcompetence.Id.Value) != null)
+                        {
+                            await ms.QuestionSubcompetence.SaveQuestionSubcompetence(questionSubcompetence);
+                            return Ok(new { message = "Подкомпетенция вопроса обновлена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция вопроса не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpPost("DeleteQuestionSubcompetence")]
+        public async Task<IActionResult> DeleteQuestionSubcompetence([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteQuestionSubcompetence :questionSubcompetenceId={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteQuestionSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции вопроса={id.Id}"
+                        });
+                        if (id.Id.HasValue && id.Id != 0 && await ms.QuestionSubcompetence.GetQuestionSubcompetenceById(id.Id.Value) != null)
+                        {
+                            await ms.QuestionSubcompetence.DeleteQuestionSubcompetenceById(id.Id.Value);
+                            return Ok(new { message = "Подкомпетенция удалена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция вопроса не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
          *  CompetenciesForGroup
          */
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpGet("GetCompetenciesForGroups")]
         public async Task<IActionResult> GetCompetenciesForGroups([FromHeader] string Authorization)
         {
@@ -1616,6 +2366,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpGet("GetCompetenciesForGroupsPage")]
         public async Task<IActionResult> GetCompetenciesForGroupsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -1658,6 +2409,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpPost("GetCompetenciesForGroup")]
         public async Task<IActionResult> GetCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -1695,6 +2447,7 @@ namespace Personal_Testing_System.Controllers
 
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpPost("AddCompetenciesForGroup")]
         public async Task<IActionResult> AddCompetenciesForGroup([FromHeader] string Authorization, [FromBody] AddCompetenciesForGroupModel? model)
         {
@@ -1731,6 +2484,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpPost("UpdateCompetenciesForGroup")]
         public async Task<IActionResult> UpdateCompetenciesForGroup([FromHeader] string Authorization, [FromBody] CompetenciesForGroupDto? model)
         {
@@ -1772,6 +2526,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenciesForGroup" })]
         [HttpPost("DeleteCompetenciesForGroup")]
         public async Task<IActionResult> DeleteCompetenciesForGroup([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -1810,6 +2565,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Test
          */
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpGet("GetTests")]
         public async Task<IActionResult> GetTests([FromHeader] string Authorization)
         {
@@ -1840,6 +2596,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpGet("GetTestsPage")]
         public async Task<IActionResult> GetTestsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -1881,6 +2638,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetTestsByEmployeeId")]
         public async Task<IActionResult> GetTestsByEmployeeId([FromHeader] string Authorization, [FromBody] StringIdModel id)
         {
@@ -1936,6 +2694,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetTest")]
         public async Task<IActionResult> GetTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2061,6 +2820,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetEntityTest")]
         public async Task<IActionResult> GetEntityTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2085,7 +2845,7 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id Теста={id.Id}"
                         });
 
-                        if (await ms.Test.GetTestById(id.Id) == null) 
+                        if (await ms.Test.GetTestById(id.Id) == null)
                             return NotFound(new { message = "Ошибка. Тест не найден" });
 
                         var test = await ms.Test.GetTestDtoById(id.Id);
@@ -2098,6 +2858,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("UpdateEntityTest")]
         public async Task<IActionResult> UpdateEntityTest([FromHeader] string Authorization, [FromBody] TestDto? test)
         {
@@ -2139,6 +2900,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetPdfTest")]
         public async Task<IActionResult> GetPdfTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2280,6 +3042,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetPdfCorerectTest")]
         public async Task<IActionResult> GetPdfCorerectTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2631,6 +3394,7 @@ namespace Personal_Testing_System.Controllers
              return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
          }*/
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetWordTest")]
         public async Task<IActionResult> GetWordTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2767,6 +3531,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetWordCorrectTest")]
         public async Task<IActionResult> GetWordCorrectTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -2896,6 +3661,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("AddTest")]
         public async Task<IActionResult> AddTest([FromHeader] string Authorization, [FromForm] AddPostTestModel? postModel)
         {
@@ -3015,7 +3781,8 @@ namespace Personal_Testing_System.Controllers
                                     SubsequenceDto subsequenceDto = answer.Deserialize<SubsequenceDto>();
                                     FirstSecondPartDto firstSecondPartDto = answer.Deserialize<FirstSecondPartDto>();*/
 
-                                    if (quest.IdQuestionType.Value == 1 || quest.IdQuestionType.Value == 2) {
+                                    if (quest.IdQuestionType.Value == 1 || quest.IdQuestionType.Value == 2)
+                                    {
                                         AnswerDto answerDto = answer.ToObject<AnswerDto>();
                                         if (answerDto is AnswerDto && answerDto.Correct != null)
                                         {
@@ -3127,6 +3894,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("UpdateTest")]
         public async Task<IActionResult> UpdateTest([FromHeader] string Authorization, [FromForm] UpdatePostTestModel? updatePostModel)
         {
@@ -3158,7 +3926,7 @@ namespace Personal_Testing_System.Controllers
                             });
 
                             if (await ms.TestType.GetCompetenceById(test.CompetenceId.Value) == null)
-                                return BadRequest(new { message = "Ошибка. Такой компетенции нет"});
+                                return BadRequest(new { message = "Ошибка. Такой компетенции нет" });
 
                             if (await ms.Test.GetTestById(test.Id) == null)
                                 return BadRequest(new { message = "Ошибка. Такого теста нет" });
@@ -3367,6 +4135,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("GetQuestionsInTestPage")]
         public async Task<IActionResult> GetQuestionsInTestPage([FromHeader] string Authorization, [FromBody] StringIdModel? id, [FromQuery] PageParamsModel pageParams)
         {
@@ -3395,7 +4164,7 @@ namespace Personal_Testing_System.Controllers
 
                         var AllquestionsIntest = (await ms.Question.GetAllQuestions())
                                                  .Where(x => x.IdTest.Equals(id.Id))
-                                                 .OrderBy(x=>x.Number);
+                                                 .OrderBy(x => x.Number);
 
                         var pageHeader = new PageHeader(pageParams.PageNumber.Value, AllquestionsIntest.Count(), pageParams.ItemsPerPage.Value);
                         Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
@@ -3483,6 +4252,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("AddQuestionInTest")]
         public async Task<IActionResult> AddQuestionInTest([FromHeader] string Authorization, [FromForm] AddPostQuestioModel? addQuestModel)
         {
@@ -3490,7 +4260,7 @@ namespace Personal_Testing_System.Controllers
             {
                 AddQuestionInTestModel? quest = JsonConvert.DeserializeObject<AddQuestionInTestModel>(addQuestModel.Question);
                 if (!Authorization.IsNullOrEmpty() && quest != null && !string.IsNullOrEmpty(quest.IdTest) && !quest.Text.IsNullOrEmpty() &&
-                    quest.IdQuestionType.HasValue && quest.Answers != null && quest.Answers.Count != 0 && quest.Weight.HasValue )
+                    quest.IdQuestionType.HasValue && quest.Answers != null && quest.Answers.Count != 0 && quest.Weight.HasValue)
                 {
                     TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                     if (token != null)
@@ -3652,6 +4422,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("UpdateQuestionInTest")]
         public async Task<IActionResult> UpdateQuestionInTest([FromHeader] string Authorization, [FromForm] AddPostQuestioModel? addQuestModel)
         {
@@ -3769,7 +4540,8 @@ namespace Personal_Testing_System.Controllers
                                     if (subsequenceDto is SubsequenceDto && subsequenceDto.IdSubsequence != null && subsequenceDto.IdSubsequence != 0 && subsequenceDto.Number != null && subsequenceDto.Number != 0)
                                     {
                                         logger.LogInformation($"subsequenceDto -> text={subsequenceDto.Text}, number={subsequenceDto.Number}");
-                                        if (await ms.Subsequence.GetSubsequenceById(subsequenceDto.IdSubsequence) != null) {
+                                        if (await ms.Subsequence.GetSubsequenceById(subsequenceDto.IdSubsequence) != null)
+                                        {
                                             await ms.Subsequence.SaveSubsequence(new Subsequence
                                             {
                                                 Id = subsequenceDto.IdSubsequence,
@@ -3783,7 +4555,7 @@ namespace Personal_Testing_System.Controllers
                                 if (quest.IdQuestionType.Value == 3)
                                 {
                                     if (firstSecondPartDto is FirstSecondPartDto && firstSecondPartDto != null && firstSecondPartDto.IdFirstPart != null && firstSecondPartDto.IdSecondPart != null &&
-                                        firstSecondPartDto.IdSecondPart.Value != 0 && firstSecondPartDto.IdSecondPart != 0 && 
+                                        firstSecondPartDto.IdSecondPart.Value != 0 && firstSecondPartDto.IdSecondPart != 0 &&
                                         !string.IsNullOrEmpty(firstSecondPartDto.FirstPartText) && !string.IsNullOrEmpty(firstSecondPartDto.SecondPartText))
                                     {
                                         logger.LogInformation($"firstSecondPartDto -> first={firstSecondPartDto.FirstPartText}, second={firstSecondPartDto.SecondPartText}");
@@ -3814,10 +4586,11 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("DeleteQuestionInTest")]
         public async Task<IActionResult> DeleteQuestionInTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
-            if (!Authorization.IsNullOrEmpty() && id!=null && !string.IsNullOrEmpty(id.Id))
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -3869,7 +4642,7 @@ namespace Personal_Testing_System.Controllers
                         await ms.Question.DeleteQuestionById(id.Id);
 
                         int number = 1;
-                        foreach(var question in (await ms.Question.GetQuestionsByTest(quest.IdTest)).OrderBy(x => x.Number).ToList())
+                        foreach (var question in (await ms.Question.GetQuestionsByTest(quest.IdTest)).OrderBy(x => x.Number).ToList())
                         {
                             question.Number = Convert.ToByte(number);
                             await ms.Question.SaveQuestion(question);
@@ -3883,7 +4656,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
-
+        [SwaggerOperation(Tags = new[] { "Admin/Test" })]
         [HttpPost("DeleteTest")]
         public async Task<IActionResult> DeleteTest([FromHeader] string Authorization, [FromBody] StringIdModel? id)
         {
@@ -3922,6 +4695,7 @@ namespace Personal_Testing_System.Controllers
         /*
          *  Purpose
          */
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpGet("GetPurposes")]
         public async Task<IActionResult> GetPurposes([FromHeader] string Authorization)
         {
@@ -3952,6 +4726,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpGet("GetPurposesPage")]
         public async Task<IActionResult> GetPurposesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -3994,6 +4769,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpPost("GetPurposesByEmployeeId")]
         public async Task<IActionResult> GetPurposesByEmployeeId([FromHeader] string Authorization, [FromBody] StringIdModel id)
         {
@@ -4019,7 +4795,7 @@ namespace Personal_Testing_System.Controllers
                         });
 
                         List<TestPurposeDto> purposes = (await ms.TestPurpose.GetAllTestPurposeDtos())
-                                         .Where(x => x!= null && x.IdEmployee != null && x.IdTest != null && x.IdEmployee.Equals(id.Id)).ToList();
+                                         .Where(x => x != null && x.IdEmployee != null && x.IdTest != null && x.IdEmployee.Equals(id.Id)).ToList();
 
                         if (purposes.Count == 0)
                         {
@@ -4049,6 +4825,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpPost("GetPurposesPageByEmployeeId")]
         public async Task<IActionResult> GetPurposesPageByEmployeeId([FromHeader] string Authorization, [FromBody] StringIdModel id, [FromQuery] PageParamsModel pageParams)
         {
@@ -4112,6 +4889,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpPost("AddPurpose")]
         public async Task<IActionResult> AddPurpose([FromHeader] string Authorization, [FromBody] AddTestPurposeModel? purpose)
         {
@@ -4218,6 +4996,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }*/
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpPost("UpdatePurpose")]
         public async Task<IActionResult> UpdatePurpose([FromHeader] string Authorization, [FromBody] UpdateTestPurposeModel? purpose)
         {
@@ -4268,6 +5047,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Purpose" })]
         [HttpPost("DeletePurpose")]
         public async Task<IActionResult> DeletePurpose([FromHeader] string Authorization, [FromBody] IntIdModel? id)
         {
@@ -4308,6 +5088,200 @@ namespace Personal_Testing_System.Controllers
          *  Result
          */
         //todo edit query GetResults
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpGet("GetEmployeeResultsOfSubcompetence")]
+        public async Task<IActionResult> GetEmployeeResultsOfSubcompetence([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetEmployeeResultsOfSubcompetence ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetEmployeeResultsOfSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        List<EmployeeResultSubcompetenceDto> list = await ms.EmployeeResultSubcompetence.GetAllEmployeeResultSubcompetenceDtos();
+
+                        return Ok(list);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpGet("DeleteEmployeeResultsOfSubcompetence")]
+        public async Task<IActionResult> DeleteEmployeeResultsOfSubcompetence([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetEmployeeResultsOfSubcompetence ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetEmployeeResultsOfSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        List<EmployeeResultSubcompetenceDto> list = await ms.EmployeeResultSubcompetence.GetAllEmployeeResultSubcompetenceDtos();
+                        foreach(EmployeeResultSubcompetenceDto dto in list)
+                        {
+                            await ms.EmployeeResultSubcompetence.DeleteEmployeeResultSubcompetenceById(dto.Id);
+                        }
+                        return Ok(new { message = "Резульаты по подкомпентенциям удалены"});
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpGet("GetResultWithSubcompetences")]
+        public async Task<IActionResult> GetResultWithSubcompetences([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResultSubcompetences ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResultSubCompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        List<EmployeeResultSubcompetenceModel> list = await ms.GetAllEmployeeResultSubcompetenceModels();
+
+                        return Ok(list);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpPost("GetResultWithSubcompetencesByEmployee")]
+        public async Task<IActionResult> GetResultWithSubcompetencesByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetResultWithSubcompetencesByEmployee");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetResultWithSubcompetencesByEmployee",
+                        UserId = $"{token.IdAdmin}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"Id={id.Id}"
+                    });
+
+                    if (await ms.Employee.GetEmployeeById(id.Id) == null)
+                    {
+                        return NotFound(new { message = "Ошибка. Такого пользователя нет" });
+                    }
+
+                    List<EmployeeResultSubcompetenceModel>? results = await ms.GetAllEmployeeResultSubcompetenceModelsByEmployee(id.Id);
+
+                    if (results != null && results.Count != 0)
+                    {
+                        return Ok(results);
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Результатов нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpPost("GetResultWithSubcompetencesByEmployeeResultId")]
+        public async Task<IActionResult> GetResultWithSubcompetencesByEmployeeResultId([FromHeader] string? Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetResultWithSubcompetencesByEmployeeResultId");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetResultWithSubcompetencesByEmployeeResultId",
+                        UserId = $"{token.IdAdmin}",
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                        Params = $"Id={id.Id}"
+                    });
+
+                    if (await ms.EmployeeResult.GetEmployeeResultById(id.Id.Value) == null)
+                    {
+                        return NotFound(new { message = "Ошибка. Такого результата пользователя нет" });
+                    }
+
+                    List<EmployeeResultSubcompetenceModel>? results = await ms.GetAllEmployeeResultSubcompetenceModelsByEmployeeResultId(id.Id.Value);
+
+                    if (results != null && results.Count != 0)
+                    {
+                        return Ok(results);
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Результат не найден" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpGet("GetResults")]
         public async Task<IActionResult> GetResults([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
         {
@@ -4331,7 +5305,7 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
 
-                        List<EmployeeResultModel> list = await ms.GetAllEmployeeResultModels();
+                        List<EmployeeResultModel> list = await ms.GetAllEmployeeResultModels(); 
                         /*if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
                         {
                             list = list.Where(x => x.Employee.Subdivision.Id == query.IdSubdivision).ToList();
@@ -4394,6 +5368,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpGet("GetResultsPage")]
         public async Task<IActionResult> GetResultsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)//, [FromBody] ResultQuerryModel query)
         {
@@ -4436,10 +5411,11 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpPost("GetResultsByEmployee")]
         public async Task<IActionResult> GetResultsByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id)
         {
-            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id) )
+            if (!Authorization.IsNullOrEmpty() && id != null && !string.IsNullOrEmpty(id.Id))
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -4479,6 +5455,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpPost("GetResultsPageByEmployee")]
         public async Task<IActionResult> GetResultsPageByEmployee([FromHeader] string? Authorization, [FromBody] StringIdModel? id, [FromQuery] PageParamsModel pageParams)
         {
@@ -4531,8 +5508,9 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpPost("GetEmployeeResultAnswers")]
-        public async Task<IActionResult> GetEmployeeResultAnswers([FromHeader] string Authorization, [FromBody]StringIdModel ResultId)//, [FromBody] ResultQuerryModel query)
+        public async Task<IActionResult> GetEmployeeResultAnswers([FromHeader] string Authorization, [FromBody] StringIdModel ResultId)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty() && ResultId != null && !ResultId.Id.IsNullOrEmpty())
             {
@@ -4558,24 +5536,26 @@ namespace Personal_Testing_System.Controllers
                         Result result = (await ms.Result.GetResultById(ResultId.Id));
                         if (ResultId == null)
                             return NotFound(new { message = "Ошибка. такого результата нет" });
+                        EmployeeResult employeeResult = (await ms.EmployeeResult.GetEmployeeResultByResultId(result.Id));
                         List<EmployeeAnswer>? employeeAnswers = await ms.EmployeeAnswer.GetAllEmployeeAnswersByResultId(result.Id);
                         List<EmployeeSubsequence>? employeeSubs = await ms.EmployeeSubsequence.GetAllEmployeeSubsequencesByResultId(result.Id);
                         List<EmployeeMatching>? employeeMatchs = await ms.EmployeeMatching.GetAllEmployeeMatchingsByResultId(result.Id);
 
 
                         Test? test = await ms.Test.GetTestById(result.IdTest);
-                        if (test == null) 
+                        if (test == null)
                             return NotFound(new { message = "Ошибка. Тест не найден" });
 
                         List<Question> questions = (await ms.Question.GetAllQuestions())
                             .Where(x => x.IdTest.Equals(test.Id)).ToList();
                         questions = questions.OrderBy(x => x.Number).ToList();
 
-                        TestModel testDto = new TestModel
+                        EmployeeResultAnswersModel testDto = new EmployeeResultAnswersModel
                         {
                             Id = test.Id,
                             Name = test.Name,
-                            Weight = test.Weight,
+                            ScoreFrom = employeeResult.ScoreFrom,
+                            ScoreTo = employeeResult.ScoreTo,
                             Generation = test.Generation,
                             Instruction = test.Instruction,
                             Description = test.Description,
@@ -4629,7 +5609,7 @@ namespace Personal_Testing_System.Controllers
                                             model.ImagePath = answer.ImagePath;
                                         }
                                     }
-                                    if (employeeAnswers.Find(x=>x.IdAnswer.Equals(answer.Id)) != null)
+                                    if (employeeAnswers.Find(x => x.IdAnswer.Equals(answer.Id)) != null)
                                     {
                                         model.IsUserAnswer = true;
                                     }
@@ -4674,15 +5654,15 @@ namespace Personal_Testing_System.Controllers
                                 secondPartDtos = secondPartDtos.OrderBy(x => rand.Next()).ToList();*/
 
                                 List<EmployeeResultFSPartModel> models = new List<EmployeeResultFSPartModel>();
-                                foreach(SecondPartDto sDto in secondPartDtos)
+                                foreach (SecondPartDto sDto in secondPartDtos)
                                 {
-                                    EmployeeMatching match = employeeMatchs.Find(x=>x.IdSecondPart.Equals(sDto.IdSecondPart));
+                                    EmployeeMatching match = employeeMatchs.Find(x => x.IdSecondPart.Equals(sDto.IdSecondPart));
                                     if (match != null)
                                     {
                                         models.Add(new EmployeeResultFSPartModel
                                         {
-                                            FirstPartId = firstPartDtos.FirstOrDefault(x=>x.IdFirstPart.Equals(match.IdFirstPart)),
-                                            SecondPartId = secondPartDtos.FirstOrDefault(x=>x.IdSecondPart.Equals(match.IdSecondPart)),
+                                            FirstPartId = firstPartDtos.FirstOrDefault(x => x.IdFirstPart.Equals(match.IdFirstPart)),
+                                            SecondPartId = secondPartDtos.FirstOrDefault(x => x.IdSecondPart.Equals(match.IdSecondPart)),
                                             IsUserAnswer = true
                                         });
                                     }
@@ -4712,6 +5692,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpPost("DeleteResults")]
         public async Task<IActionResult> DeleteResults([FromHeader] string Authorization)//!!!
         {
@@ -4751,6 +5732,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
         [HttpPost("DeleteResult")]
         public async Task<IActionResult> DeleteResult([FromHeader] string Authorization, [FromBody] IntIdModel resultId)
         {
@@ -4791,6 +5773,10 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        /*
+         *  Log
+         */
+        [SwaggerOperation(Tags = new[] { "Admin/Log" })]
         [HttpGet("GetLogs")]
         public async Task<IActionResult> GetLogs([FromHeader] string Authorization)
         {
@@ -4821,6 +5807,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
 
+        [SwaggerOperation(Tags = new[] { "Admin/Log" })]
         [HttpGet("GetLogsPage")]
         public async Task<IActionResult> GetLogsPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
         {
@@ -4851,7 +5838,7 @@ namespace Personal_Testing_System.Controllers
                         Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
 
                         var logs = Alllogs
-                            .Skip((pageParams.PageNumber.Value -1) * pageParams.ItemsPerPage.Value)
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
                             .Take(pageParams.ItemsPerPage.Value)
                             .ToList();
 

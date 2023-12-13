@@ -37,6 +37,10 @@ namespace Personal_Testing_System.Services
         private ProfileService profileService;
         private GroupPositionService groupPositionService;
         private CompetenciesForGroupService competenciesForGroupService;
+        private EmployeeResultSubcompetenceService employeeResultSubcompetenceServidce;
+        private QuestionSubcompetenceService questionSubcompetenceService;
+        private SubcompetenceService subcompetenceService;
+        private MessageService messageService;
         
         private IConfiguration config;
 
@@ -49,7 +53,10 @@ namespace Personal_Testing_System.Services
                        CompetenceService _competenceService, AdminService _adminService,
                        ResultService _resultService, EmployeeResultService _employeeResultService,
                        LogService _logService, TokenEmployeeService _tokenEmployeeService, TokenAdminService _tokenAdminService,
-                       ProfileService _profileService, GroupPositionService _groupPositionService, CompetenciesForGroupService _competenciesForGroupService, IConfiguration _config)
+                       ProfileService _profileService, GroupPositionService _groupPositionService, CompetenciesForGroupService _competenciesForGroupService,
+                       EmployeeResultSubcompetenceService _employeeResultSubcompetenceServidce, QuestionSubcompetenceService _questionSubcompetenceService,
+                       SubcompetenceService _subcompetenceService, MessageService _messageService,
+                        IConfiguration _config)
         {
             answerService = _answerService;
             employeeAnswerService = _employeeAnswerService;
@@ -74,6 +81,10 @@ namespace Personal_Testing_System.Services
             profileService = _profileService;
             groupPositionService = _groupPositionService;
             competenciesForGroupService = _competenciesForGroupService;
+            employeeResultSubcompetenceServidce = _employeeResultSubcompetenceServidce;
+            questionSubcompetenceService = _questionSubcompetenceService;
+            subcompetenceService = _subcompetenceService;
+            messageService = _messageService;
 
             config = _config;
         }
@@ -102,6 +113,11 @@ namespace Personal_Testing_System.Services
         public ProfileService Profile { get { return profileService; } }
         public GroupPositionService GroupPosition { get { return groupPositionService; } }
         public CompetenciesForGroupService CompetenciesForGroup { get { return competenciesForGroupService; } }
+        public EmployeeResultSubcompetenceService EmployeeResultSubcompetence { get { return employeeResultSubcompetenceServidce; } }
+        public QuestionSubcompetenceService QuestionSubcompetence { get { return questionSubcompetenceService; } }
+        public SubcompetenceService Subcompetence { get { return subcompetenceService; } }
+        public MessageService Message { get { return messageService; } }
+
         /*
          *  Logic
          */
@@ -263,6 +279,39 @@ namespace Personal_Testing_System.Services
                 Employee = await employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
                 Result = await GetResultModelById( await Result.GetResultById(EmployeeResult.IdResult))
             };
+        }        
+
+        private async Task<List<ResultSubcompetenceModel>> GetResultSubcompetenceModels(string IdResult)
+        {
+            List<ResultSubcompetenceModel> list = new List<ResultSubcompetenceModel>();
+            List<ElployeeResultSubcompetence> resultSubcompetences = (await EmployeeResultSubcompetence.GetAllEmployeeResultSubcompetences())
+                    .Where(x => x!=null && x.IdResult != null && x.IdResult.Equals(IdResult))
+                    .ToList();
+            foreach(var resultSubcompetence in resultSubcompetences)
+            {
+                list.Add(new ResultSubcompetenceModel()
+                {
+                    Id = resultSubcompetence.Id,
+                    IdResult = resultSubcompetence.IdResult,
+                    Subcompetence = await Subcompetence.GetSubcompetenceDtoById(resultSubcompetence.IdSubcompetence.Value),
+                    Result = resultSubcompetence.Result
+                });
+            }
+            return list;
+        }
+
+        private async Task<EmployeeResultSubcompetenceModel> ConvertToEmployeeResultSubcompetenceModel(EmployeeResult EmployeeResult)
+        {
+            List<ResultSubcompetenceModel>? subCompetenceResults = await GetResultSubcompetenceModels(EmployeeResult.IdResult);
+            return new EmployeeResultSubcompetenceModel
+            {
+                Id = EmployeeResult.Id,
+                ScoreFrom = EmployeeResult.ScoreFrom,
+                ScoreTo = EmployeeResult.ScoreTo,
+                SubcompetenceResults = subCompetenceResults,
+                Employee = await employeeService.GetEmployeeModelById(EmployeeResult.IdEmployee),
+                Result = await GetResultModelById( await Result.GetResultById(EmployeeResult.IdResult))
+            };
         }
         public async Task<EmployeeResultModel> GetEmployeeResultModelById(int id)
         {
@@ -278,6 +327,37 @@ namespace Personal_Testing_System.Services
             //().ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
             return list;
         }
+        public async Task<List<EmployeeResultSubcompetenceModel>?> GetAllEmployeeResultSubcompetenceModels()
+        {
+            List<EmployeeResultSubcompetenceModel> list = new List<EmployeeResultSubcompetenceModel>();
+            foreach (EmployeeResult result in await EmployeeResult.GetAllEmployeeResults())
+            {
+                list.Add(await ConvertToEmployeeResultSubcompetenceModel(result));
+            }
+            //().ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
+            return list;
+        }
+        public async Task<List<EmployeeResultSubcompetenceModel>?> GetAllEmployeeResultSubcompetenceModelsByEmployee(string idEmployee)
+        {
+            List<EmployeeResultSubcompetenceModel> list = new List<EmployeeResultSubcompetenceModel>();
+            foreach (EmployeeResult result in (await EmployeeResult.GetAllEmployeeResults()).Where(x=> x!=null && x.IdEmployee != null && x.IdEmployee.Equals(idEmployee)))
+            {
+                list.Add(await ConvertToEmployeeResultSubcompetenceModel(result));
+            }
+            //().ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
+            return list;
+        }
+        public async Task<List<EmployeeResultSubcompetenceModel>?> GetAllEmployeeResultSubcompetenceModelsByEmployeeResultId(int idEmployeeResult)
+        {
+            List<EmployeeResultSubcompetenceModel> list = new List<EmployeeResultSubcompetenceModel>();
+            foreach (EmployeeResult result in (await EmployeeResult.GetAllEmployeeResults()).Where(x => x != null && x.Id.Equals(idEmployeeResult)))
+            {
+                list.Add(await ConvertToEmployeeResultSubcompetenceModel(result));
+            }
+            //().ForEach(async x => list.Add(await ConvertToEmployeeResultModel(x)));
+            return list;
+        }
+
         public async Task<List<EmployeeResultModel>> GetAllEmployeeResultModelsByEmployeeId(string employeeId)
         {
             List<EmployeeResultModel> list = new List<EmployeeResultModel>();

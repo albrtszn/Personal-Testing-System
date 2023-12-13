@@ -1,6 +1,7 @@
 ﻿using CRUD.implementations;
 using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Microsoft.IdentityModel.Tokens;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 
@@ -94,9 +95,14 @@ namespace Personal_Testing_System.Services
 
         private Employee ConvertToEmployee(UpdateEmployeeModel employeeDto)
         {
+            string employeeId = Guid.NewGuid().ToString();
+            if (employeeDto!=null && !employeeDto.Id.IsNullOrEmpty())
+            {
+                employeeId = employeeDto.Id;
+            }
             return new Employee
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = employeeId,
                 FirstName = employeeDto.FirstName,
                 SecondName = employeeDto.SecondName,
                 LastName = employeeDto.LastName,

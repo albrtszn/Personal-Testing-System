@@ -52,6 +52,9 @@ public partial class Employee
     public virtual Subdivision? IdSubdivisionNavigation { get; set; }
 
     [InverseProperty("IdEmployeeNavigation")]
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    [InverseProperty("IdEmployeeNavigation")]
     public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
 
     [InverseProperty("IdEmployeeNavigation")]

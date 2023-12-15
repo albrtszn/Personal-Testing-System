@@ -496,7 +496,7 @@ namespace Personal_Testing_System.RateLogic
                         {
                             res = "выше среднего";
                         }
-                        else if (Point > 0 && Point <= 2)
+                        else if (Point >= 0 && Point <= 2)
                         {
                             res = "высокий";
                         }

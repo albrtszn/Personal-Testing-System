@@ -68,7 +68,33 @@ namespace Personal_Testing_System.Controllers
         /*
          *  TEST METHODS
          */
-
+        [HttpGet("CalculateTestsWeight")]
+        public async Task<IActionResult> CalculateTestsWeight()
+        {
+            var tests = await ms.Test.GetAllTests();
+            if (tests.Any())
+            {
+                foreach(var test in tests)
+                {
+                    int testWeight = 0;
+                    var questions = await ms.Question.GetQuestionsByTest(test.Id);
+                    if (questions.Any())
+                    {
+                        foreach (var question in questions)
+                        {
+                            if (question.Weight.HasValue)
+                            {
+                                testWeight += question.Weight.Value;
+                            }
+                        }
+                        test.Weight = testWeight;
+                        logger.LogInformation($"testId={test.Id}, newScore={test.Weight}");
+                        await ms.Test.SaveTest(test);
+                    }
+                }
+            }
+            return NoContent();
+        }
         [HttpPost("InitAdminDB")]
         public async Task<IActionResult> InitAdminDB()
         {
@@ -3830,7 +3856,7 @@ namespace Personal_Testing_System.Controllers
                                 return BadRequest(new { message = "Ошибка. Такой компетенции нет" });
 
                             string idTest = Guid.NewGuid().ToString();
-                            await ms.Test.SaveTest(new Test
+                            Test newTest = new Test
                             {
                                 Id = idTest,
                                 Name = test.Name,
@@ -3839,7 +3865,10 @@ namespace Personal_Testing_System.Controllers
                                 Generation = test.Generation,
                                 Description = test.Description,
                                 Instruction = test.Instruction
-                            });
+                            };
+                            await ms.Test.SaveTest(newTest);
+
+                            int testWeight = 0;
                             int countOfQuestions = 1;
                             foreach (AddQuestionModel quest in test.Questions)
                             {
@@ -3907,6 +3936,10 @@ namespace Personal_Testing_System.Controllers
                                     });
                                 }
                                 countOfQuestions++;
+                                if (quest.Weight.HasValue && quest.Weight > 0)
+                                {
+                                    testWeight += quest.Weight.Value;
+                                }
                                 int countOfAnswer = 0;
                                 foreach (JObject answer in quest.Answers)
                                 {
@@ -4019,6 +4052,8 @@ namespace Personal_Testing_System.Controllers
                                     }
                                 }
                             }
+                            newTest.Weight = testWeight;
+                            await ms.Test.SaveTest(newTest);
                             return Ok(new { message = "Добавление теста успешно" });
                         }
                     }
@@ -5319,9 +5354,61 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
 
-                        List<EmployeeResultSubcompetenceModel> list = await ms.GetAllEmployeeResultSubcompetenceModels();
+                        List<EmployeeResultSubcompetenceModel> list = (await ms.GetAllEmployeeResultSubcompetenceModels())
+                                                                            .OrderByDescending(x => x.Id)
+                                                                            .ToList(); 
+                        list.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
 
                         return Ok(list);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpGet("GetResultWithSubcompetencesPage")]
+        public async Task<IActionResult> GetResultWithSubcompetencesPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResults ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResults",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+
+                        var Allresults = (await ms.GetAllEmployeeResultSubcompetenceModels())
+                                                    .OrderByDescending(x => x.Id)
+                                                    .ToList();
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allresults.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var results = Allresults
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+
+                        return Ok(results);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -5357,15 +5444,71 @@ namespace Personal_Testing_System.Controllers
                         return NotFound(new { message = "Ошибка. Такого пользователя нет" });
                     }
 
-                    List<EmployeeResultSubcompetenceModel>? results = await ms.GetAllEmployeeResultSubcompetenceModelsByEmployee(id.Id);
+                    List<EmployeeResultSubcompetenceModel>? results = (await ms.GetAllEmployeeResultSubcompetenceModelsByEmployee(id.Id))
+                                                                            .OrderByDescending(x => x.Id)
+                                                                            .ToList();
 
                     if (results != null && results.Count != 0)
                     {
+                        results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
                         return Ok(results);
                     }
                     else
                     {
                         return BadRequest(new { message = "Результатов нет" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpPost("GetResultWithSubcompetencesPageByEmployee")]
+        public async Task<IActionResult> GetResultWithSubcompetencesPageByEmployee([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams, [FromBody] StringIdModel? id)//, [FromBody] ResultQuerryModel query)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResultWithSubcompetencesPageByEmployee");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResultWithSubcompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        if (await ms.Employee.GetEmployeeById(id.Id) == null)
+                        {
+                            return NotFound(new { message = "Ошибка. Такого пользователя нет" });
+                        }
+
+                        var Allresults = (await ms.GetAllEmployeeResultSubcompetenceModelsByEmployee(id.Id))
+                                                    .OrderByDescending(x => x.Id)
+                                                    .ToList();
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Allresults.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var results = Allresults
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+
+                        return Ok(results);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -5386,10 +5529,10 @@ namespace Personal_Testing_System.Controllers
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                    logger.LogInformation($"/admin-api/GetResultWithSubcompetencesByEmployeeResultId");
+                    logger.LogInformation($"/admin-api/GetResultWithSubcompetences");
                     await ms.Log.SaveLog(new Log
                     {
-                        UrlPath = "admin-api/GetResultWithSubcompetencesByEmployeeResultId",
+                        UrlPath = "admin-api/GetResultWithSubcompetences",
                         UserId = $"{token.IdAdmin}",
                         UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
                         DataTime = DateTime.Now,
@@ -5401,10 +5544,14 @@ namespace Personal_Testing_System.Controllers
                         return NotFound(new { message = "Ошибка. Такого результата пользователя нет" });
                     }
 
-                    List<EmployeeResultSubcompetenceModel>? results = await ms.GetAllEmployeeResultSubcompetenceModelsByEmployeeResultId(id.Id.Value);
+                    List<EmployeeResultSubcompetenceModel>? results = (await ms.GetAllEmployeeResultSubcompetenceModelsByEmployeeResultId(id.Id.Value))
+                                                                            .OrderByDescending(x => x.Id)
+                                                                            .ToList(); ;
 
                     if (results != null && results.Count != 0)
                     {
+                        results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
                         return Ok(results);
                     }
                     else
@@ -5441,7 +5588,13 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
 
-                        List<EmployeeResultModel> list = await ms.GetAllEmployeeResultModels(); 
+                        List<EmployeeResultModel> list = (await ms.GetAllEmployeeResultModels())
+                                                            .OrderByDescending(x => x.Id)
+                                                            .ToList();
+                        list.ForEach(x =>
+                            x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                       
+
                         /*if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)
                         {
                             list = list.Where(x => x.Employee.Subdivision.Id == query.IdSubdivision).ToList();
@@ -5539,6 +5692,9 @@ namespace Personal_Testing_System.Controllers
                             .Take(pageParams.ItemsPerPage.Value)
                             .ToList();
 
+                        results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+
                         return Ok(results);
                     }
                 }
@@ -5575,7 +5731,11 @@ namespace Personal_Testing_System.Controllers
                         return NotFound(new { message = "Ошибка. Такого пользователя нет" });
                     }
 
-                    List<EmployeeResultModel>? results = await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id);
+                    List<EmployeeResultModel>? results = (await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id))
+                                                            .OrderByDescending(x => x.Id)
+                                                            .ToList();
+                    results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
 
                     if (results != null && results.Count != 0)
                     {
@@ -5629,6 +5789,9 @@ namespace Personal_Testing_System.Controllers
                         .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
                         .Take(pageParams.ItemsPerPage.Value)
                         .ToList();
+
+                    results.ForEach(x =>
+                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
 
                     if (allResults != null && allResults.Count() != 0)
                     {

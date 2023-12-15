@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<TokenAdmin> GetTokenAdminById(int id)
         {
             return await context.TokenAdmins.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }      
+        public async Task<TokenAdmin> GetTrackTokenAdminById(int id)
+        {
+            return await context.TokenAdmins.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveTokenAdmin(TokenAdmin TokenAdminToSave)
         {
-            TokenAdmin? TokenAdmin = await GetTokenAdminById(TokenAdminToSave.Id);
+            TokenAdmin? TokenAdmin = await GetTrackTokenAdminById(TokenAdminToSave.Id);
             //TokenAdmin? TokenAdmin = await context.TokenAdmins.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TokenAdminToSave.Id));
             if (TokenAdmin != null && TokenAdminToSave.Id != 0)
             {

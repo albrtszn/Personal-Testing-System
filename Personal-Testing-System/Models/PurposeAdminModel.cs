@@ -8,5 +8,6 @@ namespace Personal_Testing_System.Models
         public EmployeeModel? Employee { get; set; }
         public TestGetModel? Test { get; set; }
         public string? DatatimePurpose { get; set; }
+        public int? Timer { get; set; }
     }
 }

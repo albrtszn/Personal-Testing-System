@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<Employee> GetEmployeeById(string id)
         {
             return await context.Employees.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        public async Task<Employee> GetTrackEmployeeById(string id)
+        {
+            return await context.Employees.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveEmployee(Employee EmployeeToSave)
         {
-            Employee? employee = await GetEmployeeById(EmployeeToSave.Id);
+            Employee? employee = await GetTrackEmployeeById(EmployeeToSave.Id);
             //Employee? Employee = await context.Employees.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(EmployeeToSave.Id));
             if (employee != null && !EmployeeToSave.Id.IsNullOrEmpty())
             {

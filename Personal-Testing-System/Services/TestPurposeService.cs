@@ -26,7 +26,8 @@ namespace Personal_Testing_System.Services
                 Id = testPurposeDto.Id.Value,
                 IdEmployee = testPurposeDto.IdEmployee,
                 IdTest = testPurposeDto.IdTest,
-                DatatimePurpose = DateTime.Parse(testPurposeDto.DatatimePurpose)
+                DatatimePurpose = DateTime.Parse(testPurposeDto.DatatimePurpose),
+                Timer = testPurposeDto.Timer.Value
             };
         }
 
@@ -37,7 +38,8 @@ namespace Personal_Testing_System.Services
                 Id = testPurpose.Id,
                 IdEmployee = testPurpose.IdEmployee,
                 IdTest = testPurpose.IdTest,
-                DatatimePurpose = testPurpose.DatatimePurpose.ToString()
+                DatatimePurpose = testPurpose.DatatimePurpose.ToString(),
+                Timer = testPurpose.Timer
             };
         }
 
@@ -48,7 +50,8 @@ namespace Personal_Testing_System.Services
                 Id = purpose.Id,
                 Employee = await employeeService.GetEmployeeModelById(purpose.IdEmployee),
                 Test = await testService.GetTestGetModelById(purpose.IdTest),
-                DatatimePurpose = purpose.DatatimePurpose.ToString()
+                DatatimePurpose = purpose.DatatimePurpose.ToString(),
+                Timer = purpose.Timer
             };
         }
 
@@ -125,7 +128,8 @@ namespace Personal_Testing_System.Services
             {
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
-                DatatimePurpose = DateTime.Now
+                DatatimePurpose = DateTime.Now,
+                Timer = purpose.Timer.Value
                 //DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
             return true;
@@ -138,7 +142,8 @@ namespace Personal_Testing_System.Services
                 Id = purpose.Id.Value,
                 IdEmployee = purpose.IdEmployee,
                 IdTest = purpose.IdTest,
-                DatatimePurpose = DateTime.Now
+                DatatimePurpose = DateTime.Now,
+                Timer = purpose.Timer.Value
                 //DatatimePurpose = DateTime.Parse(purpose.DatatimePurpose)
             });
             return true;
@@ -159,7 +164,8 @@ namespace Personal_Testing_System.Services
                         {
                             IdEmployee = employee.Id,
                             IdTest = testId,
-                            DatatimePurpose = time
+                            DatatimePurpose = time,
+                            Timer = 0
                         });
                     }
                 }

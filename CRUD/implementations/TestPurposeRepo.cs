@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<TestPurpose> GetTestPurposeById(int id)
         {
             return await context.TestPurposes.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }      
+        public async Task<TestPurpose> GetTrackTestPurposeById(int id)
+        {
+            return await context.TestPurposes.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveTestPurpose(TestPurpose TestPurposeToSave)
         {
-            TestPurpose? TestPurpose = await GetTestPurposeById(TestPurposeToSave.Id);
+            TestPurpose? TestPurpose = await GetTrackTestPurposeById(TestPurposeToSave.Id);
             //TestPurpose? TestPurpose = await context.TestPurposes.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TestPurposeToSave.Id));
             if (TestPurpose != null && TestPurposeToSave.Id != 0)
             {

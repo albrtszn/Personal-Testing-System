@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<FirstPart> GetFirstPartById(string id)
         {
             return await context.FirstParts.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        async Task<FirstPart> GetTrackFirstPartById(string id)
+        {
+            return await context.FirstParts.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveFirstPart(FirstPart FirstPartToSave)
         {
-            FirstPart? FirstPart = await GetFirstPartById(FirstPartToSave.Id);
+            FirstPart? FirstPart = await GetTrackFirstPartById(FirstPartToSave.Id);
             //FirstPart? FirstPart = await context.FirstParts.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(FirstPartToSave.Id));
             if (FirstPart != null && !FirstPartToSave.Id.IsNullOrEmpty())
             {

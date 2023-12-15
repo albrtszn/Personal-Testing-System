@@ -4811,7 +4811,8 @@ namespace Personal_Testing_System.Controllers
                                     Id = purpose.Id,
                                     IdEmployee = id.Id,
                                     Test = await ms.Test.GetTestGetModelById(purpose.IdTest),
-                                    DatatimePurpose = purpose.DatatimePurpose
+                                    DatatimePurpose = purpose.DatatimePurpose,
+                                    Timer = purpose.Timer
                                 };
 
                                 models.Add(model);
@@ -4876,7 +4877,8 @@ namespace Personal_Testing_System.Controllers
                                     Id = purpose.Id,
                                     IdEmployee = id.Id,
                                     Test = await ms.Test.GetTestGetModelById(purpose.IdTest),
-                                    DatatimePurpose = purpose.DatatimePurpose
+                                    DatatimePurpose = purpose.DatatimePurpose,
+                                    Timer = purpose.Timer
                                 };
                                 models.Add(model);
                             }

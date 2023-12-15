@@ -32,11 +32,15 @@ namespace CRUD.implementations
         public async Task<Message> GetMessageById(int id)
         {
             return await context.Messages.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }     
+        public async Task<Message> GetTrackMessageById(int id)
+        {
+            return await context.Messages.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveMessage(Message MessageToSave)
         {
-            Message? Message = await GetMessageById(MessageToSave.Id);
+            Message? Message = await GetTrackMessageById(MessageToSave.Id);
             //Message? Message = await context.Messages.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(MessageToSave.Id));
             if (Message != null && MessageToSave.Id != 0)
             {

@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<Competence> GetCompetenceById(int id)
         {
             return await context.Competences.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        public async Task<Competence> GetTrackCompetenceById(int id)
+        {
+            return await context.Competences.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveCompetence(Competence CompetenceToSave)
         {
-            Competence? competence = await GetCompetenceById(CompetenceToSave.Id);
+            Competence? competence = await GetTrackCompetenceById(CompetenceToSave.Id);
             //Competence? Competence = await context.Competences.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(CompetenceToSave.Id));
             if (competence != null && CompetenceToSave.Id !=0)
             {

@@ -33,10 +33,14 @@ namespace CRUD.implementations
         {
             return await context.ElployeeResultSubcompetences.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
+        public async Task<ElployeeResultSubcompetence> GetTrackEmployeeResultSubcompetenceById(int id)
+        {
+            return await context.ElployeeResultSubcompetences.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }
 
         public async Task<bool> SaveEmployeeResultSubcompetence(ElployeeResultSubcompetence ElployeeResultSubcompetenceToSave)
         {
-            ElployeeResultSubcompetence? ElployeeResultSubcompetence = await GetEmployeeResultSubcompetenceById(ElployeeResultSubcompetenceToSave.Id);
+            ElployeeResultSubcompetence? ElployeeResultSubcompetence = await GetTrackEmployeeResultSubcompetenceById(ElployeeResultSubcompetenceToSave.Id);
             if (ElployeeResultSubcompetence != null && ElployeeResultSubcompetenceToSave.Id != 0)
             {
                 /*context.ElployeeResultSubcompetences.Entry(ElployeeResultSubcompetenceToSave).State = EntityState.Detached;

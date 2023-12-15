@@ -34,11 +34,15 @@ namespace CRUD.implementations
         public async Task<Test> GetTestById(string id)
         {
             return await context.Tests.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }       
+        public async Task<Test> GetTrackTestById(string id)
+        {
+            return await context.Tests.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveTest(Test TestToSave)
         {
-            Test? Test = await GetTestById(TestToSave.Id);
+            Test? Test = await GetTrackTestById(TestToSave.Id);
             //Test? Test = await context.Tests.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(TestToSave.Id));
             if (Test != null && !TestToSave.Id.IsNullOrEmpty())
             {

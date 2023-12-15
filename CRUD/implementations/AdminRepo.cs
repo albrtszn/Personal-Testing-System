@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<Admin> GetAdminById(string id)
         {
             return await context.Admins.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        public async Task<Admin> GettrackAdminById(string id)
+        {
+            return await context.Admins.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveAdmin(Admin AdminToSave)
         {
-            Admin? admin = await GetAdminById(AdminToSave.Id);
+            Admin? admin = await GettrackAdminById(AdminToSave.Id);
             //Admin? admin = await context.Admins.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(AdminToSave.Id));
             if (admin != null && !AdminToSave.Id.IsNullOrEmpty())
             {

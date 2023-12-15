@@ -105,11 +105,10 @@ builder.Services.AddSignalR();/*options =>
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefautConnection"))
     );*/
 
-builder.Services.AddControllers()
-   .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-    });
+builder.Services.AddDbContext<EFDbContext>(options =>
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("DefautConnection"))
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+);
 
 builder.Services.AddSwaggerGen(c =>
 {

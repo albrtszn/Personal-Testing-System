@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<Profile> GetProfileById(int id)
         {
             return await context.Profiles.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        public async Task<Profile> GetTrackProfileById(int id)
+        {
+            return await context.Profiles.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveProfile(Profile ProfileToSave)
         {
-            Profile? Profile = await GetProfileById(ProfileToSave.Id);
+            Profile? Profile = await GetTrackProfileById(ProfileToSave.Id);
             //Profile? Profile = await context.Profiles.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(ProfileToSave.Id));
             if (Profile != null && ProfileToSave.Id != 0)
             {

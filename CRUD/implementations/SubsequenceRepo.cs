@@ -35,11 +35,15 @@ namespace CRUD.implementations
         public async Task<Subsequence> GetSubsequenceById(int id)
         {
             return await context.Subsequences.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }       
+        public async Task<Subsequence> GettrackSubsequenceById(int id)
+        {
+            return await context.Subsequences.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveSubsequence(Subsequence SubsequenceToSave)
         {
-            Subsequence? Subsequence = await GetSubsequenceById(SubsequenceToSave.Id);
+            Subsequence? Subsequence = await GettrackSubsequenceById(SubsequenceToSave.Id);
             //Subsequence? Subsequence = await context.Subsequences.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(SubsequenceToSave.Id));
             if (Subsequence != null && SubsequenceToSave.Id != 0)
             {

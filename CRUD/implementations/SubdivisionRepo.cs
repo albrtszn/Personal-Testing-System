@@ -33,11 +33,15 @@ namespace CRUD.implementations
         public async Task<Subdivision> GetSubdivisionById(int id)
         {
             return await context.Subdivisions.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }        
+        public async Task<Subdivision> GettrackSubdivisionById(int id)
+        {
+            return await context.Subdivisions.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveSubdivision(Subdivision SubdivisionToSave)
         {
-            Subdivision? Subdivision = await GetSubdivisionById(SubdivisionToSave.Id);
+            Subdivision? Subdivision = await GettrackSubdivisionById(SubdivisionToSave.Id);
             //Subdivision? Subdivision = await context.Subdivisions.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(SubdivisionToSave.Id));
             if (Subdivision != null && SubdivisionToSave.Id != 0)
             {

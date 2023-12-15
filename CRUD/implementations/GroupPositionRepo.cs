@@ -32,11 +32,15 @@ namespace CRUD.implementations
         public async Task<GroupPosition> GetGroupPositionById(int id)
         {
             return await context.GroupPositions.FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }     
+        public async Task<GroupPosition> GetTrackGroupPositionById(int id)
+        {
+            return await context.GroupPositions.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> SaveGroupPosition(GroupPosition GroupPositionToSave)
         {
-            GroupPosition? GroupPosition = await GetGroupPositionById(GroupPositionToSave.Id);
+            GroupPosition? GroupPosition = await GetTrackGroupPositionById(GroupPositionToSave.Id);
             //GroupPosition? GroupPosition = await context.GroupPositions.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(GroupPositionToSave.Id));
             if (GroupPosition != null && GroupPositionToSave.Id != 0)
             {

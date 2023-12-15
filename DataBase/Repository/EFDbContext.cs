@@ -43,6 +43,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<FirstPart> FirstParts { get; set; }
 
+    public virtual DbSet<GlobalConfigure> GlobalConfigures { get; set; }
+
     public virtual DbSet<GroupPosition> GroupPositions { get; set; }
 
     public virtual DbSet<Log> Logs { get; set; }
@@ -204,6 +206,11 @@ public partial class EFDbContext : DbContext
             entity.HasOne(d => d.IdQuestionNavigation).WithMany(p => p.FirstParts)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__FirstPart__idQue__1A9EF37A");
+        });
+
+        modelBuilder.Entity<GlobalConfigure>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__GlobalCo__3213E83F796DFB2B");
         });
 
         modelBuilder.Entity<GroupPosition>(entity =>

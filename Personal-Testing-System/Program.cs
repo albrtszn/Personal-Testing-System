@@ -18,7 +18,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped< EFDbContext>();
+builder.Services.AddScoped<EFDbContext>();
 
 builder.Services.AddScoped<IAnswerRepo, AnswerRepo>();
 builder.Services.AddScoped<IProfileRepo, ProfileRepo>();
@@ -101,14 +101,16 @@ builder.Services.AddSignalR();/*options =>
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
     });*/
 
-/*builder.Services.AddDbContext<EFDbContext>(
-        options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefautConnection"))
-    );*/
-
 builder.Services.AddDbContext<EFDbContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DefautConnection"))
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
 );
+
+builder.Services.AddControllers()
+   .AddJsonOptions(options =>
+   {
+       options.JsonSerializerOptions.PropertyNamingPolicy = null;
+   });
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -163,8 +165,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 /*if (app.Environment.IsDevelopment())
 {*/
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseStaticFiles();

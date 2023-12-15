@@ -23,9 +23,9 @@ public partial class TestPurpose
 
     [Column("datatimePurpose", TypeName = "datetime")]
     public DateTime? DatatimePurpose { get; set; }
+
     [Column("timer")]
     public int Timer { get; set; }
-
 
     [ForeignKey("IdEmployee")]
     [InverseProperty("TestPurposes")]

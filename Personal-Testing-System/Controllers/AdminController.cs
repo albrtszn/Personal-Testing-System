@@ -265,6 +265,140 @@ namespace Personal_Testing_System.Controllers
         /*
         *  Profile
         */
+        [SwaggerOperation(Tags = new[] { "Admin/GlobalConfigure" })]
+        [HttpGet("GetGlobalConfigures")]
+        public async Task<IActionResult> GetGlobalConfigures([FromHeader] string Authorization)
+        {
+            logger.LogInformation($"/admin-api/GetGlobalConfigures");
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetGlobalConfigures : AuthHeader={Authorization}");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetGlobalConfigures",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.GlobalConfigure.GetAllGlobalConfigureDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/GlobalConfigure" })]
+        [HttpPost("AddGlobalConfigure")]
+        public async Task<IActionResult> AddGlobalConfigure([FromHeader] string Authorization, [FromBody] AddGlobalConfigureModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null 
+                && model.TestingTimeLimit.HasValue && model.SkippingQuestion.HasValue
+                && model.EarlyCompletionTesting.HasValue )
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                        logger.LogInformation($"/admin-api/AddGlobalConfigure ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddGlobalConfigure",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+                        await ms.GlobalConfigure.SaveGlobalConfigure(model);
+                        return Ok(new { message = "Конфигурация добавлена" });
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/GlobalConfigure" })]
+        [HttpPost("UpdateGlobalConfigure")]
+        public async Task<IActionResult> UpdateGlobalConfigure([FromHeader] string Authorization, [FromBody] GlobalConfigureDto? dto)
+        {
+            if (!Authorization.IsNullOrEmpty() && dto != null &&  dto.Id.HasValue && dto.Id != 0
+                && dto.TestingTimeLimit.HasValue && dto.SkippingQuestion.HasValue
+                && dto.EarlyCompletionTesting.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                        logger.LogInformation($"/admin-api/UpdateGlobalConfigure ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateGlobalConfigure",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+                        await ms.GlobalConfigure.SaveGlobalConfigure(dto);
+                        return Ok(new { message = "Конфигурация обновлена" });
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/GlobalConfigure" })]
+        [HttpPost("DeleteGlobalConfigure")]
+        public async Task<IActionResult> DeleteGlobalConfigure([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if ((await ms.Profile.GetProfileById(id.Id.Value)) != null)
+                        {
+                            await ms.Log.SaveLog(new Log
+                            {
+                                UrlPath = "admin-api/DeleteGlobalConfigure",
+                                UserId = token.IdAdmin,
+                                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                                DataTime = DateTime.Now
+                            });
+                            if (await ms.GlobalConfigure.GetGlobalConfigureById(id.Id.Value) != null)
+                            {
+                                await ms.GlobalConfigure.DeleteGlobalConfigureById(id.Id.Value);
+                            }
+                            return Ok(new { message = "Конфигурация удалена" });
+                        }
+                        else
+                        {
+                            return NotFound(new { message = "Ошибка. Такой конфигурации не существует" });
+                        }
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
+        *  Profile
+        */
         //[ApiExplorerSettings(GroupName = "Profiles")]
         [SwaggerOperation(Tags = new[] { "Admin/Profile" })]
         [HttpGet("GetProfiles")]
@@ -5536,7 +5670,7 @@ namespace Personal_Testing_System.Controllers
                         });
 
                         Result result = (await ms.Result.GetResultById(ResultId.Id));
-                        if (ResultId == null)
+                        if (result == null)
                             return NotFound(new { message = "Ошибка. такого результата нет" });
                         EmployeeResult employeeResult = (await ms.EmployeeResult.GetEmployeeResultByResultId(result.Id));
                         List<EmployeeAnswer>? employeeAnswers = await ms.EmployeeAnswer.GetAllEmployeeAnswersByResultId(result.Id);

@@ -3,6 +3,6 @@
     public class AnswerWeightResultModel
     {
         public int? AnswerId { get; set; }
-        public int? NewWeight { get; set; }
+        //public int? NewWeight { get; set; }
     }
 }

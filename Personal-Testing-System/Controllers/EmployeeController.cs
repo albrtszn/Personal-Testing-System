@@ -158,6 +158,34 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заолнены" });
         }
 
+        [HttpGet("GetGlobalConfigures")]
+        public async Task<IActionResult> GetGlobalConfigures([FromHeader] string Authorization)
+        {
+            logger.LogInformation($"/admin-api/GetGlobalConfigures");
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenEmployee? token = await ms.TokenEmployee.GetTokenEmployeeByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenEmployeeExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/user-api/GetGlobalConfigures ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "user-api/GetGlobalConfigures",
+                        UserId = token.IdEmployee,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.GlobalConfigure.GetAllGlobalConfigureDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         [HttpGet("GetMessages")]
         public async Task<IActionResult> GetMessages([FromHeader] string Authorization)
         {

@@ -34,12 +34,32 @@ namespace CRUD.implementations
         {
             return await context.EmployeeResults.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
+        public async Task<EmployeeResult> GetTrtackEmployeeResultById(int id)
+        {
+            return await context.EmployeeResults.AsTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }
 
         public async Task<bool> SaveEmployeeResult(EmployeeResult EmployeeResultToSave)
         {
-            await context.EmployeeResults.AddAsync(EmployeeResultToSave);
-            await context.SaveChangesAsync();
+            EmployeeResult? result = await GetTrtackEmployeeResultById(EmployeeResultToSave.Id);
+            //Answer? Answer = await context.Answers.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(AnswerToSave.Id));
+            if (result != null && result.Id != 0)
+            {
+                /*context.Answers.Entry(AnswerToSave).State = EntityState.Detached;
+                context.Set<Answer>().Update(AnswerToSave);*/
+                result.IdResult = EmployeeResultToSave.IdResult;
+                result.ScoreFrom = EmployeeResultToSave.ScoreFrom;
+                result.ScoreTo = EmployeeResultToSave.ScoreTo;
+                result.IdEmployee = EmployeeResultToSave.IdEmployee;
 
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.EmployeeResults.AddAsync(EmployeeResultToSave);
+                await context.SaveChangesAsync();
+                return false;
+            }
             return true;
         }
     }

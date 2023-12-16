@@ -50,4 +50,7 @@ public partial class Test
 
     [InverseProperty("IdTestNavigation")]
     public virtual ICollection<TestPurpose> TestPurposes { get; set; } = new List<TestPurpose>();
+
+    [InverseProperty("IdTestNavigation")]
+    public virtual ICollection<TestScore> TestScores { get; set; } = new List<TestScore>();
 }

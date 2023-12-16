@@ -42,6 +42,7 @@ namespace Personal_Testing_System.Services
         private SubcompetenceService subcompetenceService;
         private GlobalConfigureService globalConfigureService;
         private MessageService messageService;
+        private TestScoreService testScoreService;
         
         private IConfiguration config;
 
@@ -57,7 +58,7 @@ namespace Personal_Testing_System.Services
                        ProfileService _profileService, GroupPositionService _groupPositionService, CompetenciesForGroupService _competenciesForGroupService,
                        EmployeeResultSubcompetenceService _employeeResultSubcompetenceServidce, QuestionSubcompetenceService _questionSubcompetenceService,
                        SubcompetenceService _subcompetenceService, MessageService _messageService,
-                       GlobalConfigureService _globalConfigureService,
+                       GlobalConfigureService _globalConfigureService, TestScoreService _testScoreService,
                         IConfiguration _config)
         {
             answerService = _answerService;
@@ -88,6 +89,7 @@ namespace Personal_Testing_System.Services
             subcompetenceService = _subcompetenceService;
             messageService = _messageService;
             globalConfigureService = _globalConfigureService;
+            testScoreService = _testScoreService;
 
             config = _config;
         }
@@ -121,6 +123,7 @@ namespace Personal_Testing_System.Services
         public SubcompetenceService Subcompetence { get { return subcompetenceService; } }
         public MessageService Message { get { return messageService; } }
         public GlobalConfigureService GlobalConfigure { get { return globalConfigureService; } }
+        public TestScoreService TestScore { get { return testScoreService; } }
 
         /*
          *  Logic
@@ -129,7 +132,7 @@ namespace Personal_Testing_System.Services
         /*
          *  TokenEmployee
          */
-        private double hoursToExpireEmployeeToken = 2.0;
+        private double hoursToExpireEmployeeToken = 5.0;
         public async Task<bool> IsTokenEmployeeExpired(TokenEmployee tokenEmployee)
         {
             double ttl = config.GetValue<double>("TokenTimeToLiveInHours:EmployeeToken");

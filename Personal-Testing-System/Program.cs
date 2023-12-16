@@ -49,6 +49,7 @@ builder.Services.AddScoped<IQuestionSubcompetenceRepo, QuestionSubcompetenceRepo
 builder.Services.AddScoped<ISubcompetenceRepo, SubcompetenceRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IGlobalConfigureRepo, GlobalConfigureRepo>();
+builder.Services.AddScoped<ITestScoreRepo, TestScoreRepo>();
 
 builder.Services.AddScoped<AnswerService>();
 builder.Services.AddScoped<ProfileService>();
@@ -78,6 +79,7 @@ builder.Services.AddScoped<QuestionSubcompetenceService>();
 builder.Services.AddScoped<SubcompetenceService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<GlobalConfigureService>();
+builder.Services.AddScoped<TestScoreService>();
 
 builder.Services.AddScoped<MasterService>();
 

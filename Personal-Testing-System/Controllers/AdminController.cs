@@ -289,7 +289,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
-        *  Profile
+        *  GlobalConfigure
         */
         [SwaggerOperation(Tags = new[] { "Admin/GlobalConfigure" })]
         [HttpGet("GetGlobalConfigures")]
@@ -2716,6 +2716,140 @@ namespace Personal_Testing_System.Controllers
                             return Ok(new { message = "Компетенция для группы удалена" });
                         }
                         return NotFound(new { message = "Ошибка. Компетенция для группы не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+        /*
+        *  TestScore
+        */
+        [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
+        [HttpGet("GetTestScores")]
+        public async Task<IActionResult> GetTestScores([FromHeader] string Authorization)
+        {
+            logger.LogInformation($"/admin-api/GetTestScores");
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetTestScores");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetTestScores",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.TestScore.GetAllTestScoreDtos());
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
+        [HttpPost("AddTestScore")]
+        public async Task<IActionResult> AddTestScore([FromHeader] string Authorization, [FromBody] AddTestScoreModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null
+                && model.MinValue.HasValue && model.MaxValue.HasValue
+                && !model.Name.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/AddTestScore ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/AddTestScore",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now
+                    });
+                    await ms.TestScore.SaveTestScore(model);
+                    return Ok(new { message = "Оценка результата теста добавлена" });
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
+        [HttpPost("UpdateTestScore")]
+        public async Task<IActionResult> UpdateTestScore([FromHeader] string Authorization, [FromBody] TestScoreDto? dto)
+        {
+            if (!Authorization.IsNullOrEmpty() && dto != null && dto.Id.HasValue && dto.Id != 0
+                && dto.MinValue.HasValue && dto.MaxValue.HasValue
+                && !dto.Name.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/UpdateGlobalConfigure ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/UpdateGlobalConfigure",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now
+                    });
+                    await ms.TestScore.SaveTestScore(dto);
+                    return Ok(new { message = "Конфигурация обновлена" });
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
+        [HttpPost("DeleteTestScore")]
+        public async Task<IActionResult> DeleteTestScore([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        if ((await ms.TestScore.GetTestScoreById(id.Id.Value)) != null)
+                        {
+                            await ms.Log.SaveLog(new Log
+                            {
+                                UrlPath = "admin-api/DeleteTestScore",
+                                UserId = token.IdAdmin,
+                                UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                                DataTime = DateTime.Now
+                            });
+                            if (await ms.GlobalConfigure.GetGlobalConfigureById(id.Id.Value) != null)
+                            {
+                                await ms.GlobalConfigure.DeleteGlobalConfigureById(id.Id.Value);
+                            }
+                            return Ok(new { message = "Конфигурация удалена" });
+                        }
+                        else
+                        {
+                            return NotFound(new { message = "Ошибка. Такой оценки результата нет" });
+                        }
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -5354,13 +5488,30 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now
                         });
 
-                        List<EmployeeResultSubcompetenceModel> list = (await ms.GetAllEmployeeResultSubcompetenceModels())
+                        List<EmployeeResultSubcompetenceModel> results = (await ms.GetAllEmployeeResultSubcompetenceModels())
                                                                             .OrderByDescending(x => x.Id)
-                                                                            .ToList(); 
-                        list.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                                                                            .ToList();
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Name;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        //list.ForEach(x =>
+                        //        x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
 
-                        return Ok(list);
+                        return Ok(results);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -5591,8 +5742,36 @@ namespace Personal_Testing_System.Controllers
                         List<EmployeeResultModel> list = (await ms.GetAllEmployeeResultModels())
                                                             .OrderByDescending(x => x.Id)
                                                             .ToList();
-                        list.ForEach(x =>
-                            x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+
+                        foreach (var result in list)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    logger.LogInformation($"score Name={score.Name} min={score.MinValue} max={score.MaxValue}");
+
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        logger.LogInformation($"employeeScore Name={score.Name}");
+                                        //var editedResult = list.FirstOrDefault(x=> x.Id.Equals(result.Id));
+                                        //editedResult.ResultLevel = score.Name;
+
+                                        EmployeeResultModel model = list.Find(x=> x.Equals(result));
+
+                                        if (model!=null) 
+                                            model.ResultLevel = score.Name;
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        //list.ForEach(x =>
+                        //    x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
                        
 
                         /*if (query.IdSubdivision.HasValue && query.IdSubdivision != 0)

@@ -73,6 +73,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<TestPurpose> TestPurposes { get; set; }
 
+    public virtual DbSet<TestScore> TestScores { get; set; }
+
     public virtual DbSet<TokenAdmin> TokenAdmins { get; set; }
 
     public virtual DbSet<TokenEmployee> TokenEmployees { get; set; }
@@ -331,6 +333,15 @@ public partial class EFDbContext : DbContext
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.TestPurposes)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__TestPurpo__idTes__3CF40B7E");
+        });
+
+        modelBuilder.Entity<TestScore>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__TestScor__3213E83F0A72DEC6");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.TestScores)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__TestScore__idTes__22FF2F51");
         });
 
         modelBuilder.Entity<TokenAdmin>(entity =>

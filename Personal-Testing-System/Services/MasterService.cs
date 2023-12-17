@@ -43,6 +43,7 @@ namespace Personal_Testing_System.Services
         private GlobalConfigureService globalConfigureService;
         private MessageService messageService;
         private TestScoreService testScoreService;
+        private SubcompetenceScoreService subcompetenceScoreService;
         
         private IConfiguration config;
 
@@ -59,6 +60,7 @@ namespace Personal_Testing_System.Services
                        EmployeeResultSubcompetenceService _employeeResultSubcompetenceServidce, QuestionSubcompetenceService _questionSubcompetenceService,
                        SubcompetenceService _subcompetenceService, MessageService _messageService,
                        GlobalConfigureService _globalConfigureService, TestScoreService _testScoreService,
+                       SubcompetenceScoreService _subcompetenceScoreService,
                         IConfiguration _config)
         {
             answerService = _answerService;
@@ -90,6 +92,7 @@ namespace Personal_Testing_System.Services
             messageService = _messageService;
             globalConfigureService = _globalConfigureService;
             testScoreService = _testScoreService;
+            subcompetenceScoreService = _subcompetenceScoreService;
 
             config = _config;
         }
@@ -124,6 +127,7 @@ namespace Personal_Testing_System.Services
         public MessageService Message { get { return messageService; } }
         public GlobalConfigureService GlobalConfigure { get { return globalConfigureService; } }
         public TestScoreService TestScore { get { return testScoreService; } }
+        public SubcompetenceScoreService SubcompetenceScore { get { return subcompetenceScoreService; } }
 
         /*
          *  Logic

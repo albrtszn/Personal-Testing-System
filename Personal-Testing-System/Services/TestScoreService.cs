@@ -19,10 +19,11 @@ namespace Personal_Testing_System.Services
                 Id = TestScore.Id,
                 MinValue = TestScore.MinValue,
                 MaxValue = TestScore.MaxValue,
-                Name = TestScore.Name,
+                //Name = TestScore.Name,
                 Description = TestScore.Description,
                 IdTest = TestScore.IdTest,
-                Recommend = TestScore.Recommend
+                Recommend = TestScore.Recommend,
+                NumberPoints = TestScore.NumberPoints
             };
         }
         private TestScore ConvertToTestScore(TestScoreDto TestScoreDto)
@@ -32,10 +33,11 @@ namespace Personal_Testing_System.Services
                 Id = TestScoreDto.Id.Value,
                 MinValue = TestScoreDto.MinValue.Value,
                 MaxValue = TestScoreDto.MaxValue.Value,
-                Name = TestScoreDto.Name,
+                //Name = TestScoreDto.Name,
                 Description = TestScoreDto.Description,
                 IdTest = TestScoreDto.IdTest,
-                Recommend = TestScoreDto.Recommend.Value
+                Recommend = TestScoreDto.Recommend.Value,
+                NumberPoints = TestScoreDto.NumberPoints.Value
             };
         }
         public async Task<bool> DeleteTestScoreById(int id)
@@ -109,10 +111,11 @@ namespace Personal_Testing_System.Services
             {
                 MinValue = TestScoreToSave.MinValue.Value,
                 MaxValue = TestScoreToSave.MaxValue.Value,
-                Name = TestScoreToSave.Name,
+                //Name = TestScoreToSave.Name,
                 Description = TestScoreToSave.Description,
                 IdTest = TestScoreToSave.IdTest,
-                Recommend = TestScoreToSave.Recommend.Value
+                Recommend = TestScoreToSave.Recommend.Value,
+                NumberPoints = TestScoreToSave.NumberPoints.Value
             });
         }
     }

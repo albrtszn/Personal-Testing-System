@@ -25,7 +25,7 @@ public partial class Test
     public int? IdCompetence { get; set; }
 
     [Column("description")]
-    [StringLength(600)]
+    [StringLength(1000)]
     public string? Description { get; set; }
 
     [Column("instruction")]

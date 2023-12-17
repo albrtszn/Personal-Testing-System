@@ -62,6 +62,15 @@ namespace Personal_Testing_System.Services
             list.ForEach(x => QuestionSubcompetences.Add(ConvertToQuestionSubcompetenceDto(x)));
             return QuestionSubcompetences;
         }
+        public async Task<List<QuestionSubcompetenceDto>> GetAllQuestionSubcompetenceDtosByQuestion(string idQuestion)
+        {
+            List<QuestionSubcompetenceDto> QuestionSubcompetences = new List<QuestionSubcompetenceDto>();
+            List<QuestionSubcompetence> list = (await QuestionSubcompetenceRepo.GetAllQuestionSubcompetences())
+                                                     .Where(x => x!= null && x.IdQuestion != null && x.IdQuestion.Equals(idQuestion))
+                                                     .ToList();
+            list.ForEach(x => QuestionSubcompetences.Add(ConvertToQuestionSubcompetenceDto(x)));
+            return QuestionSubcompetences;
+        }
 
         /*public async Task<List<QuestionSubcompetenceDto>> GetQuestionSubcompetenceDtosByQuestionId(string id)
         {

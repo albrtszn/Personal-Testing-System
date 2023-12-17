@@ -366,16 +366,17 @@ namespace Personal_Testing_System.Controllers
                     {
                         return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
                     }
-                        logger.LogInformation($"/admin-api/UpdateGlobalConfigure ");
-                        await ms.Log.SaveLog(new Log
-                        {
-                            UrlPath = "admin-api/UpdateGlobalConfigure",
-                            UserId = token.IdAdmin,
-                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
-                            DataTime = DateTime.Now
-                        });
-                        await ms.GlobalConfigure.SaveGlobalConfigure(dto);
-                        return Ok(new { message = "Конфигурация обновлена" });
+                    logger.LogInformation($"/admin-api/UpdateGlobalConfigure ");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/UpdateGlobalConfigure",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now
+                    });
+                    //await ms.GlobalConfigure.SaveGlobalConfigure(dto);
+                    await notificationHub.Clients.All.ReceiveMessage($"UpdateGlobalConfig: Временной лимт:'{dto.TestingTimeLimit}, Пропуск вопросов: {dto.SkippingQuestion}, Завершение: {dto.EarlyCompletionTesting}.");
+                    return Ok(new { message = "Конфигурация обновлена" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
             }
@@ -1245,6 +1246,7 @@ namespace Personal_Testing_System.Controllers
                         }
 
                         await ms.Employee.SaveEmployee(employee);
+                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Зарегестрирован новый пользователь");
                         return Ok(new { message = "Сотрудник добавлен" });
                     }
                 }
@@ -1287,6 +1289,7 @@ namespace Personal_Testing_System.Controllers
                                 return BadRequest(new { message = "Ошибка. Такого отдела нет" });
                             }
                             await ms.Employee.SaveEmployee(employee);
+                            await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.SecondName} {employee.FirstName}' обновлен");
                             return Ok(new { message = "Сотрудник обновлен" });
                         }
                         else
@@ -1324,9 +1327,11 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"Id Сотрудника={id.Id}"
                         });
-                        if (await ms.Employee.GetEmployeeById(id.Id) != null)
+                        Employee? employee = await ms.Employee.GetEmployeeById(id.Id);
+                        if (employee != null)
                         {
                             await ms.Employee.DeleteEmployeeById(id.Id);
+                            await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.SecondName} {employee.FirstName}' удален");
                             return Ok(new { message = "Сотрудник удален" });
                         }
                         return NotFound(new { message = "Ошибка. Пользователь не найден" });
@@ -2270,6 +2275,265 @@ namespace Personal_Testing_System.Controllers
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
+
+        /*
+         *  SubcompetenceScore
+         */
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpGet("GetSubcompetenceScores")]
+        public async Task<IActionResult> GetSubcompetenceScores([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetenceScores");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetenceScores",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.SubcompetenceScore.GetAllSubcompetenceScoreDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpGet("GetSubcompetenceScoresBySubcompetence")]
+        public async Task<IActionResult> GetSubcompetenceScoresBySubcompetence([FromHeader] string Authorization, [FromBody] IntIdModel id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id !=null && id.Id > 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetenceScores");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetenceScores",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.SubcompetenceScore.GetSubcompetenceScoreDtosBySubCompetence(id.Id.Value));
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpGet("GetSubcompetenceScoresPage")]
+        public async Task<IActionResult> GetSubcompetenceScoresPage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetenceScoresPage");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetenceScores",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var Alsubcompetences = (await ms.SubcompetenceScore.GetAllSubcompetenceScoreDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, Alsubcompetences.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var subcompetences = Alsubcompetences
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(subcompetences);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpPost("GetSubcompetenceScore")]
+        public async Task<IActionResult> GetSubcompetenceScore([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetSubcompetenceScore :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetSubcompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id ={id.Id}"
+                        });
+                        SubcompetenceScoreDto? dto = await ms.SubcompetenceScore.GetSubcompetenceScoreDtoById(id.Id.Value);
+                        if (dto != null)
+                        {
+                            return Ok(dto);
+                        }
+                        return NotFound(new { message = "Ошибка. Оценка подкомпетенции не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpPost("AddSubcompetenceScore")]
+        public async Task<IActionResult> AddSubcompetenceScore([FromHeader] string Authorization, [FromBody] AddSubcompetenceScoreModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null && 
+                model.MinValue.HasValue && model.MaxValue.HasValue &&
+                !model.Description.IsNullOrEmpty() && model.IdSubcompetence.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddSubcompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddSubcompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"id подкомпентенции={model.IdSubcompetence}"
+                        });
+                        await ms.SubcompetenceScore.SaveSubcompetenceScore(model);
+                        return Ok(new { message = "Оценка подкомпетенции добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpPost("UpdateSubcompetenceScore")]
+        public async Task<IActionResult> UpdateSubcompetenceScore([FromHeader] string Authorization, [FromBody] SubcompetenceScoreDto? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null &&
+                model.Id.HasValue && model.Id > 0 && 
+                model.MinValue.HasValue && model.MaxValue.HasValue &&
+                !model.Description.IsNullOrEmpty() && model.IdSubcompetence.HasValue && model.IdSubcompetence > 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateSubcompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateSubcompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции теста={model.IdSubcompetence}"
+                        });
+                        if (await ms.Subcompetence.GetSubcompetenceById(model.IdSubcompetence.Value) != null)
+                        {
+                            await ms.SubcompetenceScore.SaveSubcompetenceScore(model);
+                            return Ok(new { message = "Оценка подкомпетенции обновлена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Оценка подкомпетенции не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/SubcompetenceScore" })]
+        [HttpPost("DeleteSubcompetenceScore")]
+        public async Task<IActionResult> DeleteSubcompetenceScore([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue && id.Id > 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteSubcompetence :competenceId={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteSubcompetence",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id подкомпетенции теста={id.Id}"
+                        });
+                        if (await ms.SubcompetenceScore.GetSubcompetenceScoreById(id.Id.Value) != null)
+                        {
+                            await ms.SubcompetenceScore.DeleteSubcompetenceScoreById(id.Id.Value);
+                            return Ok(new { message = "Подкомпетенция удалена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Подкомпетенция не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         /*
          *  QuestionSubcompetence
          */
@@ -2297,6 +2561,37 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                         });
                         return Ok(await ms.QuestionSubcompetence.GetAllQuestionSubcompetenceDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Subcompetence" })]
+        [HttpGet("GetQuestionSubcompetencesByQuestion")]
+        public async Task<IActionResult> GetQuestionSubcompetencesByQuestion([FromHeader] string Authorization, [FromBody] StringIdModel id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && !id.Id.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetQuestionSubcompetences");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetQuestionSubcompetences",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.QuestionSubcompetence.GetAllQuestionSubcompetenceDtosByQuestion(id.Id));
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -2755,12 +3050,41 @@ namespace Personal_Testing_System.Controllers
         }
 
         [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
+        [HttpGet("GetTestScoresByTest")]
+        public async Task<IActionResult> GetTestScoresByTest([FromHeader] string Authorization, [FromBody]StringIdModel id)
+        {
+            logger.LogInformation($"/admin-api/GetTestScores");
+            if (!Authorization.IsNullOrEmpty() && id!=null && !string.IsNullOrEmpty(id.Id))
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    logger.LogInformation($"/admin-api/GetTestScores");
+                    await ms.Log.SaveLog(new Log
+                    {
+                        UrlPath = "admin-api/GetTestScores",
+                        UserId = token.IdAdmin,
+                        UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                        DataTime = DateTime.Now,
+                    });
+                    return Ok(await ms.TestScore.GetTestScoreDtosByTest(id.Id));
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/TestScore" })]
         [HttpPost("AddTestScore")]
         public async Task<IActionResult> AddTestScore([FromHeader] string Authorization, [FromBody] AddTestScoreModel? model)
         {
             if (!Authorization.IsNullOrEmpty() && model != null
                 && model.MinValue.HasValue && model.MaxValue.HasValue
-                && !model.Name.IsNullOrEmpty())
+                && !model.Description.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -2791,7 +3115,7 @@ namespace Personal_Testing_System.Controllers
         {
             if (!Authorization.IsNullOrEmpty() && dto != null && dto.Id.HasValue && dto.Id != 0
                 && dto.MinValue.HasValue && dto.MaxValue.HasValue
-                && !dto.Name.IsNullOrEmpty())
+                && !dto.Description.IsNullOrEmpty())
             {
                 TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
                 if (token != null)
@@ -5394,7 +5718,7 @@ namespace Personal_Testing_System.Controllers
          */
         //todo edit query GetResults
         [SwaggerOperation(Tags = new[] { "Admin/Result" })]
-        [HttpGet("GetEmployeeResultsOfSubcompetence")]
+        [HttpGet("#GetEmployeeResultsOfSubcompetence")]
         public async Task<IActionResult> GetEmployeeResultsOfSubcompetence([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty())
@@ -5428,7 +5752,7 @@ namespace Personal_Testing_System.Controllers
         }
 
         [SwaggerOperation(Tags = new[] { "Admin/Result" })]
-        [HttpGet("DeleteEmployeeResultsOfSubcompetence")]
+        [HttpGet("#DeleteEmployeeResultsOfSubcompetence")]
         public async Task<IActionResult> DeleteEmployeeResultsOfSubcompetence([FromHeader] string Authorization)//, [FromBody] ResultQuerryModel query)
         {
             if (!Authorization.IsNullOrEmpty())
@@ -5501,7 +5825,22 @@ namespace Personal_Testing_System.Controllers
                                     int employeeScore = result.ScoreFrom.Value;
                                     if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
                                     {
-                                        result.ResultLevel = score.Name;
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            foreach (var subcompetenceResult in result.SubcompetenceResults) {
+                                var subcompetenceScores = await ms.SubcompetenceScore.GetSubcompetenceScoresBySubCompetence(subcompetenceResult.Subcompetence.Id.Value);
+                                foreach(var subcompetenceScore in subcompetenceScores)
+                                {
+                                    int employeeSubcompetenceScore = subcompetenceResult.Result;
+                                    if(employeeSubcompetenceScore >= subcompetenceScore.MinValue && 
+                                        employeeSubcompetenceScore <= subcompetenceScore.MaxValue)
+                                    {
+                                        subcompetenceResult.Description = subcompetenceScore.Description;
                                         break;
                                     }
                                 }
@@ -5556,8 +5895,40 @@ namespace Personal_Testing_System.Controllers
                             .Take(pageParams.ItemsPerPage.Value)
                             .ToList();
 
-                        results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            foreach (var subcompetenceResult in result.SubcompetenceResults)
+                            {
+                                var subcompetenceScores = await ms.SubcompetenceScore.GetSubcompetenceScoresBySubCompetence(subcompetenceResult.Subcompetence.Id.Value);
+                                foreach (var subcompetenceScore in subcompetenceScores)
+                                {
+                                    int employeeSubcompetenceScore = subcompetenceResult.Result;
+                                    if (employeeSubcompetenceScore >= subcompetenceScore.MinValue &&
+                                        employeeSubcompetenceScore <= subcompetenceScore.MaxValue)
+                                    {
+                                        subcompetenceResult.Description = subcompetenceScore.Description;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+
 
                         return Ok(results);
                     }
@@ -5601,8 +5972,24 @@ namespace Personal_Testing_System.Controllers
 
                     if (results != null && results.Count != 0)
                     {
-                        results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         return Ok(results);
                     }
                     else
@@ -5656,8 +6043,23 @@ namespace Personal_Testing_System.Controllers
                             .Take(pageParams.ItemsPerPage.Value)
                             .ToList();
 
-                        results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
                         return Ok(results);
                     }
@@ -5701,8 +6103,23 @@ namespace Personal_Testing_System.Controllers
 
                     if (results != null && results.Count != 0)
                     {
-                        results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         return Ok(results);
                     }
                     else
@@ -5750,20 +6167,23 @@ namespace Personal_Testing_System.Controllers
                             {
                                 foreach (var score in testScores)
                                 {
-                                    logger.LogInformation($"score Name={score.Name} min={score.MinValue} max={score.MaxValue}");
+                                    logger.LogInformation($"score Name={score.Description} min={score.MinValue} max={score.MaxValue}");
 
                                     int employeeScore = result.ScoreFrom.Value;
                                     if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
                                     {
-                                        logger.LogInformation($"employeeScore Name={score.Name}");
+                                        logger.LogInformation($"employeeScore Name={score.Description}");
                                         //var editedResult = list.FirstOrDefault(x=> x.Id.Equals(result.Id));
                                         //editedResult.ResultLevel = score.Name;
 
                                         EmployeeResultModel model = list.Find(x=> x.Equals(result));
 
-                                        if (model!=null) 
-                                            model.ResultLevel = score.Name;
-
+                                        if (model != null)
+                                        {
+                                            model.ResultLevel = score.Description;
+                                            model.NumberPoints = score.NumberPoints;
+                                        }
+                                            
                                         break;
                                     }
                                 }
@@ -5871,10 +6291,98 @@ namespace Personal_Testing_System.Controllers
                             .Take(pageParams.ItemsPerPage.Value)
                             .ToList();
 
-                        results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
                         return Ok(results);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/Result" })]
+        [HttpPost("GetResultsBySubdivision")]
+        public async Task<IActionResult> GetResultsBySubdivision([FromHeader] string Authorization, [FromBody] IntIdModel id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id > 0)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetResults ");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetResults",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now
+                        });
+
+                        if (await ms.Subdivision.GetSubdivisionById(id.Id.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой должности нет" });
+
+                        List<EmployeeResultModel> list = (await ms.GetAllEmployeeResultModels())
+                                                            .Where(x => x!= null &&
+                                                                   x.Employee != null &&
+                                                                   x.Employee.Subdivision.Id != null &&
+                                                                   x.Employee.Subdivision.Id.Equals(id.Id.Value))
+                                                            .OrderByDescending(x => x.Id)
+                                                            .ToList();
+
+                        foreach (var result in list)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    logger.LogInformation($"score Name={score.Description} min={score.MinValue} max={score.MaxValue}");
+
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        logger.LogInformation($"employeeScore Name={score.Description}");
+                                        //var editedResult = list.FirstOrDefault(x=> x.Id.Equals(result.Id));
+                                        //editedResult.ResultLevel = score.Name;
+
+                                        EmployeeResultModel model = list.Find(x => x.Equals(result));
+
+                                        if (model != null)
+                                        {
+                                            model.ResultLevel = score.Description;
+                                            model.NumberPoints = score.NumberPoints;
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        return Ok(list);
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -5913,11 +6421,27 @@ namespace Personal_Testing_System.Controllers
                     List<EmployeeResultModel>? results = (await ms.GetAllEmployeeResultModelsByEmployeeId(id.Id))
                                                             .OrderByDescending(x => x.Id)
                                                             .ToList();
-                    results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
+
 
                     if (results != null && results.Count != 0)
                     {
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         return Ok(results);
                     }
                     else
@@ -5969,11 +6493,26 @@ namespace Personal_Testing_System.Controllers
                         .Take(pageParams.ItemsPerPage.Value)
                         .ToList();
 
-                    results.ForEach(x =>
-                                x.ResultLevel = RateLogic.RateLogic.GetLevelTestPoit(x.Result.Test.Id, x.ScoreFrom.Value));
 
                     if (allResults != null && allResults.Count() != 0)
                     {
+                        foreach (var result in results)
+                        {
+                            var testScores = await ms.TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                            if (testScores.Any())
+                            {
+                                foreach (var score in testScores)
+                                {
+                                    int employeeScore = result.ScoreFrom.Value;
+                                    if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                                    {
+                                        result.ResultLevel = score.Description;
+                                        result.NumberPoints = score.NumberPoints;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         return Ok(results);
                     }
                     else

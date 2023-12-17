@@ -19,12 +19,8 @@ public partial class TestScore
     [Column("maxValue")]
     public int MaxValue { get; set; }
 
-    [Column("name")]
-    [StringLength(50)]
-    public string? Name { get; set; }
-
     [Column("description")]
-    [StringLength(50)]
+    [StringLength(1000)]
     public string? Description { get; set; }
 
     [Column("idTest")]
@@ -33,6 +29,9 @@ public partial class TestScore
 
     [Column("recommend")]
     public bool Recommend { get; set; }
+
+    [Column("numberPoints")]
+    public int NumberPoints { get; set; }
 
     [ForeignKey("IdTest")]
     [InverseProperty("TestScores")]

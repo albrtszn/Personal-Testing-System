@@ -65,6 +65,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<Subcompetence> Subcompetences { get; set; }
 
+    public virtual DbSet<SubcompetenceScore> SubcompetenceScores { get; set; }
+
     public virtual DbSet<Subdivision> Subdivisions { get; set; }
 
     public virtual DbSet<Subsequence> Subsequences { get; set; }
@@ -295,6 +297,15 @@ public partial class EFDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Subcompe__3213E83FEE573FB4");
         });
 
+        modelBuilder.Entity<SubcompetenceScore>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Subcompe__3213E83F2BD7D43B");
+
+            entity.HasOne(d => d.IdSubcompetenceNavigation).WithMany(p => p.SubcompetenceScores)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Subcompet__idSub__26CFC035");
+        });
+
         modelBuilder.Entity<Subdivision>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Subdivis__3213E83F4561AB6A");
@@ -338,6 +349,8 @@ public partial class EFDbContext : DbContext
         modelBuilder.Entity<TestScore>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__TestScor__3213E83F0A72DEC6");
+
+            entity.Property(e => e.NumberPoints).HasDefaultValueSql("((1))");
 
             entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.TestScores)
                 .OnDelete(DeleteBehavior.Cascade)

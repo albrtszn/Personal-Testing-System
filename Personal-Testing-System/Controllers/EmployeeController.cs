@@ -277,6 +277,11 @@ namespace Personal_Testing_System.Controllers
                         DataTime = DateTime.Now
                     });
                     await ms.Message.SaveMessage(message, token.IdEmployee);
+                    Employee? employee = await ms.Employee.GetEmployeeById(token.IdEmployee);
+                    if (employee != null)
+                    {
+                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} отправил новое сообщение.");
+                    }
                     return Ok(new { message = "Сообщение добавлено" });
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
@@ -901,12 +906,12 @@ namespace Personal_Testing_System.Controllers
 
                                     Answer answerCheck = await ms.Answer.GetAnswerById(answerModel.AnswerId.Value);
                                     //todo answer correct field
-                                    if (quest.IdQuestionType == 1)// && answerCheck.Correct != null && answerCheck.Correct.Value)
+                                    if (quest.IdQuestionType == 1 && answerCheck.Correct != null && answerCheck.Correct.Value)
                                     {
                                         if (answerCheck.Weight != null && answerCheck.Weight.HasValue)
                                             score += answerCheck.Weight.Value;
                                     }
-                                    if (quest.IdQuestionType == 2)// && answerCheck.Correct != null && answerCheck.Correct.Value)
+                                    if (quest.IdQuestionType == 2 && answerCheck.Correct != null && answerCheck.Correct.Value)
                                     {
                                         if (answerCheck.Weight != null && answerCheck.Weight.HasValue)
                                             score += answerCheck.Weight.Value;

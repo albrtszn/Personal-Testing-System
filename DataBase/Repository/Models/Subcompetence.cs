@@ -26,4 +26,7 @@ public partial class Subcompetence
 
     [InverseProperty("IdSubcompetenceNavigation")]
     public virtual ICollection<QuestionSubcompetence> QuestionSubcompetences { get; set; } = new List<QuestionSubcompetence>();
+
+    [InverseProperty("IdSubcompetenceNavigation")]
+    public virtual ICollection<SubcompetenceScore> SubcompetenceScores { get; set; } = new List<SubcompetenceScore>();
 }

@@ -48,10 +48,11 @@ namespace CRUD.implementations
                 context.Set<TestScore>().Update(TestScoreToSave);*/
                 TestScore.MinValue = TestScoreToSave.MinValue;
                 TestScore.MaxValue = TestScoreToSave.MaxValue;
-                TestScore.Name = TestScoreToSave.Name;
+                //TestScore.Name = TestScoreToSave.Name;
                 TestScore.Description = TestScoreToSave.Description;
                 TestScore.IdTest = TestScoreToSave.IdTest;
                 TestScore.Recommend = TestScoreToSave.Recommend;
+                TestScore.NumberPoints = TestScoreToSave.NumberPoints;
 
                 await context.SaveChangesAsync();
             }

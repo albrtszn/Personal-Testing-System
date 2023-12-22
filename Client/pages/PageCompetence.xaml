@@ -4,28 +4,568 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
       Title="PageCompetence"
-      Background="White">
+      Background="#EDEDED">
+
+    <Page.Resources>
+
+        <Geometry x:Key="Frame_69Geometry1">F1 M16,16z M0,0z M1.48508,1.62939L14.3557,14.5</Geometry>
+        <Geometry x:Key="Frame_69Geometry2">F1 M16,16z M0,0z M1.48508,14.3706L14.3557,1.49999</Geometry>
+        <DrawingGroup x:Key="Frame_69DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+            <DrawingGroup Opacity="1">
+                <DrawingGroup.ClipGeometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,16,16" />
+                </DrawingGroup.ClipGeometry>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry1}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry2}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingGroup>
+        <DrawingImage x:Key="Frame_69DrawingImage" Drawing="{StaticResource Frame_69DrawingGroup}" />
+
+    </Page.Resources>
 
     <Grid >
-        <StackPanel>
-            <TextBlock Text="Компетенции" HorizontalAlignment="Center" FontSize="20"/>
-            <Grid Background="White" Margin="0 15 0 0">
-                <ListView x:Name="listCompetence" FontSize="15" d:ItemsSource="{d:SampleData ItemCount=3}" SelectionMode="Single">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Идентификационный номер" DisplayMemberBinding="{Binding Id}" />
-                            <GridViewColumn Header="Наименование компетенции" DisplayMemberBinding="{Binding Name}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+        <Grid  Background="Transparent" Margin="0 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="84"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Label Content="Компетенции" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" Margin="40 40 0 0"/>
 
-            </Grid>
-            
-        </StackPanel>
+            <StackPanel x:Name="SPProfile" Grid.Row="1" Visibility="Visible">
+                <Label Content="Профиль" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 40 5"/>
+                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="profileCB"  
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="40 0 60 20" 
+                          Padding="17 0 20 0" 
+                          Height="40"
+                          SelectedIndex="0" SelectionChanged="sel_profile">
+                    <ComboBoxItem Content="Механик"/>
+                    <ComboBoxItem Content="Технолог" />
+                </ComboBox>
+            </StackPanel>
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible"  CanContentScroll="False">
+                <StackPanel>
+                    <StackPanel x:Name="MartixMex" Visibility="Visible">
+                        <Label Content="Матрица компетенций групп должностей профиля «Механик»" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 40 5"/>
+                        <Grid Margin="40 0 40 0 ">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группы ключевых компетенций" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группы должностей" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border  Grid.Row="1" Grid.Column="1" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="Группа 1. Рабочие" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="2" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группа 2. Инженерные и руководящие начального уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="3" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="Группа 3. Руководящие среднего уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+
+                            </Border >
+
+                            <Border Grid.Row="1" Grid.Column="4" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группа 4. Руководящие высшего уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <!-- 1.Профессиональные -->
+                            <Border Grid.Row="2" Grid.RowSpan="5" Grid.Column="0" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="1. Профессиональные" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="1" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-1aa5e4aa9723">Физико-механические</Hyperlink>
+                                    (уровень среднего специального образования)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ar3d999c-dfd8-4f68-836c-1aa5e4aa9723">Физико-механические</Hyperlink>
+                                    (уровень высшего образования)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa4e4aa9723">Технологические</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-ca45e4aa9723">Производственные</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c7a5e4aa9723">Экономические</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-6aa4e4aa9723">Инновационные</Hyperlink>
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 2.Корпоративные -->
+                            <Border Grid.Row="7" Grid.RowSpan="8" Grid.Column="0" Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="2. Корпоративные" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9724">Лояльность</Hyperlink>
+                                    (доброжелательное отношение подчиненного к работодателю, руководителям, к самой работе и принятым правилам)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa972a">Морально-этическая ответственность</Hyperlink>
+                                    (личная потребность в выполнении социальных и личностных норм, способность адекватно воспринимать внешнюю оценку совершаемых поступков, внутренняя оценка собственных действий с позиций гуманности и совести)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa972b">Командность</Hyperlink>
+                                    (умение работать в команде)
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9744">Ориентация на профессиональное развитие</Hyperlink>
+                                    (стремление быть профессионалом, мастером своего дела)
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="11" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9742">Коммуникативность</Hyperlink>
+                                    (способность к общению, стремление заниматься общественной деятельностью, инициативность в общении)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="12" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9725">Ориентация на достижения</Hyperlink>
+                                    (умение ставить амбициозные цели, которые бросают вызов способностям личности и подчиненных)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="13" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c745e4aa9723">Адаптивность к изменениям</Hyperlink>
+                                    (способность справляться с изменениями и извлекать из них выгоду)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="14" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa9722">Стратегическое мышление</Hyperlink>
+                                    (умение анализировать поступающую информацию и совершать действия, которые принесут максимальную выгоду в долгосрочной перспективе)
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 3.Управленческие -->
+                            <Border Grid.Row="15" Grid.RowSpan="8" Grid.Column="0" Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="3.Управленческие" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9723">Дисциплинированность</Hyperlink>
+                                    (нравственно-волевое качество личности, проявляющееся как добровольное сознательное соблюдение нравственных норм и установленного порядка жизни и деятельности)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c015e4aa9723">Ответственность</Hyperlink>
+                                    (способность взять на себя груз принятия решения, держать ответ за исполненное, отвечать за порученное, добровольно принимать наказание за неверно выполненное не только, когда принятие ответственности инициировано самим «ответственным субъектом», но и когда на него формально или неофициально возложен контроль за проявлениями групповой активности и ее последствиям)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-40a5e4aa9723">Лидерские способности</Hyperlink>
+                                    (совокупность способностей, позволяющих становиться лидером, вести за собой людей (в том или ином плане)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text=" (вид коммуникативных способностей, которые проявляются в совершенстве умений переводить социально значимые цели на язык практики для своего коллектива и в умении доводить дело до логического конца" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e7aa9723">Организаторские способности</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="19" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-436c-c0a5e4aa9723">Способность принимать решения</Hyperlink>
+                                    (способность к верному выбору мнения или курса действий среди нескольких альтернативных)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="20" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9723">Эмоциональная уравновешенность</Hyperlink>
+                                    (способность сдерживать, не проявлять внешне эмоции, сохранять спокойствие и спокойно реагировать на неблагоприятные обстоятельства)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="21" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e44a9723">Креативность</Hyperlink>
+                                    (способность генерировать оригинальные и ценные идеи)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="22" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa7723">Стиль мышление</Hyperlink>
+                                    (знание цели, оценка ресурсов для её достижения, предвидение нештатных ситуаций, видение конечного результата и перспективы)
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 4.Профессионально-психологические -->
+                            <Border Grid.Row="23" Grid.RowSpan="5" Grid.Column="0" Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="4.Профессионально-психологические" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="23" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-47f9-89bf-248bf7794cb3">Внимательность</Hyperlink>
+                                    (способность сосредоточить ум на одном объекте и в то же время исключить лишние мысли, идеи, чувства или ощущения, не касающиеся этого объекта)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="24" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-47f9-89bf-241bf7794cb3">Кратковременное запоминание</Hyperlink>
+                                    (способность удерживать небольшой объем информации в активном, легкодоступном состоянии в течение короткого промежутка времени)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="25" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa9723">Стрессоустойчивость</Hyperlink>
+                                    (способность спокойно переносить действие стрессоров без вредных всплесков эмоций, влияющих на деятельность и на окружающих, а также способных вызывать психические расстройства
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="26" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa6723">Склонность к риску</Hyperlink>
+                                    (способность принимать нестандартные решения, не бояться потерять существующие материальные (духовные) блага ради чего-то большего)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="27" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5a8aa9723">Личная организованность</Hyperlink>
+                                    (способность организовать свой рабочий день и выполнить все намеченное)
+                                </TextBlock>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="MartixTex" Visibility="Collapsed">
+                        <Label Content="Матрица компетенций групп должностей профиля «Технолог»" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 40 5"/>
+                        <Grid Margin="40 0 40 0 ">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группы ключевых компетенций" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группы должностей" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border  Grid.Row="1" Grid.Column="1" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="Группа 1. Рабочие" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="2" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группа 2. Инженерные и руководящие начального уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="3" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="Группа 3. Руководящие среднего уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+
+                            </Border >
+
+                            <Border Grid.Row="1" Grid.Column="4" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  Text="Группа 4. Руководящие высшего уровня" TextWrapping="Wrap" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5 5 5 5"/>
+                            </Border>
+
+                            <!-- 1.Профессиональные -->
+                            <Border Grid.Row="2" Grid.RowSpan="5" Grid.Column="0" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="1. Профессиональные" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="1" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-3333-89bf-248bf7794cb3">Химические</Hyperlink>
+                                    (уровень среднего специального образования)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-4444-89bf-248bf7794cb3">Химические</Hyperlink>
+                                    (уровень высшего образования)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa4e4aa9723">Технологические</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-ca45e4aa1111">Производственные</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c7a5e4aa9723">Экономические</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Background="Pink" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-6aa4e4aa9723">Инновационные</Hyperlink>
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 2.Корпоративные -->
+                            <Border Grid.Row="7" Grid.RowSpan="8" Grid.Column="0" Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="2. Корпоративные" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9724">Лояльность</Hyperlink>
+                                    (доброжелательное отношение подчиненного к работодателю, руководителям, к самой работе и принятым правилам)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa972a">Морально-этическая ответственность</Hyperlink>
+                                    (личная потребность в выполнении социальных и личностных норм, способность адекватно воспринимать внешнюю оценку совершаемых поступков, внутренняя оценка собственных действий с позиций гуманности и совести)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa972b">Командность</Hyperlink>
+                                    (умение работать в команде)
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9744">Ориентация на профессиональное развитие</Hyperlink>
+                                    (стремление быть профессионалом, мастером своего дела)
+                                </TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="11" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9742">Коммуникативность</Hyperlink>
+                                    (способность к общению, стремление заниматься общественной деятельностью, инициативность в общении)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="12" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock  TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9725">Ориентация на достижения</Hyperlink>
+                                    (умение ставить амбициозные цели, которые бросают вызов способностям личности и подчиненных)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="13" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c745e4aa9723">Адаптивность к изменениям</Hyperlink>
+                                    (способность справляться с изменениями и извлекать из них выгоду)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="14" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightBlue" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa9722">Стратегическое мышление</Hyperlink>
+                                    (умение анализировать поступающую информацию и совершать действия, которые принесут максимальную выгоду в долгосрочной перспективе)
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 3.Управленческие -->
+                            <Border Grid.Row="15" Grid.RowSpan="8" Grid.Column="0" Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="3.Управленческие" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e4aa9723">Дисциплинированность</Hyperlink>
+                                    (нравственно-волевое качество личности, проявляющееся как добровольное сознательное соблюдение нравственных норм и установленного порядка жизни и деятельности)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c015e4aa9723">Ответственность</Hyperlink>
+                                    (способность взять на себя груз принятия решения, держать ответ за исполненное, отвечать за порученное, добровольно принимать наказание за неверно выполненное не только, когда принятие ответственности инициировано самим «ответственным субъектом», но и когда на него формально или неофициально возложен контроль за проявлениями групповой активности и ее последствиям)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-40a5e4aa9723">Лидерские способности</Hyperlink>
+                                    (совокупность способностей, позволяющих становиться лидером, вести за собой людей (в том или ином плане)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text=" (вид коммуникативных способностей, которые проявляются в совершенстве умений переводить социально значимые цели на язык практики для своего коллектива и в умении доводить дело до логического конца" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e7aa9723">Организаторские способности</Hyperlink>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="19" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-436c-c0a5e4aa9723">Способность принимать решения</Hyperlink>
+                                    (способность к верному выбору мнения или курса действий среди нескольких альтернативных)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="20" Grid.Column="3" Grid.ColumnSpan="2"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa9723">Эмоциональная уравновешенность</Hyperlink>
+                                    (способность сдерживать, не проявлять внешне эмоции, сохранять спокойствие и спокойно реагировать на неблагоприятные обстоятельства)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="21" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e44a9723">Креативность</Hyperlink>
+                                    (способность генерировать оригинальные и ценные идеи)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="22" Grid.Column="4" Grid.ColumnSpan="1"  Background="LightGreen" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-caa5e4aa7723">Стиль мышление</Hyperlink>
+                                    (знание цели, оценка ресурсов для её достижения, предвидение нештатных ситуаций, видение конечного результата и перспективы)
+                                </TextBlock>
+                            </Border>
+
+                            <!-- 4.Профессионально-психологические -->
+                            <Border Grid.Row="23" Grid.RowSpan="5" Grid.Column="0" Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock Text="4.Профессионально-психологические" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5"/>
+                            </Border>
+                            <Border Grid.Row="23" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                     <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-47f9-89bf-248bf7794cb3">Внимательность</Hyperlink>
+                                    (способность сосредоточить ум на одном объекте и в то же время исключить лишние мысли, идеи, чувства или ощущения, не касающиеся этого объекта)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="24" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="d53e7264-8a39-47f9-89bf-241bf7794cb3">Кратковременное запоминание</Hyperlink>
+                                    (способность удерживать небольшой объем информации в активном, легкодоступном состоянии в течение короткого промежутка времени)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="25" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa9723">Стрессоустойчивость</Hyperlink>
+                                    (способность спокойно переносить действие стрессоров без вредных всплесков эмоций, влияющих на деятельность и на окружающих, а также способных вызывать психические расстройства
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="26" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5e8aa6723">Склонность к риску</Hyperlink>
+                                    (способность принимать нестандартные решения, не бояться потерять существующие материальные (духовные) блага ради чего-то большего)
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Row="27" Grid.Column="1" Grid.ColumnSpan="4"  Background="LightGoldenrodYellow" BorderBrush="#787575" BorderThickness="1">
+                                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="12" FontFamily="Roboto" Foreground="#555" Margin="5">
+                                    <Hyperlink Command="{Binding CommandTest}" CommandParameter="ad3d986c-dfd8-4f68-836c-c0a5a8aa9723">Личная организованность</Hyperlink>
+                                    (способность организовать свой рабочий день и выполнить все намеченное)
+                                </TextBlock>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+
+        </Grid>
 
 
     </Grid>
+
 </Page>
+
+

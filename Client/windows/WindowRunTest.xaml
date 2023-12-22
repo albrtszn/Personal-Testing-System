@@ -16,9 +16,19 @@
         WindowStyle="None"
       x:Name="MyWindowRunTest"
         >
+
+    <Window.Resources>
+        <Geometry x:Key="basil_alarm_outlineGeometry1">F0 M24,24z M0,0z M12,5.75C10.0772,5.75 8.23311,6.51384 6.87348,7.87348 5.51384,9.23311 4.75,11.0772 4.75,13 4.75,14.9228 5.51384,16.7669 6.87348,18.1265 8.23311,19.4862 10.0772,20.25 12,20.25 13.9228,20.25 15.7669,19.4862 17.1265,18.1265 18.4862,16.7669 19.25,14.9228 19.25,13 19.25,11.0772 18.4862,9.23311 17.1265,7.87348 15.7669,6.51384 13.9228,5.75 12,5.75z M3.25,13C3.25,10.6794 4.17187,8.45376 5.81282,6.81282 7.45376,5.17187 9.67936,4.25 12,4.25 14.3206,4.25 16.5462,5.17187 18.1872,6.81282 19.8281,8.45376 20.75,10.6794 20.75,13 20.75,15.3206 19.8281,17.5462 18.1872,19.1872 16.5462,20.8281 14.3206,21.75 12,21.75 9.67936,21.75 7.45376,20.8281 5.81282,19.1872 4.17187,17.5462 3.25,15.3206 3.25,13z</Geometry>
+        <Geometry x:Key="basil_alarm_outlineGeometry2">F0 M24,24z M0,0z M11.9998,7.24983C12.1988,7.24983 12.3895,7.32885 12.5302,7.4695 12.6708,7.61015 12.7498,7.80092 12.7498,7.99983L12.7498,12.5838 15.3978,14.2388C15.4814,14.2911 15.5538,14.3593 15.6109,14.4395 15.6681,14.5198 15.7089,14.6105 15.731,14.7065 15.7531,14.8026 15.7561,14.902 15.7397,14.9991 15.7234,15.0963 15.6881,15.1893 15.6358,15.2728 15.5836,15.3563 15.5154,15.4288 15.4351,15.4859 15.3549,15.5431 15.2642,15.5839 15.1681,15.606 14.9742,15.6506 14.7705,15.6164 14.6018,15.5108L11.6018,13.6358C11.4941,13.5683 11.4052,13.4746 11.3436,13.3633 11.2821,13.2521 11.2498,13.127 11.2498,12.9998L11.2498,7.99983C11.2498,7.80092 11.3289,7.61015 11.4695,7.4695 11.6102,7.32885 11.8009,7.24983 11.9998,7.24983z M6.52985,3.46983C6.6703,3.61045 6.74919,3.80108 6.74919,3.99983 6.74919,4.19858 6.6703,4.3892 6.52985,4.52983L4.02985,7.02983C3.88767,7.16231 3.69963,7.23443 3.50532,7.231 3.31102,7.22758 3.12564,7.14886 2.98822,7.01145 2.85081,6.87404 2.7721,6.68865 2.76867,6.49435 2.76524,6.30005 2.83737,6.112 2.96985,5.96983L5.46985,3.46983C5.61047,3.32938 5.8011,3.25049 5.99985,3.25049 6.1986,3.25049 6.38922,3.32938 6.52985,3.46983z M17.4698,3.46983C17.3294,3.61045 17.2505,3.80108 17.2505,3.99983 17.2505,4.19858 17.3294,4.3892 17.4698,4.52983L19.9698,7.02983C20.0385,7.10352 20.1213,7.16262 20.2133,7.20361 20.3053,7.2446 20.4046,7.26664 20.5053,7.26842 20.606,7.2702 20.7061,7.25167 20.7994,7.21395 20.8928,7.17623 20.9777,7.12009 21.0489,7.04887 21.1201,6.97765 21.1762,6.89281 21.214,6.79943 21.2517,6.70604 21.2702,6.60601 21.2684,6.50531 21.2667,6.4046 21.2446,6.30529 21.2036,6.21329 21.1626,6.12129 21.1035,6.03849 21.0298,5.96983L18.5298,3.46983C18.3892,3.32938 18.1986,3.25049 17.9998,3.25049 17.8011,3.25049 17.6105,3.32938 17.4698,3.46983z</Geometry>
+        <DrawingGroup x:Key="basil_alarm_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="Black" Geometry="{StaticResource basil_alarm_outlineGeometry1}" />
+            <GeometryDrawing Brush="Black" Geometry="{StaticResource basil_alarm_outlineGeometry2}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="basil_alarm_outlineDrawingImage" Drawing="{StaticResource basil_alarm_outlineDrawingGroup}" />
+    </Window.Resources>
     <Grid>
         <Border Background="#EDEDED" Margin="0">
-            <Grid Margin="40">
+            <Grid Margin="60 30 60 30">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -30,63 +40,87 @@
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Row="0" Grid.ColumnSpan="2"  Margin="20 40 20 0" Background="White" CornerRadius="10">
+                <Border Grid.Row="0" Grid.ColumnSpan="2"  Margin="20 20 20 0" Background="White" CornerRadius="10">
                     <StackPanel Margin="10">
 
                         <TextBlock Text="Наименование теста"  FontSize="20" FontFamily="Roboto"  Padding="0" Margin="5 5 0 0"/>
                         <TextBlock x:Name="TB_Name" Text="{Binding TestName}" FontSize="20" FontFamily="Roboto"   Padding="0" Margin="5 0 0 0" FontWeight="Bold" />
 
                         <TextBlock Text="Описание теста"  FontSize="16" FontFamily="Roboto"   Padding="0" Margin="5 5 0 0" />
-                        <TextBlock x:Name="TB_Discrib" Text="{Binding TestDiscrib}" FontSize="16" FontFamily="Roboto"   Padding="0" Margin="5 0 0 0" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="TB_Discrib" Text="{Binding TestDiscrib}" FontSize="18" FontFamily="Roboto"   Padding="0" Margin="5 0 0 0" FontWeight="Bold" TextWrapping="Wrap"/>
 
                     </StackPanel>
                 </Border>
+                <StackPanel Grid.ColumnSpan="2" Grid.Row="2" Margin="20 5 20 20">
+                    <StackPanel x:Name="SP_idType1" Visibility="Visible">
+                        <ProgressBar
+                            materialDesign:TransitionAssist.DisableTransitions="True"
+                            Value="{Binding ProgressValue}" />
+                        <Border   CornerRadius="0 0 10 10" Background="White" Padding="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="{Binding SelectedQuestion.Text, UpdateSourceTrigger=PropertyChanged}" FontSize="16" FontFamily="Roboto"   Padding="0" TextWrapping="Wrap" Margin="0 0 0 10"/>
+                                    <Image x:Name="QNameImg" Source="{Binding SelectedQuestion.Img}"  MaxHeight="250" Stretch="UniformToFill"/>
+                                    <Separator Margin="10 0 10 10"/>
+                                </StackPanel>
+
+                                <ListBox x:Name="LBTest"
+                                      Grid.Row="1" ItemsSource="{Binding SelectedQuestion.Answers}" 
+                                      d:ItemsSource="{d:SampleData ItemCount=4}" 
+                                      SelectedIndex="{Binding SelectedQuestion.PushAnswersID}" 
+                                      SelectionChanged="LBTest_Selected" >
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="{Binding ElementName=LBTest, Path=ActualWidth}">
+                                                <RadioButton IsChecked="{Binding IsSelected, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                                    <WrapPanel Margin="0 0 0 0" VerticalAlignment="Center">
+                                                        <Image Source="{Binding Img}" d:Width="250" />
+                                                        <TextBlock Text="{Binding Text}" FontSize="16" FontFamily="Roboto"   Padding="0" />
+                                                    </WrapPanel>
+                                                </RadioButton>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+
+                        </Border>
+                    </StackPanel>
+                    <StackPanel x:Name="SP_idType5" Visibility="Collapsed" >
+                        <ProgressBar
+                            materialDesign:TransitionAssist.DisableTransitions="True"
+                            Value="{Binding ProgressValue}" />
+                        <Border   CornerRadius="0 0 10 10" Background="White" Padding="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="{Binding SelectedQuestion.Text, UpdateSourceTrigger=PropertyChanged}" FontSize="16" FontFamily="Roboto"   Padding="0" TextWrapping="Wrap" Margin="0 0 0 10"/>
+                                    <Image x:Name="ImageQtype5"  Source="{Binding SelectedQuestion.Img}"  MaxHeight="250" Stretch="UniformToFill" Visibility="Collapsed"/>
+                                    <Separator Margin="10 0 10 10"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <Button x:Name="BeginQuestion"  VerticalAlignment="Top" HorizontalAlignment="Center" Content="НАЧАТЬ" 
+                                         materialDesign:ButtonAssist.CornerRadius="20"
+                                         Width="220" Height="40" FontSize="16" Margin="0 0 20 0" 
+                                         Command="{Binding CmdBeginQuestion}" IsEnabled="true" Visibility="Visible"/>
+
+                                    <TextBox x:Name="TB_QType5" materialDesign:HintAssist.Hint="Введите числа через пробел" FontSize="20" BorderThickness="1" Foreground="Black" BorderBrush="#C2C2C2" Margin="20 0 20 0"/>
+                                </StackPanel>
 
 
-                <Border Grid.ColumnSpan="2" Grid.Row="2" Margin="20"  CornerRadius="10" Background="White" Padding="5">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Margin="10">
-                            <TextBlock Text="{Binding SelectedQuestion.Text, UpdateSourceTrigger=PropertyChanged}" FontSize="16" FontFamily="Roboto"   Padding="0" TextWrapping="Wrap" Margin="0 0 0 10"/>
-                            <Image x:Name="QNameImg" Source="{Binding SelectedQuestion.Img}" d:Width="300" Width="300" Stretch="UniformToFill"/>
-                            <Separator Margin="10 0 10 10"/>
-                        </StackPanel>
+                            </Grid>
 
-                        <ListBox x:Name="LBTest"
-                 Grid.Row="1" ItemsSource="{Binding SelectedQuestion.Answers}" 
-                      d:ItemsSource="{d:SampleData ItemCount=2}" 
-                      SelectedIndex="{Binding SelectedQuestion.PushAnswersID}" 
-                      SelectionChanged="LBTest_Selected" 
-                                 >
-                            
-
-
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Width="{Binding ElementName=LBTest, Path=ActualWidth}">
-                                        <RadioButton IsChecked="{Binding IsSelected, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}" 
-                                          
-                                  
-                                                     >
-                                            <WrapPanel Margin="0 0 0 0" VerticalAlignment="Center">
-                                                <Image Source="{Binding Img}" d:Width="250" />
-                                                <TextBlock Text="{Binding Text}" FontSize="16" FontFamily="Roboto"   Padding="0" />
-                                            </WrapPanel>
-                                        </RadioButton>
-                                    </Border>
-
-                                    <!--<CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}"/>-->
-
-
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Grid>
-
-                </Border>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+               
 
                 <Grid Grid.Column="0" Grid.Row="1">
                     <Grid.RowDefinitions>
@@ -94,7 +128,7 @@
                         <RowDefinition Height="4*"/>
 
                     </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Margin="20 20 10 10"  CornerRadius="10" Background="White" Padding="5">
+                    <Border Grid.Row="0" Margin="20 20 10 10"  CornerRadius="10" Background="White" Padding="5" Width="200" HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Вопрос №"  FontSize="16" FontFamily="Roboto" />
                             <Label Content="{Binding SelectedQuestion.Number}" FontSize="16" FontFamily="Roboto" />
@@ -107,7 +141,11 @@
                 </Grid>
 
                 <Border Grid.Column="1" Grid.Row="1" Background="White"  Margin="20 20 20 10" CornerRadius="10" Width="150" HorizontalAlignment="Right" Visibility="Visible">
-                    <Label x:Name="timeContent" Content="{Binding timerContent}" FontFamily="Roboto" FontSize="20" HorizontalAlignment="Center" Foreground="#F25C4F"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Image Source="{StaticResource basil_alarm_outlineDrawingImage}" Height="30" Margin="0 0 15 0"/>
+                        <Label x:Name="timeContent" Content="{Binding timerContent}" FontFamily="Roboto" FontSize="24" HorizontalAlignment="Center" Foreground="#F25C4F" VerticalAlignment="top" Height="30" Margin="0 3 0 0"/>
+                    </StackPanel>
+                    
                 </Border>
 
                 <Button x:Name="BT_prev" Grid.ColumnSpan="2" Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Right" Content="ПРЕДЫДУЩИЙ ВОПРОС" 

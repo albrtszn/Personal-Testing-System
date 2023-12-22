@@ -140,7 +140,19 @@ namespace Client.pages
 
             }
 
-            if (user.Password == null || user.Password == "")
+            if (user.Login == null || user.Login == "" || user.Login.Length < 3)
+            {
+                addLogin.Background = Brushes.Pink;
+                MessageBox.Show("Значение в поле логин заполнено неверно!");
+                BT_update.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addLogin.Background = Brushes.Transparent;
+            }
+
+            if (user.Password == null || user.Password == "" || user.Password.Length < 3)
             {
                 addPassword.Background = Brushes.Pink;
                 MessageBox.Show("Значение в поле пароль заполнено неверно!");

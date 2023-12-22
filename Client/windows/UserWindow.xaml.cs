@@ -108,14 +108,6 @@ namespace Client
             ListSetting.SelectedIndex = -1;
         }
 
-        private void About(object sender, RoutedEventArgs e)
-        {
-            ListSetting.SelectedIndex = -1;
-            WindowAbout windowAbout = new WindowAbout();
-            // Показываем новое окно
-            windowAbout.Show();
-        }
-
         private void WindowMaximizeApp(object sender, RoutedEventArgs e)
         {
 
@@ -156,6 +148,14 @@ namespace Client
         private void selecAddMass(object sender, RoutedEventArgs e)
         {
             FrameUserData.Navigate(new PageUserMass());
+        }
+
+        private void About(object sender, MouseButtonEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            WindowAbout windowAbout = new WindowAbout();
+            // Показываем новое окно
+            windowAbout.Show();
         }
     }
 }

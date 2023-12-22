@@ -301,7 +301,7 @@
 
                     </ListViewItem>
 
-                    <ListViewItem Selected="About" Width="280" Height="46">
+                    <ListViewItem MouseUp="About" Width="280" Height="46">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="35"/>

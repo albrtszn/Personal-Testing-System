@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Runtime.InteropServices.ComTypes;
 using Client.windows;
 using ScottPlot.Drawing.Colormaps;
+using static Client.SettingConnHost;
 
 namespace Client.VM
 {
@@ -37,6 +38,7 @@ namespace Client.VM
             public string DatatimePurpose { get; set; }
             public bool Active { get; set; }
             public string FlagEnd { get; set; }
+            public string Timer { get; set; }
         }
 
         private TestView selectedTest;
@@ -90,7 +92,15 @@ namespace Client.VM
                     }
 
                     //myGlobal.NavigationService.Navigate(new PageRunTest(SelectedTest.test.Id));
-                    WindowRunTest windowRunTest = new WindowRunTest(SelectedTest.test.Id);
+
+                    int tmpTimer = 0;
+                    if (!SelectedTest.Timer.Contains("не ограничен"))
+                    {
+                        tmpTimer = (int)double.Parse(SelectedTest.Timer);
+                    }
+
+
+                    WindowRunTest windowRunTest = new WindowRunTest(SelectedTest.test.Id, tmpTimer*60);
                     windowRunTest.Show();
                     windowRunTest.Closed += WindowRunTest_Closed;
                     break;
@@ -109,7 +119,7 @@ namespace Client.VM
 
         private void WindowRunTest_Closed(object sender, EventArgs e)
         {
-            Console.WriteLine("Нужно обновить данные завершенного теста");
+
             SelectedTest.FlagEnd = "Завершен (" + System.DateTime.Now.ToShortTimeString() + ")";
             SelectedTest.Active = false;
             
@@ -126,20 +136,31 @@ namespace Client.VM
         public static readonly DependencyProperty ItemsProperty =
             DependencyProperty.Register("ItemsTests", typeof(ICollectionView), typeof(PageUserHomeVM), new PropertyMetadata(null));
 
+        private MySetting[] inSetting;
 
         public async void LoadData()
         {
             emp = AutWindow.employee;
             string tmp_pay = "{\"Id\"" + ":\"" + emp.Id + "\"}";
             ConnectHost conn = new ConnectHost();
+
             
 
-
-            JToken jObject = await conn.GetPurposesByEmployeeId(tmp_pay);
+            JToken jObject = await conn.GetGlobalConfigures();
             var jsonSettings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             };
+
+            if (jObject == null)
+            {
+                MessageBox.Show("Ошибка загрузки глобальной конфигурации!");
+                return;
+            }
+            inSetting = JsonConvert.DeserializeObject<MySetting[]>(jObject.ToString(), jsonSettings);
+
+            jObject = null;
+            jObject = await conn.GetPurposesByEmployeeId(tmp_pay);
 
             if (jObject != null) 
             {
@@ -179,6 +200,15 @@ namespace Client.VM
                     }
 
                     tmp.DatatimePurpose = test.DatatimePurpose;
+                    if ((test.Timer == 0) || (inSetting[0].TestingTimeLimit == false))
+                    {
+                        tmp.Timer = "не ограничен";
+                    }
+                    else
+                    {
+                        tmp.Timer = test.Timer.ToString();
+                    }
+                    
                     alltest[i] = tmp;
                     i++;
                 }

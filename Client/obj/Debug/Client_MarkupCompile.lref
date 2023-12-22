@@ -1,14 +1,19 @@
 ﻿
 FD:\workspace\NET\Personal-Testing-System\Client\App.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminEdit.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminMass.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminReg.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageChoiceUser.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageCompetencyAsses.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageLoad.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageLogs.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageResults.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageRunTest.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserAdmin.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserEdit.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserInfo.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserMass.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageViewTestAnswers.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\windows\addSubdivision.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAddPurpose.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAddQuestion.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\pages\PageCompetence.xaml;;
@@ -25,9 +30,5 @@ FD:\workspace\NET\Personal-Testing-System\Client\windows\SettingConnHost.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\windows\UserWindow.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\windows\WindowAbout.xaml;;
 FD:\workspace\NET\Personal-Testing-System\Client\windows\WindowRunTest.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserAdmin.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminEdit.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminReg.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\pages\PageUserMass.xaml;;
-FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAdminMass.xaml;;
+FD:\workspace\NET\Personal-Testing-System\Client\pages\PageAnalyseResult.xaml;;
 

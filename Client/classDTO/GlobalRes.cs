@@ -35,8 +35,9 @@ namespace Client.classDTO
             LoadSubdivisions();
         }
 
-        public async void LoadSubdivisions()
+        public async Task LoadSubdivisions()
         {
+            
             ConnectHost conn = new ConnectHost();
             JToken jObject = await conn.GetGroupPositions();
             itemsGroupPosition = JsonConvert.DeserializeObject<GroupPositionDto[]>(jObject.ToString());
@@ -73,6 +74,8 @@ namespace Client.classDTO
                     item.NameGroupPositions2 = "Группа 4. Руководящие высшего уровня";
                 }
             }
+
+           
         }
 
         public static int searchID_Groupe(int index)
@@ -92,7 +95,19 @@ namespace Client.classDTO
             return 0;
         }
 
-       
+        public static EmployeeDto GetEmployee(string ID)
+        {
+            foreach (var item in itemsUserEmployee)
+            {
+                if (item.employee.Id == ID)
+                {
+                    return item.employee;
+                }
+            }
+
+            return null;
+        }
+
         public static SubdivisionDto GetSubdivision(int ID)
         {
             foreach (var item in itemsSubdivision)

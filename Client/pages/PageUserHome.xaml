@@ -36,6 +36,17 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Наименование теста" IsReadOnly="True" MinWidth="210" Width="2*"  Binding="{Binding test.Name}"/>
                     <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Width="220"  Binding="{Binding test.QuestionsCount}"/>
+                    <DataGridTextColumn x:Name="TB_Timer" Binding="{Binding Timer}" Width="170">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="Ограничение по времени, мин"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           
+                                           Margin="1"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTextColumn Header="Дата назначения" IsReadOnly="True" MinWidth="210" Width="*" Binding="{Binding DatatimePurpose}"/>
                     <DataGridTextColumn Header="Дата выполнения" IsReadOnly="True" MinWidth="210" Width="*" Binding="{Binding FlagEnd}"/>
                 </DataGrid.Columns>

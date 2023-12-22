@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace Client
 {
@@ -63,6 +64,62 @@ namespace Client
             var jObject = await ProcessRequest(data_payload);
             return jObject;
         }
+
+        public async Task<JToken> DeleteQuestionInTest(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/DeleteQuestionInTest";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/DeleteQuestionInTest";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+       
+        public async Task<byte[]> GetWordTest(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetWordTest";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetWordTest";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequestFile(data_payload);
+            return jObject;
+        }
+
+        public async Task<byte[]> GetPdfTest(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetPdfTest";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetPdfTest";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequestFile(data_payload);
+            return jObject;
+        }
+
 
         public async Task<JToken> DeleteEmployee(string pay_data)
         {
@@ -269,6 +326,24 @@ namespace Client
             var jObject = await ProcessRequest(data_payload);
             return jObject;
         }
+        
+        public async Task<JToken> GetResultsBySubdivision(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetResultsBySubdivision";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetResultsBySubdivision";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
 
         public async Task<JToken> AddAdmin(string pay_data)
         {
@@ -306,6 +381,44 @@ namespace Client
             return jObject;
         }
         
+        
+        public async Task<JToken> UpdateGlobalConfigure(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/UpdateGlobalConfigure";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateGlobalConfigure";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> GetGlobalConfigures()
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetGlobalConfigures";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetGlobalConfigures";
+            }
+
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
 
         public async Task<JToken> GetAdmins()
         {
@@ -438,6 +551,65 @@ namespace Client
             data_payload.metod = (int)connMetod.POST;
             data_payload.token = token;
             var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        
+        public async Task<JToken> ChangeMesssageStatus(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/ChangeMesssageStatus";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/ChangeMesssageStatus";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> DeleteMesssage(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/DeleteMesssage";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/DeleteMesssage";
+            }
+
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        
+        public async Task<JToken> GetLogsPage(int Page)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/user-api/GetLogsPage?PageNumber=1&ItemsPerPage=100";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetLogsPage?PageNumber=" + Page.ToString() + "&ItemsPerPage=100";
+            }
+
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
+            data_payload.token = token;
+            var jObject = await ProcessRequestHead(data_payload);
             return jObject;
         }
 
@@ -629,7 +801,142 @@ namespace Client
 
         }
 
-        private async Task<JToken> ProcessRequestForm(Payload payload, Payload_files[] payfile )
+        private async Task<byte[]> ProcessRequestFile(Payload payload)
+        {
+            byte[] fileByte = null;
+
+            var request = new HttpRequestMessage();
+            HttpContent c = new StringContent(payload.payload, Encoding.UTF8, "application/json");
+            JToken jObject = null;
+
+            if (payload.uri == null)
+            {
+                return fileByte;
+            }
+            request.RequestUri = new Uri(payload.uri);
+            if (payload.metod == (int)connMetod.POST) // Метод POST
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = c;
+            }
+            else if (payload.metod == (int)connMetod.GET) // Метод GET
+            {
+                request.Method = HttpMethod.Get;
+            }
+            else // Другие методы
+            {
+                request.Method = HttpMethod.Get;
+            }
+
+            try
+            {
+                var client = new HttpClient();
+                if (token != "")
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
+                }
+
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.SendAsync(request);
+
+                switch (response.StatusCode)
+                {
+                    case (System.Net.HttpStatusCode.OK):
+                        HttpContent content = response.Content;
+                        fileByte = await content.ReadAsByteArrayAsync();
+                        
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                fileByte = null;
+            }
+
+            //Console.WriteLine(xjson);
+            return fileByte;
+
+        }
+
+        private async Task<JToken> ProcessRequestHead(Payload payload)
+        {
+            string xjson = "";
+            string xjson2 = "";
+            string xjson3 = "";
+
+            var request = new HttpRequestMessage();
+            HttpContent c = new StringContent(payload.payload, Encoding.UTF8, "application/json");
+            JToken jObject = null;
+
+            if (payload.uri == null)
+            {
+                return jObject;
+            }
+            request.RequestUri = new Uri(payload.uri);
+            if (payload.metod == (int)connMetod.POST) // Метод POST
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = c;
+            }
+            else if (payload.metod == (int)connMetod.GET) // Метод GET
+            {
+                request.Method = HttpMethod.Get;
+            }
+            else // Другие методы
+            {
+                request.Method = HttpMethod.Get;
+            }
+
+            try
+            {
+                var client = new HttpClient();
+                if (token != "")
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
+                }
+
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.SendAsync(request);
+
+                switch (response.StatusCode)
+                {
+                    case (System.Net.HttpStatusCode.OK):
+                        HttpContent content = response.Content;
+                        xjson = await content.ReadAsStringAsync();
+                       
+
+                        if (response.Headers.Contains("pageheader"))
+                        {
+                            xjson2 = response.Headers.GetValues("pageheader").First().ToString();
+
+                            //do something with the header value
+                        }
+                        xjson3 = "{ \"Head\":" + xjson2 + ", \"Data\": " + xjson + "  }";
+                        jObject = JToken.Parse(xjson3);
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                jObject = null;
+            }
+
+            //Console.WriteLine(xjson);
+            return jObject;
+
+        }
+
+        private async Task<JToken> ProcessRequestForm(Payload payload, Payload_files[] payfile)
         {
             string xjson = "";
 
@@ -645,12 +952,14 @@ namespace Client
 
             formContent.Add(c, "Question");
 
-            foreach (var file in payfile) 
-            {
-                var fileStreamContent = new StreamContent(File.OpenRead(file.filePath));
-                formContent.Add(fileStreamContent, "files", file.name);
+            if (payfile != null)
+            { 
+                foreach (var file in payfile)
+                {
+                    var fileStreamContent = new StreamContent(File.OpenRead(file.filePath));
+                    formContent.Add(fileStreamContent, "files", file.name);
+                }
             }
-            
 
             request.Content = formContent;
 

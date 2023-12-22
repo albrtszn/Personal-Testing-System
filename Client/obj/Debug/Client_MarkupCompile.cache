@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\workspace\NET\Personal-Testing-System\Client\App.xaml
-342099281182
+35870430260
 198041542
-77334073067
-1551440075841
-pages\PageAdminEdit.xaml;pages\PageAdminMass.xaml;pages\PageAdminReg.xaml;pages\PageChoiceUser.xaml;pages\PageCompetencyAsses.xaml;pages\PageLoad.xaml;pages\PageResults.xaml;pages\PageRunTest.xaml;pages\PageUserAdmin.xaml;pages\PageUserEdit.xaml;pages\PageUserInfo.xaml;pages\PageUserMass.xaml;pages\PageViewTestAnswers.xaml;Style\DataGrid.xaml;Style\Icons.xaml;Style\ListBox.xaml;windows\AutWindow.xaml;windows\addSubdivision.xaml;pages\PageAddPurpose.xaml;pages\PageAddQuestion.xaml;pages\PageCompetence.xaml;pages\PageHome.xaml;pages\PageSubdivision.xaml;pages\PageTestOne.xaml;pages\PageTests.xaml;pages\PageUserHome.xaml;pages\PageUserReg.xaml;pages\PageUsers.xaml;windows\MainWindow.xaml;windows\PasswordWindow.xaml;windows\SettingConnHost.xaml;windows\UserWindow.xaml;windows\WindowAbout.xaml;windows\WindowRunTest.xaml;
+801669888795
+157-1613890194
+pages\PageAdminEdit.xaml;pages\PageAdminMass.xaml;pages\PageAdminReg.xaml;pages\PageAnalyseResult.xaml;pages\PageChoiceUser.xaml;pages\PageCompetencyAsses.xaml;pages\PageLoad.xaml;pages\PageLogs.xaml;pages\PageResults.xaml;pages\PageRunTest.xaml;pages\PageUserAdmin.xaml;pages\PageUserEdit.xaml;pages\PageUserInfo.xaml;pages\PageUserMass.xaml;pages\PageViewTestAnswers.xaml;Style\DataGrid.xaml;Style\Icons.xaml;Style\ListBox.xaml;windows\AutWindow.xaml;pages\PageAddPurpose.xaml;pages\PageAddQuestion.xaml;pages\PageCompetence.xaml;pages\PageHome.xaml;pages\PageSubdivision.xaml;pages\PageTestOne.xaml;pages\PageTests.xaml;pages\PageUserHome.xaml;pages\PageUserReg.xaml;pages\PageUsers.xaml;windows\MainWindow.xaml;windows\PasswordWindow.xaml;windows\SettingConnHost.xaml;windows\UserWindow.xaml;windows\WindowAbout.xaml;windows\WindowRunTest.xaml;
 
 False
 

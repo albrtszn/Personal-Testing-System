@@ -12,6 +12,8 @@ namespace Client.classDTO
         public int Id { get; set; }
         public int ScoreFrom { get; set; }
         public int ScoreTo { get; set; }
+        public string ResultLevel { get; set; }
+        public float NumberPoints { get; set; }
         public OneResult Result { get; set;}
         public OneEmployee Employee { get; set;}
     }

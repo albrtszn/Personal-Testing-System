@@ -17,38 +17,66 @@ using System.Windows.Shapes;
 using static Client.AutWindow;
 using Client.classDTO;
 using System.IO;
-
+using static Client.pages.PageAddQuestion;
+using System.Runtime.CompilerServices;
+using Microsoft.Win32;
+using System.Windows.Markup;
+using ScottPlot.Drawing.Colormaps;
 
 namespace Client.pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageTestOne.xaml
-    /// </summary>
+
     public partial class PageTestOne : Page
     {
         private string IDTest = string.Empty;
-
+        private Visibility pageLoadOk = Visibility.Visible;
+        private string strDel = string.Empty;
         public PageTestOne(string idTest)
         {
+            IDTest = idTest;
             InitializeComponent();
-            LeadTest(idTest);
+            Loaded += PageTestOne_Loaded;
+           
         }
 
-        private async void LeadTest(string idTest)
+        private void PageTestOne_Loaded(object sender, RoutedEventArgs e)
         {
-            IDTest = idTest;
+            LoadProgress.Visibility = pageLoadOk;
+            LeadTest();
+        }
+
+        private async void LeadTest()
+        {
+            
             OneTest test = new OneTest();  
             ConnectHost conn = new ConnectHost();
-            JToken jObject = await conn.GetTest(idTest);
+            JToken jObject = await conn.GetTest(IDTest);
             var jsonSettings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             };
+
+            if (jObject == null)
+            {
+                MessageBox.Show("Не удалось выгрузить тест");
+                return;
+            }
             test = JsonConvert.DeserializeObject<OneTest>(jObject.ToString(), jsonSettings);
+            
             TB_Name.Text = test.Name;
             TB_Discrib.Text = test.Description;
-            TB_Instruct.Text = test.Instruction;
-            TB_Comp.Text = test.CompetenceId.ToString();
+
+            TB_Comp.Text = GlobalRes.GetCompetence(test.CompetenceId).Name;
+            if (test.CompetenceId == 1)
+            {
+               BT_ADD_Q.Visibility = Visibility.Visible;
+               
+
+            }
+            else
+            {
+                BT_ADD_Q.Visibility = Visibility.Hidden;
+            }
             
             foreach (var tmpQ in test.Questions)
             {
@@ -64,9 +92,10 @@ namespace Client.pages
                     }
                 }
             }
-                
+            TestLB.ItemsSource = null;
             TestLB.ItemsSource = test.Questions;
-            
+            pageLoadOk = Visibility.Collapsed;
+            LoadProgress.Visibility = pageLoadOk;
         }
 
         public BitmapImage LoadImage(string instr)
@@ -90,13 +119,105 @@ namespace Client.pages
             return image; 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private class Myid
         {
-            string tmp = "{\"Id\"" + ":\"" + IDTest + "\"}";
-            
-            this.NavigationService.Navigate(new PageAddQuestion(tmp));
+            public string Id { get; set; }
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //string tmp = "{\"Id\"" + ":\"" + IDTest + "\"}";
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            Myid myid = new Myid();
+            myid = JsonConvert.DeserializeObject<Myid>(IDTest, jsonSettings);
+            this.NavigationService.Navigate(new PageAddQuestion(myid.Id));
+        }
 
+        private void Button_Back(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.GoBack();
+        }
+
+        private void Button_Edit(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Delet(object sender, RoutedEventArgs e)
+        {
+            var tmp = sender as System.Windows.Controls.Button;
+            var dat = tmp.DataContext as OneQuestion;
+
+            TBMessage.Text = "Удалить вопрос " + dat.Number.ToString() + "?";
+            BRquestion.Visibility = Visibility.Visible;
+
+          
+            strDel = "{\"Id\":\"" + dat.Id  + "\"}";
+            BRquestion.Visibility = Visibility.Visible;
+
+
+        }
+
+        private void ButtonClose(object sender, RoutedEventArgs e)
+        {
+            BRquestion.Visibility=Visibility.Collapsed;
+            strDel = "";
+        }
+
+        private async void Button_delete(object sender, RoutedEventArgs e)
+        {
+            ConnectHost conn = new ConnectHost();
+            if (strDel != "")
+            {
+                BRquestion.Visibility = Visibility.Collapsed;
+                JToken jObject = await conn.DeleteQuestionInTest(strDel);
+                if (jObject != null)
+                {
+                    pageLoadOk = Visibility.Visible;
+                    LoadProgress.Visibility = pageLoadOk;
+                    LeadTest();
+                }
+            }
+        }
+
+        private async void Button_export_pdf(object sender, RoutedEventArgs e)
+        {
+            exportPdf_BT.IsEnabled = false;
+            ConnectHost conn = new ConnectHost();
+            var filePdf = await conn.GetPdfTest(IDTest);
+            if (filePdf != null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Pdf file (*.pdf)|*.pdf";
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllBytes(saveFileDialog.FileName, filePdf);
+                }
+            }
+            exportPdf_BT.IsEnabled = true;
+        }
+
+        private async void Button_export_doc(object sender, RoutedEventArgs e)
+        {
+            exportDoc_BT.IsEnabled = false;
+        
+            ConnectHost conn = new ConnectHost();
+            var filePdf = await conn.GetWordTest(IDTest);
+            if (filePdf != null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Word file (*.docx)|*.docx";
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    //var stream = File.Create(saveFileDialog.FileName);
+                    //stream.Write(filePdf, 0, filePdf.Length);
+                    File.WriteAllBytes(saveFileDialog.FileName, filePdf);
+                }
+            }
+            exportDoc_BT.IsEnabled = true;
+        }
     }
 }

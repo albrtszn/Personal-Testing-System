@@ -67,15 +67,17 @@
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Номер" IsReadOnly="True" Binding="{Binding number}"/>
-                <DataGridTextColumn Header="Наименование теста (копметенции)" IsReadOnly="True" Binding="{Binding test.Name}"/>
+                <DataGridTextColumn Header="Наименование теста (компетенции)" MinWidth="250" Width="2*" IsReadOnly="True" Binding="{Binding test.Name}"/>
                 <DataGridTextColumn Header="Количество вопросов" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
-                <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
+                <DataGridTextColumn Header="Группа компетенций" IsReadOnly="True" MinWidth="250" Width="*" Binding="{Binding nameCompetense}"/>
+
+                
             </DataGrid.Columns>
         </DataGrid>
 
-        <Button Grid.Row="3" Content="Показать выбранный тест" FontSize="16" Background="#F25C4F" Click="Button_Click" 
+        <Button Grid.Row="3" Content="ПОКАЗАТЬ ВЫБРАННЫЙ ТЕСТ" FontSize="16" Background="#F25C4F" Click="Button_Click" 
                         Height="38"
-                        Width="240"
+                        Width="280"
                 materialDesign:ButtonAssist.CornerRadius="20"
                 BorderBrush="Transparent"
                 VerticalAlignment="Top"

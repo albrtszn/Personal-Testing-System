@@ -36,7 +36,7 @@ namespace Client.pages
 
         private void PageRunTest_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = new PageRunTestVM(ID_TEST, this);
+            this.DataContext = new PageRunTestVM(ID_TEST, this, 0);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -9,8 +9,6 @@ namespace Client.classDTO
     public class OneResult
     {
         public string Id { get; set; }
-        public int ScoreFrom { get; set; }
-        public int ScoreTo { get; set; }
         public OneTestResult Test { get; set; }
         public string StartDate { get; set; }
         public string StartTime { get; set; }

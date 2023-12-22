@@ -12,6 +12,9 @@ using Client.pages;
 using Client.windows;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using ScottPlot.Drawing.Colormaps;
 
 namespace Client
 {
@@ -50,14 +53,40 @@ namespace Client
             
         }
 
-        public static async Task RunWebSocketClient()
+        private void ParseMessage(string inStr)
+        {
+            //string tmp = "{\"type\":1,\"target\":\"ReceiveMessage\",\"arguments\":[\"07.12.2023 22:50:32 Пользователь 'Михайлович Валерий Чертков завершил тест 'Склонность к риску с оценкой '0'.\"]}";
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            try
+            {
+                NotificationDTO outStr = JsonConvert.DeserializeObject<NotificationDTO>(inStr, jsonSettings);
+
+                if ((outStr.type == 1) && (outStr.target == "TestCompleteNotification"))
+                {
+                    TBMess.Text = outStr.arguments[0];
+                    BRMess.Visibility = Visibility.Visible;
+
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+
+        public async Task RunWebSocketClient()
         {
             ClientWebSocket websocket = new ClientWebSocket();
             string url = "wss://fitpsu.online/notification-hub";
-            Console.WriteLine("Connecting to: " + url);
+           
             await websocket.ConnectAsync(new Uri(url), CancellationToken.None);
             string message = "{\"protocol\":\"json\",\"version\":1}\u001e";
-            Console.WriteLine("Sending message: " + message);
+          
             byte[] messageBytes = Encoding.UTF8.GetBytes(message);
             
             await websocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
@@ -68,15 +97,17 @@ namespace Client
                 WebSocketReceiveResult result = await websocket.ReceiveAsync(new ArraySegment<byte>(incomingData), CancellationToken.None);
                 if (result.CloseStatus.HasValue)
                 {
-                    Console.WriteLine("Closed; Status: " + result.CloseStatus + ", " + result.CloseStatusDescription);
                     return;
                 }
                 else
                 {
-                    Console.WriteLine("Received message: " + Encoding.UTF8.GetString(incomingData, 0, result.Count));
+                    string tmp = Encoding.UTF8.GetString(incomingData, 0, result.Count-1);
+                    ParseMessage(tmp);
                 }
             }
         }
+
+
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -160,30 +191,18 @@ namespace Client
             ListSetting.SelectedIndex = -1;
         }
 
-        private void Setting(object sender, RoutedEventArgs e)
-        {
-            ListSetting.SelectedIndex = -1;
-            this.Hide(); // Скрываем нынешнее окно
-
-            // Создаем объект на основе определенного окан
-            SettingConnHost windowSetting = new SettingConnHost(this);
-            // Показываем новое окно
-            windowSetting.Show();
-
-        }
-
         private void ListViewItem_LostMouseCapture(object sender, MouseEventArgs e)
         {
              ListSetting.SelectedIndex = -1;
         }
 
-        private void About(object sender, RoutedEventArgs e)
-        {
-            ListSetting.SelectedIndex = -1;
-            WindowAbout windowAbout = new WindowAbout();
-            // Показываем новое окно
-            windowAbout.Show();
-        }
+        //private void About(object sender, RoutedEventArgs e)
+        //{
+        //    ListSetting.SelectedIndex = -1;
+        //    WindowAbout windowAbout = new WindowAbout();
+        //    // Показываем новое окно
+        //    windowAbout.Show();
+        //}
 
         private void WindowMaximizeApp(object sender, RoutedEventArgs e)
         {
@@ -212,6 +231,48 @@ namespace Client
         private void itemMessage_Selected(object sender, RoutedEventArgs e)
         {
             adminFrame.Navigate(new PageAdminMass());
+        }
+
+        private void itemLogs_Selected(object sender, RoutedEventArgs e)
+        {
+
+            adminFrame.Navigate(new PageLogs());
+        }
+
+        private void Button_Click_Read(object sender, RoutedEventArgs e)
+        {
+            TBMess.Text = "";
+            BRMess.Visibility = Visibility.Collapsed;
+        }
+
+        private void CloseQuestion(object sender, RoutedEventArgs e)
+        {
+            TBMess.Text = "";
+            BRMess.Visibility = Visibility.Collapsed;
+        }
+
+        private void About(object sender, MouseButtonEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            WindowAbout windowAbout = new WindowAbout();
+            // Показываем новое окно
+            windowAbout.Show();
+        }
+
+        private void Setting(object sender, MouseButtonEventArgs e)
+        {
+            ListSetting.SelectedIndex = -1;
+            this.Hide(); // Скрываем нынешнее окно
+
+            // Создаем объект на основе определенного окан
+            SettingConnHost windowSetting = new SettingConnHost(this);
+            // Показываем новое окно
+            windowSetting.Show();
+        }
+
+        private void itemAnalyse_Selected(object sender, RoutedEventArgs e)
+        {
+            adminFrame.Navigate(new PageAnalyseResult());
         }
     }
 

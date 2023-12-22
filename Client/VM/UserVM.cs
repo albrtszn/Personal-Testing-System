@@ -190,7 +190,8 @@ namespace Client.VM
         }
 
         void FuncDeletAdmin(object param)
-        {
+        {   
+            // TODO 
 
         }
 
@@ -273,7 +274,12 @@ namespace Client.VM
                 }
 
                 GlobalRes.itemsUserEmployee = users;
-                SelectedItems = users[0];
+                
+                if (employees.Count() > 0)
+                {
+                    SelectedItems = users[0];
+                }
+                
                 GlobalRes.flagUpdateEmployee = false;
             }
 

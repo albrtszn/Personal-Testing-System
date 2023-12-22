@@ -30,18 +30,18 @@ namespace Client.VM
         public RelayCommand CmdBackGO { get; }
         public RelayCommand CmdViewTestAnswers { get; }
 
-     
+
 
         public class ResultView
         {
             public ResultDto result { get; set; }
             public string prof { get; set; }
-            public string level { get; set; }   
+            public string level { get; set; }
             public int points { get; set; }
             public string GroupeSubName { get; set; }
             public int IdCompetenc { get; set; }
-            public int QuestionsCount { get; set; } 
-
+            public int QuestionsCount { get; set; }
+            public int pointerLever { get; set; }
 
         }
 
@@ -132,46 +132,34 @@ namespace Client.VM
             }
             res = JsonConvert.DeserializeObject<ResultDto[]>(jObject.ToString(), jsonSettings);
 
-           
+            myGlobal.LLastName.Content = res[0].Employee.LastName;
+            myGlobal.LFirstName.Content = res[0].Employee.FirstName;
+            myGlobal.LSecondName.Content = res[0].Employee.SecondName;
+            myGlobal.LSub.Content = res[0].Employee.Subdivision.Name;
+            myGlobal.LProfile.Content = GlobalRes.GetSubdivision(res[0].Employee.Subdivision.Id).Profile;
 
             ResultView[] resultViews = new ResultView[res.Count()];
 
 
+
             int i = 0;
-            int points = 0;
-            foreach ( var item in res ) 
+            //int points = 0;
+            foreach (var item in res)
             {
-                if (item.ScoreFrom == 0)
+                resultViews[i] = new ResultView();
+                resultViews[i].result = new ResultDto();
+                resultViews[i].result = item;
+                resultViews[i].pointerLever = (int)((item.NumberPoints * 100.0) / 3);
+                if (resultViews[i].pointerLever > 100)
                 {
-                    points = 0;
-                    string tmp_pay = "{\"Id\"" + ":\"" + item.Result.Id + "\"}";
-                    jObject = await conn.GetEmployeeResultAnswers(tmp_pay);
-                    if (jObject != null)
-                    {
-                        ans = JsonConvert.DeserializeObject<AnswersUserTest>(jObject.ToString(), jsonSettings);
-                        points = Rating.GetPointTest(ans, item.Result.Test.Id);
-                    }
-
-                    resultViews[i] = new ResultView();
-                    resultViews[i].result = new ResultDto();
-                    resultViews[i].result = item;
-                    resultViews[i].prof = GlobalRes.GetSubdivision(item.Employee.Subdivision.Id).Profile;
-                    resultViews[i].points = points;
-                    resultViews[i].level = Rating.GetLevelTestPoit(item.Result.Test.Id, resultViews[i].points);
+                    resultViews[i].pointerLever = 100;
+                    
                 }
-                else
-                {
-
-                    resultViews[i] = new ResultView();
-                    resultViews[i].result = new ResultDto();
-                    resultViews[i].result = item;
-                    resultViews[i].prof = GlobalRes.GetSubdivision(item.Employee.Subdivision.Id).Profile;
-                    resultViews[i].points = item.ScoreFrom;
-                    resultViews[i].level = Rating.GetLevelTestPoit(item.Result.Test.Id, resultViews[i].points);
-                }
-
+                resultViews[i].level = GetLevelString(item.NumberPoints);
+                
                 i++;
             }
+
 
             Items = CollectionViewSource.GetDefaultView(resultViews);
             myGlobal.BTBackGo.IsEnabled = true;
@@ -179,7 +167,26 @@ namespace Client.VM
 
         }
 
+        string GetLevelString(float level)
+        {
+            string strOut = "не определен";
 
+            if ((level > 0) && (level <= 1.3))
+            { strOut = "низкий"; }
+
+            if ((level > 1.3) && (level <= 1.8))
+            { strOut = "ниже среднего"; }
+
+            if ((level > 1.8) && (level <= 2.2))
+            { strOut = "средний"; }
+
+            if ((level > 2.2) && (level <= 2.8))
+            { strOut = "выше среднего"; }
+
+            if ((level > 2.8))
+            { strOut = "высокий"; }
+            return strOut;
+        }
 
         private bool FilterUsers(object obj)
         {

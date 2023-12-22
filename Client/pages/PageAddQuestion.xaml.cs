@@ -20,13 +20,6 @@ using static Client.VM.UserVM;
 
 namespace Client.pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageAddQuestion.xaml
-    /// </summary>
-    /// 
-   
-
-
     public partial class PageAddQuestion : Page
     {
         public string curID { get; set; }
@@ -45,10 +38,12 @@ namespace Client.pages
             public string Text { get; set; }
             public string ImagePath { get; set; }
             public int IdQuestionType { get; set; }
+            public int Weight { get; set; }
             public Answersss[] Answers { get; set; }
         }
 
         private string id_test = string.Empty;
+        private BitmapImage imageQ = null;
         private BitmapImage image1 = null;
         private BitmapImage image2 = null;
         private BitmapImage image3 = null;
@@ -60,9 +55,272 @@ namespace Client.pages
             curID = ID_test;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Button_Click_final(object sender, RoutedEventArgs e)
         {
+            Question ans = new Question();
+            addQFinal.IsEnabled = false;
+            if (addTextQ.Text == null || addTextQ.Text == "" || addTextQ.Text.Length < 5)
+            {
+                addTextQ.Background = Brushes.Pink;
+                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addTextQ.Background = Brushes.Transparent;
+                ans.Text = addTextQ.Text;
+            }
+            
+            ans.IdTest = curID;
+            ans.IdQuestionType = 1;
+            ans.ImagePath = addImgNameQ.Text;
+            ans.Weight = 1;
+            ans.Answers = new Answersss[addKolAnswer.SelectedIndex+1];
 
+
+
+            // Answer 1
+            ans.Answers[0] = new Answersss();
+
+            if (addTextA1.Text == null || addTextA1.Text == "" || addTextA1.Text.Length < 5)
+            {
+                addTextA1.Background = Brushes.Pink;
+                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addTextA1.Background = Brushes.Transparent;
+                ans.Answers[0].Text = addTextA1.Text;
+            }
+           
+            ans.Answers[0].ImagePath = addImgNameA1.Text;
+            
+            float tmpFloat = 0;
+            if (float.TryParse(addBallA1.Text, out tmpFloat))
+            {
+                ans.Answers[0].Weight = tmpFloat;
+                addBallA1.Background = Brushes.Transparent; 
+            }
+            else
+            {
+                addBallA1.Background = Brushes.Pink;
+                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                addQFinal.IsEnabled = true;
+                return ;
+            }
+            
+            
+
+            if (addTrueA1.SelectedIndex == 0)
+            {
+                ans.Answers[0].Correct = false;
+            }
+            else
+            {
+                ans.Answers[0].Correct = true;
+            }
+
+
+            // Answer 2
+            ans.Answers[1] = new Answersss();
+            if (addTextA2.Text == null || addTextA2.Text == "" || addTextA2.Text.Length < 5)
+            {
+                addTextA2.Background = Brushes.Pink;
+                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addTextA2.Background = Brushes.Transparent;
+                ans.Answers[1].Text = addTextA2.Text;
+            }
+
+            ans.Answers[1].ImagePath = addImgNameA2.Text;
+
+            tmpFloat = 0;
+            if (float.TryParse(addBallA2.Text, out tmpFloat))
+            {
+                ans.Answers[1].Weight = tmpFloat;
+                addBallA2.Background = Brushes.Transparent;
+            }
+            else
+            {
+                addBallA2.Background = Brushes.Pink;
+                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+
+            
+            if (addTrueA2.SelectedIndex == 0)
+            {
+                ans.Answers[1].Correct = false;
+            }
+            else
+            {
+                ans.Answers[1].Correct = true;
+            }
+
+
+            // Answer 3
+            ans.Answers[2] = new Answersss();
+            if (addTextA3.Text == null || addTextA3.Text == "" || addTextA3.Text.Length < 5)
+            {
+                addTextA3.Background = Brushes.Pink;
+                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addTextA3.Background = Brushes.Transparent;
+                ans.Answers[2].Text = addTextA3.Text;
+            }
+            
+            ans.Answers[2].ImagePath = addImgNameA3.Text;
+            tmpFloat = 0;
+            if (float.TryParse(addBallA3.Text, out tmpFloat))
+            {
+                ans.Answers[2].Weight = tmpFloat;
+                addBallA3.Background = Brushes.Transparent;
+            }
+            else
+            {
+                addBallA3.Background = Brushes.Pink;
+                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+          
+            if (addTrueA3.SelectedIndex == 0)
+            {
+                ans.Answers[2].Correct = false;
+            }
+            else
+            {
+                ans.Answers[2].Correct = true;
+            }
+
+            // Answer 4
+            ans.Answers[3] = new Answersss();
+            if (addTextA4.Text == null || addTextA4.Text == "" || addTextA4.Text.Length < 5)
+            {
+                addTextA4.Background = Brushes.Pink;
+                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+            else
+            {
+                addTextA4.Background = Brushes.Transparent;
+                ans.Answers[3].Text = addTextA4.Text;
+            }
+            
+            ans.Answers[3].ImagePath = addImgNameA4.Text;
+            tmpFloat = 0;
+            if (float.TryParse(addBallA4.Text, out tmpFloat))
+            {
+                ans.Answers[3].Weight = tmpFloat;
+                addBallA4.Background = Brushes.Transparent;
+            }
+            else
+            {
+                addBallA4.Background = Brushes.Pink;
+                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                addQFinal.IsEnabled = true;
+                return;
+            }
+
+            if (addTrueA4.SelectedIndex == 0)
+            {
+                ans.Answers[3].Correct = false;
+            }
+            else
+            {
+                ans.Answers[3].Correct = true;
+            }
+          
+
+            string jout = JsonConvert.SerializeObject(ans);
+            ConnectHost conn = new ConnectHost();
+            JToken jObject = await conn.AddQuestionInTest(jout);
+
+            if (jObject == null)
+            {
+
+                MessageBox.Show("Не удалось добавить вопрос!");
+
+            }
+            else
+            {
+                MessageBox.Show("Вопрос успешно добавлен!");
+                addBallA1.Text = "";
+                addBallA2.Text = "";
+                addBallA3.Text = "";
+                addBallA4.Text = "";
+                addTextQ.Text = "";
+                addTextA1.Text = "";
+                addTextA2.Text = "";
+                addTextA3.Text = "";
+                addTextA4.Text = "";
+               
+                addImgNameQ.Text = "";
+                addImgNameQ.Visibility = Visibility.Collapsed;
+                addImg.Visibility = Visibility.Visible;
+                addImgQ.Source = null;
+                addImgQ.Visibility = Visibility.Collapsed;
+
+                addImgA11.Source = null;
+                addImgA11.Visibility = Visibility.Collapsed;
+                addImgA1.Visibility = Visibility.Visible;
+                addImgNameA1.Text = null;
+                addImgNameA1.Visibility = Visibility.Collapsed;
+
+                addImgA12.Source = null;
+                addImgA12.Visibility = Visibility.Collapsed;
+                addImgA2.Visibility = Visibility.Visible;
+                addImgNameA2.Text = null;
+                addImgNameA2.Visibility = Visibility.Collapsed;
+
+                addImgA13.Source = null;
+                addImgA13.Visibility = Visibility.Collapsed;
+                addImgA3.Visibility = Visibility.Visible;
+                addImgNameA3.Text = null;
+                addImgNameA3.Visibility = Visibility.Collapsed;
+
+                addImgA14.Source = null;
+                addImgA14.Visibility = Visibility.Collapsed;
+                addImgA4.Visibility = Visibility.Visible;
+                addImgNameA4.Text = null;
+                addImgNameA4.Visibility = Visibility.Collapsed;
+            }
+
+        }
+
+        private void ButtonImgADD(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofdPicture = new OpenFileDialog();
+            ofdPicture.Filter = "Image files|*.bmp;*.jpg;*.gif;*.png;*.tif|All files|*.*";
+            ofdPicture.FilterIndex = 1;
+
+            if (ofdPicture.ShowDialog() == true)
+            {
+                imageQ = new BitmapImage(new Uri(ofdPicture.FileName));
+                addImgNameQ.Text = ofdPicture.FileName;
+                addImgNameQ.Visibility = Visibility.Visible;
+                addImg.Visibility = Visibility.Collapsed;
+                addImgQ.Source = imageQ;
+                addImgQ.Visibility = Visibility.Visible;
+            }
+
+        }
+
+        private void ButtonImgADD_A1(object sender, RoutedEventArgs e)
+        {
             OpenFileDialog ofdPicture = new OpenFileDialog();
             ofdPicture.Filter = "Image files|*.bmp;*.jpg;*.gif;*.png;*.tif|All files|*.*";
             ofdPicture.FilterIndex = 1;
@@ -70,15 +328,16 @@ namespace Client.pages
             if (ofdPicture.ShowDialog() == true)
             {
                 image1 = new BitmapImage(new Uri(ofdPicture.FileName));
-                QFile1.Text = ofdPicture.FileName;
-
+                addImgA11.Source = image1;
+                addImgA11.Visibility = Visibility.Visible;
+                addImgA1.Visibility = Visibility.Collapsed;
+                addImgNameA1.Text = ofdPicture.FileName;
+                addImgNameA1.Visibility = Visibility.Visible;
             }
-
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void ButtonImgADD_A2(object sender, RoutedEventArgs e)
         {
-
             OpenFileDialog ofdPicture = new OpenFileDialog();
             ofdPicture.Filter = "Image files|*.bmp;*.jpg;*.gif;*.png;*.tif|All files|*.*";
             ofdPicture.FilterIndex = 1;
@@ -86,15 +345,16 @@ namespace Client.pages
             if (ofdPicture.ShowDialog() == true)
             {
                 image2 = new BitmapImage(new Uri(ofdPicture.FileName));
-                QFile2.Text = ofdPicture.FileName;
-
+                addImgA12.Source = image2;
+                addImgA12.Visibility = Visibility.Visible;
+                addImgA2.Visibility = Visibility.Collapsed;
+                addImgNameA2.Text = ofdPicture.FileName;
+                addImgNameA2.Visibility = Visibility.Visible;
             }
-
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void ButtonImgADD_A3(object sender, RoutedEventArgs e)
         {
-
             OpenFileDialog ofdPicture = new OpenFileDialog();
             ofdPicture.Filter = "Image files|*.bmp;*.jpg;*.gif;*.png;*.tif|All files|*.*";
             ofdPicture.FilterIndex = 1;
@@ -102,15 +362,16 @@ namespace Client.pages
             if (ofdPicture.ShowDialog() == true)
             {
                 image3 = new BitmapImage(new Uri(ofdPicture.FileName));
-                QFile3.Text = ofdPicture.FileName;
-
+                addImgA13.Source = image3;
+                addImgA13.Visibility = Visibility.Visible;
+                addImgA3.Visibility = Visibility.Collapsed;
+                addImgNameA3.Text = ofdPicture.FileName;
+                addImgNameA3.Visibility = Visibility.Visible;
             }
-
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void ButtonImgADD_A4(object sender, RoutedEventArgs e)
         {
-
             OpenFileDialog ofdPicture = new OpenFileDialog();
             ofdPicture.Filter = "Image files|*.bmp;*.jpg;*.gif;*.png;*.tif|All files|*.*";
             ofdPicture.FilterIndex = 1;
@@ -118,86 +379,17 @@ namespace Client.pages
             if (ofdPicture.ShowDialog() == true)
             {
                 image4 = new BitmapImage(new Uri(ofdPicture.FileName));
-                QFile4.Text = ofdPicture.FileName;
-                
-
+                addImgA14.Source = image4;
+                addImgA14.Visibility = Visibility.Visible;
+                addImgA4.Visibility = Visibility.Collapsed;
+                addImgNameA4.Text = ofdPicture.FileName;
+                addImgNameA4.Visibility = Visibility.Visible;
             }
-
         }
 
-        private async void Button_Click_final(object sender, RoutedEventArgs e)
+        private void Button_Click_Back(object sender, RoutedEventArgs e)
         {
-            Question ans = new Question();
-            ans.Text = QName.Text;
-            ans.IdTest = curID;
-            ans.IdQuestionType = 1;
-            ans.ImagePath = null;
-            ans.Answers = new Answersss[QKol.SelectedIndex+1];
-
-            var tmp = new Answersss();
-
-            tmp.Text = QAnsweText1.Text;
-            tmp.Weight = 1;
-            if (QAnswerCor1.SelectedIndex == 0)
-            {
-                tmp.Correct = true;
-            }
-            else
-            {
-                tmp.Correct = false;
-            }
-            ans.Answers[0] = tmp;
-
-            ans.Answers[1] = new Answersss();
-            ans.Answers[1].Text = QAnsweText2.Text;
-            ans.Answers[1].Weight = 1;
-            if (QAnswerCor2.SelectedIndex == 0)
-            {
-                ans.Answers[1].Correct = true;
-            }
-            else
-            {
-                ans.Answers[1].Correct = false;
-            }
-
-            ans.Answers[2] = new Answersss();
-            ans.Answers[2].Text = QAnsweText3.Text;
-            ans.Answers[2].Weight = 1;
-            if (QAnswerCor3.SelectedIndex == 0)
-            {
-                ans.Answers[2].Correct = true;
-            }
-            else
-            {
-                ans.Answers[2].Correct = false;
-            }
-
-            ans.Answers[3] = new Answersss();
-            ans.Answers[3].Text = QAnsweText4.Text;
-            ans.Answers[3].Weight = 1;
-            if (QAnswerCor4.SelectedIndex == 0)
-            {
-                ans.Answers[3].Correct = true;
-            }
-            else
-            {
-                ans.Answers[3].Correct = false;
-            }
-
-            string jout = JsonConvert.SerializeObject(ans);
-            Console.WriteLine(jout);
-
-            ConnectHost conn = new ConnectHost();
-
-
-            JToken jObject = await conn.AddQuestionInTest(jout);
-
-            if (jObject == null)
-            {
-                Console.WriteLine(jout);
-
-            }
-
+            this.NavigationService?.GoBack();
         }
     }
 }

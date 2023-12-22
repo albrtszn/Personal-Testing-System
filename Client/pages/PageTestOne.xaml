@@ -4,88 +4,278 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="900
-      " d:DesignWidth="800"
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
       Title="PageTestOne"
-      Background="White">
+     Background="#EDEDED">
 
+    <Page.Resources>
+
+        <Geometry x:Key="tabler_editGeometry1">F1 M24,24z M0,0z M7,7L6,7C5.46957,7 4.96086,7.21071 4.58579,7.58579 4.21071,7.96086 4,8.46957 4,9L4,18C4,18.5304 4.21071,19.0391 4.58579,19.4142 4.96086,19.7893 5.46957,20 6,20L15,20C15.5304,20 16.0391,19.7893 16.4142,19.4142 16.7893,19.0391 17,18.5304 17,18L17,17</Geometry>
+        <Geometry x:Key="tabler_editGeometry2">F1 M24,24z M0,0z M16,5.00011L19,8.00011 M20.385,6.58511C20.7788,6.19126 21.0001,5.65709 21.0001,5.10011 21.0001,4.54312 20.7788,4.00895 20.385,3.61511 19.9912,3.22126 19.457,3 18.9,3 18.343,3 17.8088,3.22126 17.415,3.61511L9,12.0001 9,15.0001 12,15.0001 20.385,6.58511z</Geometry>
+        <DrawingGroup x:Key="tabler_editDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry1}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+            <GeometryDrawing Geometry="{StaticResource tabler_editGeometry2}">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingImage x:Key="tabler_editDrawingImage" Drawing="{StaticResource tabler_editDrawingGroup}" />
+
+        <Geometry x:Key="ic_round_delete_outlineGeometry">F1 M24,24z M0,0z M6,19C6,20.1,6.9,21,8,21L16,21C17.1,21,18,20.1,18,19L18,9C18,7.9,17.1,7,16,7L8,7C6.9,7,6,7.9,6,9L6,19z M9,9L15,9C15.55,9,16,9.45,16,10L16,18C16,18.55,15.55,19,15,19L9,19C8.45,19,8,18.55,8,18L8,10C8,9.45,8.45,9,9,9z M15.5,4L14.79,3.29C14.61,3.11,14.35,3,14.09,3L9.91,3C9.65,3,9.39,3.11,9.21,3.29L8.5,4 6,4C5.45,4 5,4.45 5,5 5,5.55 5.45,6 6,6L18,6C18.55,6 19,5.55 19,5 19,4.45 18.55,4 18,4L15.5,4z</Geometry>
+        <DrawingGroup x:Key="ic_round_delete_outlineDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+            <GeometryDrawing Brush="#FF787575" Geometry="{StaticResource ic_round_delete_outlineGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="ic_round_delete_outlineDrawingImage" Drawing="{StaticResource ic_round_delete_outlineDrawingGroup}" />
+
+        <Geometry x:Key="Frame_69Geometry1">F1 M16,16z M0,0z M1.48508,1.62939L14.3557,14.5</Geometry>
+        <Geometry x:Key="Frame_69Geometry2">F1 M16,16z M0,0z M1.48508,14.3706L14.3557,1.49999</Geometry>
+        <DrawingGroup x:Key="Frame_69DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+            <DrawingGroup Opacity="1">
+                <DrawingGroup.ClipGeometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,16,16" />
+                </DrawingGroup.ClipGeometry>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry1}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry2}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingGroup>
+        <DrawingImage x:Key="Frame_69DrawingImage" Drawing="{StaticResource Frame_69DrawingGroup}" />
+
+        <Geometry x:Key="export_lineGeometry1">F1 M36,36z M0,0z M6,13.61L13.61,13.61 13.61,6 24,6 24,14.38 26,14.38 26,6A2,2,0,0,0,24,4L10.87,4 4,10.87 4,30A2,2,0,0,0,6,32L24,32A2,2,0,0,0,26,30L6,30z M6,11.69L11.69,6 12,6 12,12 6,12z</Geometry>
+        <Geometry x:Key="export_lineGeometry2">F1 M36,36z M0,0z M28.32,16.35A1,1,0,0,0,26.91,17.76L30.16,21 18,21A1,1,0,0,0,18,23L30.19,23 26.91,26.28A1,1,0,1,0,28.32,27.69L34,22z</Geometry>
+        <DrawingGroup x:Key="export_lineDrawingGroup" ClipGeometry="M0,0 V36 H36 V0 H0 Z">
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry1}" />
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry2}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="export_lineDrawingImage" Drawing="{StaticResource export_lineDrawingGroup}" />
+
+        <Geometry x:Key="document_pdfGeometry1">F1 M32,32z M0,0z M30,18L30,16 24,16 24,26 26,26 26,22 29,22 29,20 26,20 26,18z M19,26L15,26 15,16 19,16A3.003,3.003,0,0,1,22,19L22,23A3.003,3.003,0,0,1,19,26 M17,24L19,24A1.001,1.001,0,0,0,20,23L20,19A1.001,1.001,0,0,0,19,18L17,18z M11,16L6,16 6,26 8,26 8,23 11,23A2.003,2.003,0,0,0,13,21L13,18A2.002,2.002,0,0,0,11,16 M8,21L8,18 11,18 11.001,21z</Geometry>
+        <Geometry x:Key="document_pdfGeometry2">F1 M32,32z M0,0z M22,14L22,10A0.91,0.91,0,0,0,21.7,9.3L14.7,2.3A0.909,0.909,0,0,0,14,2L4,2A2.006,2.006,0,0,0,2,4L2,28A2,2,0,0,0,4,30L20,30 20,28 4,28 4,4 12,4 12,10A2.006,2.006,0,0,0,14,12L20,12 20,14z M14,10L14,4.4 19.6,10z</Geometry>
+        <DrawingGroup x:Key="document_pdfDrawingGroup" ClipGeometry="M0,0 V32 H32 V0 H0 Z">
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource document_pdfGeometry1}" />
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource document_pdfGeometry2}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="document_pdfDrawingImage" Drawing="{StaticResource document_pdfDrawingGroup}" />
+       
+        <Geometry x:Key="file_word_outlinedGeometry">F1 M1024,1024z M0,0z M854.6,288.6L639.4,73.4C633.4,67.4,625.3,64,616.8,64L192,64C174.3,64,160,78.3,160,96L160,928C160,945.7,174.3,960,192,960L832,960C849.7,960,864,945.7,864,928L864,311.3C864,302.8,860.6,294.6,854.6,288.6 M790.2,326L602,326 602,137.8z M792,888L232,888 232,136 534,136 534,352A42,42,0,0,0,576,394L792,394z M528.1,472L495.9,472C490.4,472,485.6,475.7,484.3,481.1L434.6,680 388.5,481.3C387.2,475.9,382.4,472,376.8,472L341.4,472A12.02,12.02,0,0,0,329.8,487.1L404,763.1C405.4,768.3,410.2,772,415.6,772L447.6,772C453,772,457.8,768.4,459.2,763.1L512,566.1 564.8,763.1C566.2,768.3,571,772,576.4,772L608.2,772C613.6,772,618.4,768.4,619.8,763.1L694.2,487.1A12.04,12.04,0,0,0,682.6,472L647,472C641.4,472,636.6,475.9,635.3,481.3L589.5,680.4 539.7,481.1C538.4,475.7,533.6,472,528.1,472</Geometry>
+        <DrawingGroup x:Key="file_word_outlinedDrawingGroup" ClipGeometry="M0,0 V1024 H1024 V0 H0 Z">
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource file_word_outlinedGeometry}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="file_word_outlinedDrawingImage" Drawing="{StaticResource file_word_outlinedDrawingGroup}" />
+
+    </Page.Resources>
+    
     <Grid>
-        
-        <Grid Background="White" Margin="0 0 0 0">
+
+        <Grid Background="Transparent" Margin="0 0 0 0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0">
-                <WrapPanel>
-                    <TextBlock Text="Наименование теста: "  FontSize="20"  Padding="0" Margin="5"/>
-                    <TextBlock x:Name="TB_Name" Text="Название" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold" />
-                </WrapPanel>
-                <WrapPanel>
-                    <TextBlock Text="Описание теста: "  FontSize="20"  Padding="0" Margin="5"/>
-                    <TextBlock x:Name="TB_Discrib" Text="Описание" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                </WrapPanel>
-                <WrapPanel>
-                    <TextBlock Text="Инструкция прохождения теста: "  FontSize="20"  Padding="0" Margin="5"/>
-                    <TextBlock x:Name="TB_Instruct" Text="Инструкция" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                </WrapPanel>
-                <WrapPanel>
-                    <TextBlock Text="Компетенция: "  FontSize="20"  Padding="0" Margin="5"/>
-                    <TextBlock x:Name="TB_Comp" Text="Личная" FontSize="20"  Padding="0" Margin="5" FontWeight="Bold"/>
-                   
-                </WrapPanel>
-                
+            <TextBlock  x:Name="TB_Name" Text="Название" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" Margin="40 30 40 0" />
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 30 40 0">
+                <Button x:Name="exportPdf_BT" Width="40" HorizontalAlignment="Right" 
+                                BorderThickness="0"
+                                Background="Transparent"
+                                FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_pdf">
+                    <Image Source="{StaticResource document_pdfDrawingImage}" Width="30" Margin="0"/>
+                </Button>
+
+                <Button x:Name="exportDoc_BT" Width="40" HorizontalAlignment="Right" 
+                                BorderThickness="0"
+                                Background="Transparent"
+                                FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_doc">
+                    <Image Source="{StaticResource file_word_outlinedDrawingImage}" Width="30" Margin="0"/>
+                </Button>
             </StackPanel>
 
-            <ListBox x:Name="TestLB"  Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=1}" FontSize="15" VirtualizingPanel.ScrollUnit="Pixel" >
+            <TextBlock Grid.Row="1" Text="Описание теста"  FontWeight="Bold" FontSize="16"  FontFamily="Roboto" Padding="0" Margin="40 10 40 0"/>
+            <TextBlock x:Name="TB_Discrib" Grid.Row="2" Text="Описание" FontSize="16"  Padding="0"  Margin="40 10 40 0" TextWrapping="Wrap" Foreground="#555"/>
+            <TextBlock Grid.Row="3" Text="Групповая компетенция"  FontWeight="Bold" FontSize="16"  FontFamily="Roboto"  Padding="0" Margin="40 10 40 0"/>
+            <TextBlock Grid.Row="4" x:Name="TB_Comp" Text="Личная" FontSize="16"  Padding="0" Margin="40 10 40 10" TextWrapping="Wrap" Foreground="#555"/>
+
+            <ListBox x:Name="TestLB"  Grid.Row="5" d:ItemsSource="{d:SampleData ItemCount=1}" FontSize="15"  
+                     SelectedIndex="-1"  
+                     materialDesign:ListBoxItemAssist.ShowSelection="False"
+                     Padding="0"
+                     Margin="0"
+                     VirtualizingPanel.ScrollUnit="Pixel"
+                  
+                     >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <StackPanel>
-                                <Separator/>
-                                <DockPanel>
-                                    <TextBlock Text="{Binding Number}" FontSize="15"  Padding="0" Margin="0 0 5 0"/>
-                                    <TextBlock Text="{Binding Text}" FontSize="15"  Padding="0"/>
-                                </DockPanel>
-                                <Image x:Name="QNameImg" Source="{Binding Img}" Width="250" Stretch="UniformToFill"/>
-                                <TextBlock Text="Ответы:" FontSize="15"  Padding="0" FontStyle="Italic"/>
-                            </StackPanel>
+                        <Border  Width="{Binding Path=ActualWidth, ElementName=TB_Comp, Mode=OneWay}" Margin="30 20 0 10"
+                                Background="White" CornerRadius="5">
+                            <Grid>
 
-                            <ListBox ItemsSource="{Binding Answers}" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=4}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="100"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Image Source="{Binding Img}"/>
-                                            <TextBlock Text="{Binding Text}" Grid.Column="1"  FontSize="13"  Padding="0" />
-                                           
-                                        </Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal" Margin="20 15 20 0">
+                                    <TextBlock Text="Вопрос " FontSize="16"  FontFamily="Roboto" FontWeight="Bold" Foreground="Black" Padding="0" Margin="0 0 5 0"/>
+                                    <TextBlock Text="{Binding Number}" FontSize="16" FontFamily="Roboto" FontWeight="Bold" Foreground="Black" Padding="0" Margin="0 0 5 0"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Height="50" Margin="0 0 20 0"
+                                            Visibility="{Binding Path=Visibility, ElementName=BT_ADD_Q, Mode=OneWay}"
+                                            >
+                                    <Button Visibility="Hidden"
+                                            Height="25" Width="25" Padding="0" Margin="0 0 20 0" 
+                                            Background="Transparent" BorderThickness="1" 
+                                            BorderBrush="Transparent" 
+                                            Click="Button_Edit">
+                                        <Image Source="{StaticResource tabler_editDrawingImage}" Width="18" Height="18"/>
+                                    </Button>
+                                    <Button 
+                                            Height="25" Width="25" Padding="0" 
+                                            Background="Transparent" BorderThickness="1" 
+                                            BorderBrush="Transparent"
+                                            Click="Button_Delet"
+                                            >
+                                        
+                                        <Image Source="{StaticResource ic_round_delete_outlineDrawingImage}" Width="24" Height="24" ContextMenuClosing="Button_Delet"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="1" Text="{Binding Text}" FontSize="16" FontFamily="Roboto" Margin="20 10 20 10" TextWrapping="Wrap"/>
+
+                                <Image Grid.Row="2" x:Name="QNameImg" Source="{Binding Img}" Width="250" Stretch="UniformToFill"/>
+                                <TextBlock x:Name="TB_Answer" Grid.Row="4" Text="Ответы: " FontSize="16"  Padding="0" Margin="20 20 20 0"/>
+                                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <TextBlock  Text="Верный" FontSize="16"  Padding="0" Margin="0 0 5 0" HorizontalAlignment="Right"/>
+                                    <TextBlock  Text="Баллы" FontSize="16"  Padding="0" Margin="0 0 5 0" HorizontalAlignment="Right"/>
+                                </StackPanel>
+                                
+                                
+                                <ListBox ItemsSource="{Binding Answers}" Grid.Row="5" d:ItemsSource="{d:SampleData ItemCount=2}" 
+                                         materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                  
+                                        IsEnabled="False"
+                                        
+                                         >
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="{Binding Path=ActualWidth, ElementName=TB_Answer, Mode=OneWay}" HorizontalAlignment="Left" Margin="15 0 0 0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="40"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Source="{Binding Img}"  Grid.Column="0" Margin="0 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                <TextBlock Text="{Binding Text}" Grid.Column="1"  FontSize="16" FontFamily="Roboto" Margin="5 0 5 0" />
+                                                <TextBlock x:Name="points" Text="{Binding Weight}" Grid.Column="3"  FontSize="16" FontFamily="Roboto" Margin="5 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                <TextBlock x:Name="correct" Text="{Binding Correct}" Grid.Column="2"  FontSize="16" FontFamily="Roboto" Margin="5 0 5 0" VerticalAlignment="Center"/>
+                                            </Grid>
 
 
-                                       
 
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            
-                           
-                        </Grid>
 
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+
+
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
 
             </ListBox>
-            <Button Grid.Row="2" Content="Добавить вопрос" Width="150" HorizontalAlignment="Center" Margin=" 0 5 10 5" Click="Button_Click"></Button>
+
+            <Button x:Name="BT_ADD_Q" Grid.Row="8" Content="ДОБАВИТЬ ВОПРОС" Width="180" HorizontalAlignment="Right" Margin=" 0 20 35 20" Click="Button_Click" 
+                    materialDesign:ButtonAssist.CornerRadius="20"
+                    Background="#F25C4F"
+                    BorderThickness="0"
+                    BorderBrush="Transparent"
+                    Visibility="Hidden"
+                    />
+            <Button Grid.Row="8" Content="НАЗАД" Width="150" HorizontalAlignment="Left" Margin=" 35 20 35 20" Click="Button_Back" 
+                    materialDesign:ButtonAssist.CornerRadius="20"
+                    Background="#F25C4F"
+                    BorderThickness="0"
+                    BorderBrush="Transparent"
+                    />
+
+            <Border x:Name="LoadProgress" Grid.RowSpan="7" Background="White" Visibility="Collapsed">
+                <Border Width="100" Height="100" CornerRadius="15" Background="#E3E5E5" BorderBrush="#C2C2C2" BorderThickness="1">
+                    <ProgressBar
+                        Width="60"
+                        Height="60"
+                       Foreground="#6970B5"
+                       IsIndeterminate="True"
+                       Style="{StaticResource MaterialDesignCircularProgressBar}"
+                       Value="0"
+                        />
+                </Border>
+
+            </Border>
+
+            <Border x:Name="BRquestion" Background="White" Grid.RowSpan="7" Width="550" Height="230" Visibility="Collapsed"
+                    BorderBrush="#C2C2C2" BorderThickness="1" CornerRadius="5">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.4"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Click="ButtonClose" Grid.Row="0" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" 
+                            Padding="0" Background="Transparent" Opacity="1" Margin="0 15 15 15 "
+                        HorizontalAlignment="Right"
+                        >
+                        <Image Source="{StaticResource Frame_69DrawingImage}" Width="16" Height="16"/>
+                    </Button>
+
+                    <TextBlock x:Name="TBMessage" Grid.Row="1"
+                               Text=""
+                           HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                           FontFamily="Roboto" FontSize="30" Margin="20 20 20 20"
+                           />
+
+                    <Button Grid.Row="2" Width="150" Height="40" Content="УДАЛИТЬ" FontFamily="Roboto" FontSize="16" Background="#F25C4F" BorderBrush="Transparent"
+                        materialDesign:ButtonAssist.CornerRadius="20" HorizontalAlignment="Right" Margin="0 0 100 0"
+                        Click="Button_delete"
+                        />
+
+                    <Button Grid.Row="2" Width="150" Height="40" Content="ОТМЕНА" FontFamily="Roboto" FontSize="16" Background="#F25C4F" BorderBrush="Transparent"
+                        materialDesign:ButtonAssist.CornerRadius="20" HorizontalAlignment="Left" Margin="100 0 0 0"
+                        Click="ButtonClose"
+                        />
+                </Grid>
+            </Border>
+
         </Grid>
     </Grid>
 </Page>

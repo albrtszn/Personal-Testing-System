@@ -32,6 +32,7 @@ namespace Client.VM
             public int checkBox { get; set; }
             public bool active { get; set; }
             public string DatatimePurpose { get; set; }
+            public string Timer { get; set; }
         }
 
         public static EmployeeDto emp { get; set; }
@@ -68,8 +69,11 @@ namespace Client.VM
 
                 if ((tmp.checkBox == 1) && (tmp.active == false))
                 {
-
-                    tmp_payload = "{\"IdEmployee\"" + ":\"" + pages.PageAddPurpose.employee.Id + "\", \"IdTest\"" + ":\"" + tmp.test.Id + "\"}";
+                    if (tmp.Timer == null)
+                    {
+                        tmp.Timer = "0";
+                    }
+                    tmp_payload = "{\"IdEmployee\"" + ":\"" + pages.PageAddPurpose.employee.Id + "\", \"IdTest\"" + ":\"" + tmp.test.Id + "\", \"Timer\"" + ":" + tmp.Timer + "}";
                     PushPurpose(tmp_payload);
                 }
 
@@ -116,6 +120,11 @@ namespace Client.VM
 
         public async void LoadData()
         {
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
             emp = pages.PageAddPurpose.employee;
             subView = GlobalRes.GetSubdivision(emp.IdSubdivision);
 
@@ -124,13 +133,10 @@ namespace Client.VM
             ConnectHost conn = new ConnectHost();
 
             JToken jObject = await conn.GetTestsByEmployeeId(tmp_pay);
-            tests = JsonConvert.DeserializeObject<TestDto[]>(jObject.ToString());
+            tests = JsonConvert.DeserializeObject<TestDto[]>(jObject.ToString(), jsonSettings);
 
             jObject = await conn.GetPurposesByEmployeeId(tmp_pay);
-            var jsonSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            };
+
 
             alltest = new TestView[tests.Count()];
 
@@ -148,7 +154,7 @@ namespace Client.VM
                 tmp.checkBox = 0;
                 tmp.active = false;
                 tmp.nameCompetense = GlobalRes.GetCompetence(test.CompetenceId).Name;
-                tmp.DatatimePurpose = "Не назвачен";
+                tmp.DatatimePurpose = "Не назначен";
 
                 if (jObject != null)
                 {
@@ -159,6 +165,7 @@ namespace Client.VM
                             tmp.checkBox = 1;
                             tmp.active = true;
                             tmp.DatatimePurpose = tmp_j.DatatimePurpose;
+                            tmp.Timer = tmp_j.Timer.ToString();
                         }
                     }
                 }

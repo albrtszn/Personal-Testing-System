@@ -12,5 +12,6 @@ namespace Client.classDTO
         public string IdEmployee { get; set; }
         public TestDto Test { get; set; }
         public string DatatimePurpose { get; set; }
+        public int Timer { get; set; }
     }
 }

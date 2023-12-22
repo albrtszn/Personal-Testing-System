@@ -21,13 +21,14 @@ namespace Client.windows
     public partial class WindowRunTest : Window
     {
         private string ID_TEST { get; set; }
+        private int TIMER_TEST { get; set; }
 
 
-
-        public WindowRunTest(string idTest)
+        public WindowRunTest(string idTest, int TimerTest)
         {
             InitializeComponent();
             ID_TEST = idTest;
+            TIMER_TEST = TimerTest;
             Loaded += PageRunTest_Loaded;
             Closed += WindowRunTest_Closed;
         }
@@ -35,13 +36,12 @@ namespace Client.windows
         private void WindowRunTest_Closed(object sender, EventArgs e)
         {
             Unhook();
-            Console.WriteLine("Отмена запрета сочетаний");
         }
 
         private void PageRunTest_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = new PageRunTestVM(ID_TEST, this);
-            Console.WriteLine("Запрет сочетаний");
+            this.DataContext = new PageRunTestVM(ID_TEST, this, TIMER_TEST);
+           
             SetHook();
         }
 
@@ -272,8 +272,8 @@ namespace Client.windows
             GetModuleHandle(IntPtr.Zero), 0);
             m_hHook_4 = SetWindowsHookEx(WH_KEYBOARD_LL, m_callback_4,
             GetModuleHandle(IntPtr.Zero), 0);
-            m_hHook_5 = SetWindowsHookEx(WH_KEYBOARD_LL, m_callback_5,
-            GetModuleHandle(IntPtr.Zero), 0);
+            //m_hHook_5 = SetWindowsHookEx(WH_KEYBOARD_LL, m_callback_5,
+            //GetModuleHandle(IntPtr.Zero), 0);
             m_hHook_6 = SetWindowsHookEx(WH_KEYBOARD_LL, m_callback_6,
             GetModuleHandle(IntPtr.Zero), 0);
             m_hHook_7 = SetWindowsHookEx(WH_KEYBOARD_LL, m_callback_7,
@@ -288,14 +288,13 @@ namespace Client.windows
             UnhookWindowsHookEx(m_hHook_2);
             UnhookWindowsHookEx(m_hHook_3);
             UnhookWindowsHookEx(m_hHook_4);
-            UnhookWindowsHookEx(m_hHook_5);
+            //UnhookWindowsHookEx(m_hHook_5);
             UnhookWindowsHookEx(m_hHook_6);
             UnhookWindowsHookEx(m_hHook_7);
         }
 
         private void LBTest_Selected(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Выбран");
             var tmp = (PageRunTestVM)this.DataContext;
             tmp.FuncRadioCheck();
                 //FuncRadioCheck

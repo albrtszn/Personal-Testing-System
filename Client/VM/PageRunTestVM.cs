@@ -33,9 +33,12 @@ namespace Client.VM
         public RelayCommand CmdEndTest { get; }
         public RelayCommand CmdNextQuestion { get; }
         public RelayCommand CmdPrevQuestion { get; }
-        public RelayCommand CmdThatExecuteNothing { get; }
+        public RelayCommand CmdBeginQuestion { get; }
+        
 
         private PushTest pushTest = new PushTest();
+
+        DispatcherTimer timerA = new DispatcherTimer();
 
         private int _kolAnswer = 0;
         private int _kolQuestion;
@@ -60,6 +63,16 @@ namespace Client.VM
             }
         }
 
+        private int _progressValue;
+        public int ProgressValue
+        {
+            get { return _progressValue; }
+            set
+            {
+                _progressValue = value;
+                OnPropertyChanged(nameof(ProgressValue));
+            }
+        }
 
         private OneQuestion _selectedQuestion;
         public OneQuestion SelectedQuestion
@@ -116,18 +129,29 @@ namespace Client.VM
             }
         }
 
-        private int _timerTest = 600;
-     
+        private int _timerTest;
+        private bool _timerDerection = true;
 
-        public PageRunTestVM(string idTest, object myOwner)
+        public PageRunTestVM(string idTest, object myOwner, int timerCnt)
         {
             myGlobal = myOwner as WindowRunTest;
+            _timerTest = timerCnt;
+            if (_timerTest > 0)
+            {
+                _timerDerection = true;
+            }
+            else
+            {
+                _timerDerection = false;
+            }
+
             LoadData(idTest);
             this.CmdNextQuestion = new RelayCommand(FuncNextQuestion);
             this.CmdPrevQuestion = new RelayCommand(FuncPrevQuestion);
             this.CmdEndTest = new RelayCommand(FuncEndTest);
-           
-            this.CmdThatExecuteNothing = new RelayCommand(FuncCmdThatExecuteNothing);
+            this.CmdBeginQuestion = new RelayCommand(FuncBeginQuestion);
+
+
 
             //  установка таймера
 
@@ -144,20 +168,52 @@ namespace Client.VM
 
         private void dtTicker(object sender, EventArgs e) 
         {
-            if (_timerTest > 0) 
+            if (_timerDerection)
             {
-                _timerTest--;
+                if (_timerTest > 0)
+                {
+                    _timerTest--;
+                    timerContent = TimeSpan.FromSeconds(_timerTest).ToString(@"hh\:mm\:ss");
+                    
+                }
+                else
+                {
+                    myGlobal.Close();   
+                }
+            }
+            else
+            {
+                _timerTest++;
                 timerContent = TimeSpan.FromSeconds(_timerTest).ToString(@"hh\:mm\:ss");
-
             }
             
 
         }
 
-
-        void FuncCmdThatExecuteNothing(object param)
+        private int _timerATest = 0;
+        private void dtTickerA(object sender, EventArgs e)
         {
-            Console.WriteLine("Exit");
+            _timerATest++;
+            if (_timerATest > 20) 
+            {
+                timerA.Stop();
+                _timerATest = 0;
+                myGlobal.ImageQtype5.Visibility = Visibility.Collapsed;
+                myGlobal.TB_QType5.Visibility = Visibility.Visible;
+                myGlobal.TestEnd.Visibility = Visibility.Visible;
+                myGlobal.TestEnd.IsEnabled = true;
+            }
+        }
+
+        public void FuncBeginQuestion(object param)
+        {
+            myGlobal.TB_QType5.Visibility = Visibility.Collapsed;
+            myGlobal.BeginQuestion.Visibility = Visibility.Collapsed;
+            myGlobal.ImageQtype5.Visibility = Visibility.Visible;
+            timerA.Tick += dtTickerA;
+            timerA.Interval = TimeSpan.FromSeconds(1);
+            timerA.Start();
+
         }
 
         public void FuncRadioCheck()
@@ -180,6 +236,29 @@ namespace Client.VM
             }
         }
 
+        void ChangeSelectedQuestion(OneQuestion one)
+        {
+            
+            switch (one.IdQuestionType)
+            {
+                case 2:
+                    {
+                        myGlobal.TB_QType5.Visibility = Visibility.Collapsed;
+                        myGlobal.SP_idType1.Visibility = Visibility.Collapsed;
+                        myGlobal.SP_idType5.Visibility = Visibility.Visible;
+                        break;
+                    }
+                default: 
+                    {
+                        myGlobal.SP_idType1.Visibility = Visibility.Visible;
+                        myGlobal.SP_idType5.Visibility = Visibility.Collapsed;
+                        break;
+                    }
+    
+            }
+            SelectedQuestion = one;
+        }
+
         void FuncNextQuestion(object param)
         {
             if (IndexQuestion < _kolQuestion-1)
@@ -190,12 +269,13 @@ namespace Client.VM
                     _kolAnswer = IndexQuestion;
                     myGlobal.BT_next.IsEnabled = false;
                 }
-                SelectedQuestion = test.Questions[IndexQuestion];
+                ChangeSelectedQuestion(test.Questions[IndexQuestion]);
                 
                 myGlobal.BT_prev.IsEnabled = true;
                
             }
 
+            ProgressValue = (int) ((IndexQuestion+1)*100.0 / _kolQuestion);
         }
 
         void FuncPrevQuestion(object param)
@@ -203,7 +283,7 @@ namespace Client.VM
             if (IndexQuestion > 0)
             {
                 IndexQuestion = IndexQuestion - 1;
-                SelectedQuestion = test.Questions[IndexQuestion];
+                ChangeSelectedQuestion(test.Questions[IndexQuestion]);
                 myGlobal.BT_next.IsEnabled = true;
             }
 
@@ -316,7 +396,7 @@ namespace Client.VM
 
 
             IndexQuestion = 0;
-            SelectedQuestion = test.Questions[IndexQuestion];
+            ChangeSelectedQuestion(test.Questions[IndexQuestion]);
            
         }
 

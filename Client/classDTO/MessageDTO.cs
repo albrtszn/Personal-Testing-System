@@ -13,5 +13,7 @@ namespace Client.classDTO
             public string MessageText {  get; set; }
             public bool StatusRead { get; set; }
             public string DateAndTime {  get; set; }
+            public string FIO {  get; set; }
+            public string TextStatus { get; set; }
     }
 }

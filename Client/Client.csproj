@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>16</ApplicationRevision>
+    <ApplicationRevision>22</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -150,6 +150,14 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.7.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO.Pipelines, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.8.0.0\lib\net462\System.IO.Pipelines.dll</HintPath>
     </Reference>
@@ -230,6 +238,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Wordroller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Wordroller.1.1.1\lib\netstandard2.0\Wordroller.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -242,8 +253,10 @@
     <Compile Include="classDTO\AnswersQuestion.cs" />
     <Compile Include="classDTO\AnswersUserTest.cs" />
     <Compile Include="classDTO\EmployeeLogin.cs" />
+    <Compile Include="classDTO\JournalDto.cs" />
     <Compile Include="classDTO\MessageDTO.cs" />
     <Compile Include="classDTO\MyValueConverter.cs" />
+    <Compile Include="classDTO\NotificationDTO.cs" />
     <Compile Include="classDTO\OneEmployee.cs" />
     <Compile Include="classDTO\OneResult.cs" />
     <Compile Include="classDTO\OneSubdivision.cs" />
@@ -263,6 +276,9 @@
     <Compile Include="pages\PageAdminReg.xaml.cs">
       <DependentUpon>PageAdminReg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\PageAnalyseResult.xaml.cs">
+      <DependentUpon>PageAnalyseResult.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\PageChoiceUser.xaml.cs">
       <DependentUpon>PageChoiceUser.xaml</DependentUpon>
     </Compile>
@@ -271,6 +287,9 @@
     </Compile>
     <Compile Include="pages\PageLoad.xaml.cs">
       <DependentUpon>PageLoad.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\PageLogs.xaml.cs">
+      <DependentUpon>PageLogs.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\PageResults.xaml.cs">
       <DependentUpon>PageResults.xaml</DependentUpon>
@@ -315,9 +334,6 @@
     <Compile Include="classDTO\TestDto.cs" />
     <Compile Include="ConnectHost.cs" />
     <Compile Include="classDTO\EmployeeDto.cs" />
-    <Compile Include="windows\addSubdivision.xaml.cs">
-      <DependentUpon>addSubdivision.xaml</DependentUpon>
-    </Compile>
     <Compile Include="pages\PageAddPurpose.xaml.cs">
       <DependentUpon>PageAddPurpose.xaml</DependentUpon>
     </Compile>
@@ -380,6 +396,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pages\PageAnalyseResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pages\PageChoiceUser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -389,6 +409,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\PageLoad.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\PageLogs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -433,10 +457,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="windows\AutWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="windows\addSubdivision.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

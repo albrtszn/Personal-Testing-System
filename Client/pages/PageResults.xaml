@@ -4,88 +4,129 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:Client.pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" 
-      d:DesignWidth="1000"
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
       Title="PageResults"
       x:Name="myPageResults"
-      Background="White"
+      Background="#EDEDED"
       >
 
     <Page.Resources>
-        <Storyboard x:Key="imageRotationStoryboard" Storyboard.TargetName="loadingImage" Storyboard.TargetProperty="RenderTransform.(RotateTransform.Angle)">
-            <DoubleAnimation From="0" To="360" BeginTime="0:0:0" Duration="0:0:5" RepeatBehavior="Forever"/>
-        </Storyboard>
+        <Geometry x:Key="export_lineGeometry1">F1 M36,36z M0,0z M6,13.61L13.61,13.61 13.61,6 24,6 24,14.38 26,14.38 26,6A2,2,0,0,0,24,4L10.87,4 4,10.87 4,30A2,2,0,0,0,6,32L24,32A2,2,0,0,0,26,30L6,30z M6,11.69L11.69,6 12,6 12,12 6,12z</Geometry>
+        <Geometry x:Key="export_lineGeometry2">F1 M36,36z M0,0z M28.32,16.35A1,1,0,0,0,26.91,17.76L30.16,21 18,21A1,1,0,0,0,18,23L30.19,23 26.91,26.28A1,1,0,1,0,28.32,27.69L34,22z</Geometry>
+        <DrawingGroup x:Key="export_lineDrawingGroup" ClipGeometry="M0,0 V36 H36 V0 H0 Z">
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry1}" />
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry2}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="export_lineDrawingImage" Drawing="{StaticResource export_lineDrawingGroup}" />
     </Page.Resources>
 
 
-    <Grid >
+    <Grid Margin="40 40 40 40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
 
 
-
-        <StackPanel>
-            <TextBlock Text="Список пройденных тестов" FontSize="20" HorizontalAlignment="Center" Margin="5"></TextBlock>
+        <Label Grid.Row="0" Content="Список пройденных тестов" FontSize="30" FontFamily="Roboto" />
+        <Button Width="40" HorizontalAlignment="Right" 
+                BorderThickness="0"
+                Background="Transparent"
+                FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_word"
+                
+                >
+            <Image Source="{StaticResource export_lineDrawingImage}" Width="30" Margin="0"/>
+        </Button>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Label x:Name="LLastName" Grid.Row="0" Content="Фамилия" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label x:Name="LFirstName" Grid.Row="0" Content="Имя" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label x:Name="LSecondName" Grid.Row="0" Content="Отчество" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label Grid.Row="0" Content="-" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label x:Name="LProfile" Grid.Row="0" Content="Профиль" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label Grid.Row="0" Content=":" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
+            <Label x:Name="LSub" Grid.Row="0" Content="Должность" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
         </StackPanel>
 
-        <Grid Background="White" Margin="0 35 0 0">
+        <DataGrid x:Name="DGuser" Grid.Row="2" Margin="5" 
+                  ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
+                    CellStyle="{DynamicResource DataGridCellStyle1}"
+                    RowStyle="{DynamicResource DataGridRowStyle1}" 
+                    ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                    Style="{DynamicResource DataGridStyle1}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Тест (компетенция)" IsReadOnly="True" Binding="{Binding result.Result.Test.Name}"/>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="50"/>
+                <DataGridTextColumn Header="Баллы" IsReadOnly="True" Binding="{Binding result.ScoreFrom}"/>
 
-            </Grid.RowDefinitions>
-
-            <DataGrid x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Фамилия" IsReadOnly="True" Binding="{Binding result.Employee.LastName}"/>
-                    <DataGridTextColumn Header="Имя" IsReadOnly="True" Binding="{Binding result.Employee.FirstName}"/>
-                    <DataGridTextColumn Header="Отчество" IsReadOnly="True" Binding="{Binding result.Employee.SecondName}"/>
-                    <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
-                    <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding result.Employee.Subdivision.Name}"/>
-                    <DataGridTextColumn Header="Тест (компетенция)" IsReadOnly="True" Binding="{Binding result.Result.Test.Name}"/>
-                    <DataGridTextColumn Header="Уровень" IsReadOnly="True" Binding="{Binding level}"/>
-                    <DataGridTextColumn Header="Баллы" IsReadOnly="True" Binding="{Binding points}"/>
-                    <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0"
+                <DataGridTemplateColumn Header="Показатель компетенций" IsReadOnly="True" Width="230">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <ProgressBar Width="150"
+                                             materialDesign:TransitionAssist.DisableTransitions="True"
+                                             Value="{Binding pointerLever}"
+                                             Height="6"/>
+                                <Label  Content="{Binding pointerLever}" Margin="15 0 0 0"/>
+                                <Label  Content="%" Margin="0 0 0 0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Описание" IsReadOnly="True" Binding="{Binding result.ResultLevel}" MinWidth="200" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn IsReadOnly="True" Width="140">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="Просмотреть тест"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="120"
+                                           Margin="1"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Height="25" Width="25" Padding="0" Margin="0 0 5 0"
                                             Command="{Binding DataContext.CmdViewTestAnswers, ElementName=myPageResults}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
-
                                             >
-                                        <iconPacks:PackIconMaterial Kind="Information" Height="10" Width="10" />
-                                    </Button>
-                              
-                                  
+                                <iconPacks:PackIconMaterial Kind="Information" Height="10" Width="10" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-                                    
-                                  
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="BTBackGo" Grid.Row="3" Content="НАЗАД" Width="100" HorizontalAlignment="Left" Margin="15 0 0 0" Command="{Binding CmdBackGO}" Background="#F25C4F" BorderThickness="0"
+                materialDesign:ButtonAssist.CornerRadius="20" FontFamily="Roboto" FontSize="16"
+                />
 
-                </DataGrid.Columns>
-            </DataGrid>
-            <Button x:Name="BTBackGo" Grid.Row="2" Content="Назад" Width="100" HorizontalAlignment="Left" Margin="15 0 0 0" Command="{Binding CmdBackGO}"/>
-        </Grid>
 
-        <Border x:Name="PageLoad" Background="White" Visibility="{Binding vis}">
-            <Image Name="loadingImage" Width="120" Height="120" RenderTransformOrigin="0.5,0.5" Source="/Images/Naftan.png">
-                <Image.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <EventTrigger.Actions>
-                            <BeginStoryboard Storyboard="{StaticResource imageRotationStoryboard}" />
-                        </EventTrigger.Actions>
-                    </EventTrigger>
-                </Image.Triggers>
-                <Image.RenderTransform>
-                    <RotateTransform Angle="0"/>
-                </Image.RenderTransform>
-            </Image>
+        <!--Visibility="{Binding vis}"-->
+        <Border x:Name="PageLoad"  Background="White" Visibility="Collapsed">
+            <Border Width="100" Height="100" CornerRadius="15" Background="#E3E5E5" BorderBrush="#C2C2C2" BorderThickness="1">
+                <ProgressBar
+                        Width="60"
+                        Height="60"
+                       Foreground="#6970B5"
+                       IsIndeterminate="True"
+                       Style="{StaticResource MaterialDesignCircularProgressBar}"
+                       Value="0"
+                        />
+            </Border>
+
         </Border>
 
     </Grid>

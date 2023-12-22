@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Client.classDTO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Client.AutWindow;
 
 namespace Client
 {
@@ -20,6 +24,19 @@ namespace Client
     public partial class SettingConnHost : Window
     {
         private MainWindow globalOwner;
+        private MySetting[] inSetting;
+        public MySetting outSetting;
+
+        public class MySetting
+        {
+            public int Id { get; set; }
+            public bool TestingTimeLimit { get; set; }
+            public bool SkippingQuestion { get; set; }
+            public bool EarlyCompletionTesting { get; set; }
+            public bool AdditionalBool {  get; set; }
+            public int AdditionalInt {get; set;}
+            public string AdditionalString { get; set;}
+        }
 
         public SettingConnHost(object myOwner)
         { 
@@ -34,8 +51,26 @@ namespace Client
             {
                 CB_http.SelectedIndex = 1;
             }
+            Loaded += SettingConnHost_Loaded;
             
+        }
 
+        private async void SettingConnHost_Loaded(object sender, RoutedEventArgs e)
+        {
+            ConnectHost conn = new ConnectHost();
+            JToken jObject = await conn.GetGlobalConfigures();
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            if (jObject == null)
+            {
+                return;
+            }
+            inSetting = JsonConvert.DeserializeObject<MySetting[]>(jObject.ToString(), jsonSettings);
+            outSetting = inSetting[0];
+            DataContext = outSetting;
         }
 
         private void closeSetting(object sender, RoutedEventArgs e)
@@ -54,8 +89,6 @@ namespace Client
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-
-
             ConnectHost.urlHost = serverName.Text;
 
             if (CB_http.SelectedIndex == 0)
@@ -85,11 +118,47 @@ namespace Client
             else
             {
                 statusConn.Foreground = Brushes.Green;
-                Properties.Settings.Default.Save();
+               
             }
             
             statusConn.Text = output;
 
+        }
+
+        private async void Button_Save(object sender, RoutedEventArgs e)
+        {
+            BTSaveConfig.IsEnabled = false;
+            ConnectHost conn = new ConnectHost();
+            string output = "Ошибка соединения!";
+            output = await conn.Ping();
+            if (output.Contains("Ошибка соединения!"))
+            {
+                statusConn.Foreground = Brushes.Red;
+            }
+            else
+            {
+                statusConn.Foreground = Brushes.Green;
+
+            }
+            statusConn.Text = output;
+           
+            if (!(statusConn.Text.Contains("Соединение не установлено") || statusConn.Text.Contains("Ошибка соединения!")))
+            {
+                Properties.Settings.Default.Save();
+                string tmpPay = string.Empty;
+                tmpPay = JsonConvert.SerializeObject(outSetting);
+                JToken jObject = await conn.UpdateGlobalConfigure(tmpPay);
+                if (jObject == null)
+                {
+                    MessageBox.Show("Не удалось обновить конфигурацию");
+                }
+                else
+                {
+                    MessageBox.Show("Конфигурация обновлена успешно");
+                }
+            }
+
+            BTSaveConfig.IsEnabled = true;
         }
     }
 }

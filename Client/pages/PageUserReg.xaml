@@ -206,7 +206,7 @@
                 <Label Grid.Row="0" Grid.Column="2" Content="Должность" Foreground="Black" FontSize="16" FontFamily="Roboto" FontWeight="DemiBold" Margin="10 0 0 0"/>
 
                 <TextBox Grid.Row="3" x:Name="addPassword" 
-                         materialDesign:HintAssist.Hint="Пароль" 
+                         materialDesign:HintAssist.Hint="User и последние 4 цифры телефона" 
                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
                          Foreground="Black" 
                          BorderBrush="#C2C2C2"

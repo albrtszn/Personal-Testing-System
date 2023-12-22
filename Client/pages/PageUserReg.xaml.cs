@@ -16,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static Client.forms.addSubdivision;
 
 namespace Client.forms
 {
@@ -53,7 +52,7 @@ namespace Client.forms
                 if ((iProfile == tmp.Profile) && (selecGroupe + 1 == tmp.IdGroupPositions))
                 {
                     list.Add(tmp);
-                    Console.WriteLine(tmp.Name);
+                    
                 }
 
                 //list.Add(tmp);
@@ -228,7 +227,7 @@ namespace Client.forms
                
             }
 
-            if (addPassword.Text == null || addPassword.Text == "")
+            if (addPassword.Text == null || addPassword.Text == "" || addPassword.Text.Length < 3) 
             {
                 addPassword.Background = Brushes.Pink;
                 MessageBox.Show("Значение в поле пароль заполнено неверно!");

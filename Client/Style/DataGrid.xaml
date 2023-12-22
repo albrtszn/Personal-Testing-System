@@ -245,6 +245,34 @@
         
     </Style>
 
+    <Style x:Key="DataGridCellStyle2" TargetType="{x:Type DataGridCell}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}}"/>
+        <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}}"/>
+        <Setter Property="Padding" Value="5,0"/>
+        <Setter Property="BorderBrush" Value="#E3E5E5"/>
+        <Setter Property="MinHeight" Value="50"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="#FFF3F7F7"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Margin="5 5 25 5">
+                        <ContentPresenter
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Margin="{TemplateBinding Padding}"
+                            
+                            />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
     <Style x:Key="DataGridColumnHeaderStyle1" TargetType="{x:Type DataGridColumnHeader}">
         <Setter Property="Background" Value="White"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>

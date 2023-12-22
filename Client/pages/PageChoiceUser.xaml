@@ -4,65 +4,134 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Client.pages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="750" 
+      d:DesignWidth="1120"
       Title="PageChoiceUser"
-      Background="White"
+      Background="#EDEDED"
       x:Name="myPageUsersChoice"
       >
 
-    <Grid >
-        <StackPanel>
-            <TextBlock Text="Результаты тестов по копметенциям" HorizontalAlignment="Center" FontSize="20"/>
-        </StackPanel>
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <Grid Background="White" Margin="0 30 0 0">
+        <Grid>
+            <Label Content="Результаты тестов по копметенциям" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" 
+                   Margin="0 0 0 0"/>
+            <Border Width="260" Height="40" 
+                    HorizontalAlignment="Right" 
+                    Margin="0 0 0 0"
+                    BorderThickness="0 0 0 0"
+                    BorderBrush="#787575"
+                   >
+                <TextBox x:Name="wef"
+             materialDesign:TextFieldAssist.HasClearButton="True"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             
+             FontSize="16" 
+             FontFamily="Roboto"
+             Padding="10 0 0 0"                         
+        
+             materialDesign:TextFieldAssist.HasLeadingIcon="True"
+             materialDesign:TextFieldAssist.LeadingIcon="Search"
+             materialDesign:TextFieldAssist.LeadingIconSize="20"
+             
+             materialDesign:HintAssist.IsFloating="False" 
+             Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+             Height="40" 
+             VerticalContentAlignment="Center"
+         >
+                    <materialDesign:HintAssist.Hint>
+                        <TextBlock  Text="поиск" FontSize="16" FontFamily="Roboto"/>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </Border>
+        </Grid>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="50"/>
+        <DataGrid x:Name="DGuser" Grid.Row="1" Margin="0 10 0 10" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
+                      CellStyle="{DynamicResource DataGridCellStyle1}"
+                      RowStyle="{DynamicResource DataGridRowStyle1}" 
+                      ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                      Style="{DynamicResource DataGridStyle1}"
+                      >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Фамилия Имя Отчество" IsReadOnly="True" MinWidth="220" Width="*" Binding="{Binding Name}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn  IsReadOnly="True" Binding="{Binding dateB}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Дата рождения"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="100"
+                                           Margin="1"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Профиль" IsReadOnly="True" Width="120" Binding="{Binding prof}"/>
+                <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}" MinWidth="200" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn IsReadOnly="True" Binding="{Binding kolTest}" Width="145">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="Кол. завершенных"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Width="110"
+                                           Margin="1"/>
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Left" >
 
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Фильтр:" Margin="5"/>
-                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" />
-            </StackPanel>
-            <DataGrid x:Name="DGuser" Grid.Row="1" Margin="5" ItemsSource="{Binding Items}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Фамилия Имя Отчество" IsReadOnly="True" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Дата рождения" IsReadOnly="True" Binding="{Binding dateB}"/>
-                    <DataGridTextColumn Header="Профиль" IsReadOnly="True" Binding="{Binding prof}"/>
-                    <DataGridTextColumn Header="Должность" IsReadOnly="True" Binding="{Binding sub}"/>
-                    <DataGridTextColumn Header="Кол. заверщенных" IsReadOnly="True" Binding="{Binding kolTest}"/>
-                    <DataGridTemplateColumn Header="Операция" IsReadOnly="True" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Left" >
-
-                                    <Button Height="30" Width="70" Padding="0" Margin="0 0 0 0"  
+                                <Button Height="35" Width="85" Padding="0" Margin="0 0 0 0"  
+                                        materialDesign:ButtonAssist.CornerRadius="10"
+                                        BorderThickness="0"
+                                        ToolTip="Получение результатов тестирования по выбранному пользователю"
                                         Command="{Binding DataContext.CmdViewResult, ElementName=myPageUsersChoice}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
-                                        <TextBlock Text="Результаты тестов" TextWrapping="Wrap" FontSize="10" HorizontalAlignment="Center" TextAlignment="Center"/>
-                                    </Button>
+                                    <TextBlock Text="Результаты тестов" TextWrapping="Wrap" FontSize="12" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                </Button>
 
-                                    <Button Height="30" Width="80" Padding="0" Margin="15 0 0 0"  
+                                <Button Height="35" Width="90" Padding="0" Margin="15 0 0 0"  
+                                        materialDesign:ButtonAssist.CornerRadius="10"
+                                         BorderThickness="0"
+                                        ToolTip="Получение оценки групповый компетенций по выбранному пользователю"
                                         Command="{Binding DataContext.CmdViewСompetency, ElementName=myPageUsersChoice}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
-                                        <TextBlock Text="Оценка компетенций" TextWrapping="Wrap" FontSize="10" HorizontalAlignment="Center" TextAlignment="Center"/>
-                                    </Button>
+                                    <TextBlock Text="Оценка компетенций" TextWrapping="Wrap" FontSize="12" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                </Button>
 
 
 
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
+
 </Page>

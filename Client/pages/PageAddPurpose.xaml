@@ -79,8 +79,18 @@
                       >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Наименование теста" MinWidth="200" Width="2*"  IsReadOnly="True" Binding="{Binding test.Name}"/>
-                    <DataGridTextColumn Header="Кол. вопросов" MinWidth="160" Width="160" IsReadOnly="True" Binding="{Binding test.QuestionsCount}"/>
-                    <DataGridTextColumn Header="Группа компетенций" MinWidth="210" Width="2*" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
+                    <DataGridTextColumn Width="120" IsReadOnly="True" Binding="{Binding test.QuestionsCount}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="Кол. вопросов"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           
+                                           Margin="1"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Группа компетенций" MinWidth="200" Width="2*" IsReadOnly="True" Binding="{Binding nameCompetense}"/>
                     <DataGridCheckBoxColumn x:Name="CB_Active" Binding="{Binding checkBox}" MinWidth="160" Width="*" >
                         <DataGridCheckBoxColumn.Header>
                             <TextBlock Text="Выбрать для назначения"
@@ -91,14 +101,21 @@
                                            
                                            Margin="1"/>
                         </DataGridCheckBoxColumn.Header>
-                        <!--<DataGridCheckBoxColumn.CellStyle>
-                            <Style>
-                                <Setter Property="CheckBox.HorizontalAlignment" Value="Center"/>
-                                <Setter Property="CheckBox.VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridCheckBoxColumn.CellStyle>-->
                     </DataGridCheckBoxColumn>
-                    <DataGridTextColumn Header="Назвачен" MinWidth="130" Width="*" IsReadOnly="True" Binding="{Binding DatatimePurpose}"/>
+                    <DataGridTextColumn x:Name="TB_Timer" Binding="{Binding Timer}" Width="180" IsReadOnly="False"
+                                        CellStyle="{DynamicResource DataGridCellStyle2}"
+                                        >
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="Ограничение по времени, мин"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           
+                                           Margin="1"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Назначен" MinWidth="130" Width="*" IsReadOnly="True" Binding="{Binding DatatimePurpose}"/>
                 </DataGrid.Columns>
             </DataGrid>
             

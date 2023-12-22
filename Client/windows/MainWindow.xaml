@@ -20,6 +20,14 @@
             <SolidColorBrush x:Key="redStyle" Color="#F25C4F" />
             <SolidColorBrush x:Key="whiteStyle" Color="#EDEDED" />
 
+            <Geometry x:Key="analyseGeometry1">F1 M24,24z M0,0z M2,12L4,12A7.986,7.986,0,0,1,6.337,6.337A7.91,7.91,0,0,1,8.879,4.627A8.12,8.12,0,0,1,15.009,4.586A2.488,2.488,0,0,0,17.5,7C18.886,7 20,5.886 20,4.5 20,3.114 18.886,2 17.5,2 16.811,2 16.188,2.276 15.737,2.725 13.306,1.752 10.514,1.767 8.102,2.784A9.928,9.928,0,0,0,4.922,4.923A9.92,9.92,0,0,0,2.782,8.102A10.005,10.005,0,0,0,2,12 M19.373,15.122C18.972,16.074 18.396,16.93 17.663,17.663 16.93,18.396 16.074,18.972 15.121,19.373A8.12,8.12,0,0,1,8.991,19.414A2.488,2.488,0,0,0,6.5,17C5.114,17 4,18.114 4,19.5 4,20.886 5.114,22 6.5,22 7.189,22 7.812,21.724 8.263,21.275A9.965,9.965,0,0,0,12,22A9.983,9.983,0,0,0,21.217,15.898A9.992,9.992,0,0,0,22,12L20,12A7.993,7.993,0,0,1,19.373,15.122</Geometry>
+            <Geometry x:Key="analyseGeometry2">F1 M24,24z M0,0z M12,7.462C9.498,7.462 7.462,9.498 7.462,12 7.462,14.502 9.498,16.538 12,16.538 14.502,16.538 16.538,14.502 16.538,12 16.538,9.498 14.502,7.462 12,7.462 M12,14.538C10.601,14.538 9.462,13.399 9.462,12 9.462,10.601 10.601,9.462 12,9.462 13.399,9.462 14.538,10.601 14.538,12 14.538,13.399 13.399,14.538 12,14.538</Geometry>
+            <DrawingGroup x:Key="analyseDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="{Binding ElementName=LB9,Path=Foreground, Mode=OneWay}" Geometry="{StaticResource analyseGeometry1}" />
+                <GeometryDrawing Brush="{Binding ElementName=LB9,Path=Foreground, Mode=OneWay}" Geometry="{StaticResource analyseGeometry2}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="analyseDrawingImage" Drawing="{StaticResource analyseDrawingGroup}" />
+
             <Geometry x:Key="iconamoon_flag_boldGeometry">F1 M24,24z M0,0z M6,3L6,5 M6,5L18,5 16,9 18,13 6,13 M6,5L6,13 M6,21L6,13</Geometry>
             <DrawingGroup x:Key="iconamoon_flag_boldDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
                 <GeometryDrawing Geometry="{StaticResource iconamoon_flag_boldGeometry}">
@@ -200,14 +208,18 @@
             </DrawingGroup>
             <DrawingImage x:Key="messageDrawingImage" Drawing="{StaticResource messageDrawingGroup}" />
 
-
+            <Geometry x:Key="system_logGeometry">F1 M24,24z M0,0z M1,1L23,1 23,23 1,23z M3,9.667L3,21 21,21 21,9.667z M21,7.667L21,3 3,3 3,7.667z M5,4L7.004,4 7.004,6.004 5,6.004z M6,12L18,12 18,14 6,14z M6,16L12,16 12,18 6,18z</Geometry>
+            <DrawingGroup x:Key="system_logDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="{Binding ElementName=LB8,Path=Foreground, Mode=OneWay}" Geometry="{StaticResource system_logGeometry}" />
+            </DrawingGroup>
+            <DrawingImage x:Key="system_logDrawingImage" Drawing="{StaticResource system_logDrawingGroup}" />
         </ResourceDictionary>
 
     </Window.Resources>
     <Border Background="White" MouseDown="Border_MouseDown">
 
-
         <Grid >
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="320"/>
                 <ColumnDefinition Width="*" />
@@ -235,7 +247,6 @@
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
 
-                
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 25 0" Grid.Column="1">
 
@@ -263,9 +274,12 @@
 
                 <ListBox Style="{DynamicResource ListBoxStyle1}" Width="300" HorizontalAlignment="Center" FontSize="15" FontFamily="Roboto" Foreground="#EDEDED" Margin="0 241 0 0"
                          SelectedIndex="0"
+                          
                          >
 
-                    <ListBoxItem x:Name="LB1" Selected="item0_Selected" Width="280" Height="46" >
+                    <ListBoxItem x:Name="LB1" Selected="item0_Selected" Width="280" Height="46" 
+                                
+                                 >
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="35"/>
@@ -273,7 +287,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Image Source="{StaticResource ph_user_listDrawingImage}" Width="20" Height="20"/>
-                            <TextBlock Grid.Column="1" Text="Список пользователей" VerticalAlignment="Center" FontSize="16"  Margin="4.5 0 0 0"/>
+                            <TextBlock Grid.Column="1" Text="Список пользователей" VerticalAlignment="Center"  Margin="4.5 0 0 0"/>
                         </Grid>
                     </ListBoxItem>
                     <ListBoxItem x:Name="LB2" Selected="item1_Selected" Width="280" Height="46" >
@@ -308,7 +322,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Image Source="{StaticResource iconamoon_flag_boldDrawingImage}" Width="20" Height="20"/>
-                            <TextBlock Grid.Column="1" Text="Список копметенций" VerticalAlignment="Center" FontSize="16" Margin="4.5 0 0 0"/>
+                            <TextBlock Grid.Column="1" Text="Список компетенций" VerticalAlignment="Center" FontSize="16" Margin="4.5 0 0 0"/>
                         </Grid>
                     </ListBoxItem>
                     
@@ -335,6 +349,19 @@
                             <TextBlock Grid.Column="1" Text="Результаты тестов" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
                         </Grid>
                     </ListBoxItem>
+
+                    <ListBoxItem x:Name="LB9" Selected="itemAnalyse_Selected" Width="280" Height="46" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource analyseDrawingImage}" Width="20" Height="20"/>
+                            <TextBlock Grid.Column="1" Text="Анализ результатов" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
+                        </Grid>
+                    </ListBoxItem>
+
                     <ListBoxItem x:Name="LB7" Selected="itemMessage_Selected" Width="280" Height="46" >
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -346,12 +373,23 @@
                             <TextBlock Grid.Column="1" Text="Сообщения от пользователей" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
                         </Grid>
                     </ListBoxItem>
+                    <ListBoxItem x:Name="LB8" Selected="itemLogs_Selected" Width="280" Height="46" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="35"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{StaticResource system_logDrawingImage}" Width="20" Height="20"/>
+                            <TextBlock Grid.Column="1" Text="Журнал операций" VerticalAlignment="Center"  Margin="4.5 0 0 0" FontSize="16"/>
+                        </Grid>
+                    </ListBoxItem>
                 </ListBox>
 
 
 
                 <ListBox x:Name="ListSetting" Style="{DynamicResource ListBoxStyle2}" Grid.Row="1"  Width="300" HorizontalAlignment="Center" FontSize="16" FontFamily="Roboto" Foreground="#EDEDED" >
-                    <ListViewItem Selected="Setting" Width="280" Height="46">
+                    <ListViewItem MouseUp="Setting"  Width="280" Height="46">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="35"/>
@@ -364,8 +402,8 @@
 
                     </ListViewItem>
 
-                    <ListViewItem Selected="About" Width="280" Height="46">
-                        <Grid>
+                    <ListViewItem  Width="280" Height="46" MouseUp="About">
+                        <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="35"/>
                                 <ColumnDefinition Width="*"/>
@@ -400,7 +438,33 @@
                 <Frame x:Name="adminFrame" Source="../pages/PageUsers.xaml" NavigationUIVisibility="Hidden"/>
 
             </Grid>
-            
+
+            <Border x:Name="BRMess" Background="White" Grid.Column="2" Grid.Row="1" Width="600" Height="300" Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Click="CloseQuestion" Grid.Row="0" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" Padding="0" Background="Transparent" Opacity="1" Margin="0 15 15 15 "
+                        HorizontalAlignment="Right"
+                        >
+                        <Image Source="{StaticResource Frame_69DrawingImage}" Width="16" Height="16"/>
+                    </Button>
+
+                    <TextBlock x:Name="TBMess" Grid.Row="1"
+                           
+                           TextWrapping="Wrap"
+                           FontFamily="Roboto" FontSize="18" Margin="20 20 20 20"
+                           />
+
+                    <Button Grid.Row="2" Width="150" Height="40" Content="ПРОЧИТАНО" FontFamily="Roboto" FontSize="16" Background="#F25C4F" BorderBrush="Transparent"
+                        materialDesign:ButtonAssist.CornerRadius="20"
+                        Click="Button_Click_Read"
+                        />
+                </Grid>
+            </Border>
 
         </Grid>
     </Border>

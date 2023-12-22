@@ -121,7 +121,13 @@
             <Setter Property="wpf:RippleAssist.Feedback" Value="White"/>
         </Style>
 
-
+        <Geometry x:Key="export_lineGeometry1">F1 M36,36z M0,0z M6,13.61L13.61,13.61 13.61,6 24,6 24,14.38 26,14.38 26,6A2,2,0,0,0,24,4L10.87,4 4,10.87 4,30A2,2,0,0,0,6,32L24,32A2,2,0,0,0,26,30L6,30z M6,11.69L11.69,6 12,6 12,12 6,12z</Geometry>
+        <Geometry x:Key="export_lineGeometry2">F1 M36,36z M0,0z M28.32,16.35A1,1,0,0,0,26.91,17.76L30.16,21 18,21A1,1,0,0,0,18,23L30.19,23 26.91,26.28A1,1,0,1,0,28.32,27.69L34,22z</Geometry>
+        <DrawingGroup x:Key="export_lineDrawingGroup" ClipGeometry="M0,0 V36 H36 V0 H0 Z">
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry1}" />
+            <GeometryDrawing Brush="#FF000000" Geometry="{StaticResource export_lineGeometry2}" />
+        </DrawingGroup>
+        <DrawingImage x:Key="export_lineDrawingImage" Drawing="{StaticResource export_lineDrawingGroup}" />
 
     </Page.Resources>
 
@@ -153,7 +159,7 @@
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Margin="40 20 40 10" Grid.ColumnSpan="2" >
                         <TextBlock Text="Список всех пользователей" HorizontalAlignment="Left"  FontSize="30" FontFamily="Roboto" Foreground="#555" VerticalAlignment="Top"/>
-                        <Border Width="260" Height="40" HorizontalAlignment="Right" Margin="0 0 175 0"
+                        <Border Width="260" Height="40" HorizontalAlignment="Right" Margin="0 0 200 0"
                     BorderThickness="0 0 0 0"
                     BorderBrush="#787575"
                     VerticalAlignment="Top">
@@ -164,7 +170,7 @@
                          FontSize="16" 
                          FontFamily="Roboto"
                          Padding="10 0 0 0"                         
-                        
+                        ToolTip="Быстрый поиск"
                          wpf:TextFieldAssist.HasLeadingIcon="True"
                          wpf:TextFieldAssist.LeadingIcon="Search"
                          wpf:TextFieldAssist.LeadingIconSize="20"
@@ -180,11 +186,12 @@
                             </TextBox>
 
                         </Border>
-                        <Border HorizontalAlignment="Right" Width="140" Height="40" BorderBrush="#6970B5" BorderThickness="1.5" CornerRadius="20">
-                            <Button HorizontalAlignment="Center" VerticalContentAlignment="Center" Background="Transparent"  Width="140" Height="40" Foreground="#6970B5" FontSize="16" FontFamily="Roboto"
-                    BorderThickness="0"
-                    wpf:ButtonAssist.CornerRadius="20"
-                        Click="ShowFilter"
+                        <Border HorizontalAlignment="Right" Width="140" Height="40" BorderBrush="#6970B5" BorderThickness="1.5" CornerRadius="20" Margin="0 0 50 0">
+                            <Button HorizontalAlignment="Center" VerticalContentAlignment="Center" Background="Transparent"  
+                                    Width="140" Height="40" Foreground="#6970B5" FontSize="16" FontFamily="Roboto"
+                                    BorderThickness="0"
+                                    wpf:ButtonAssist.CornerRadius="20"
+                                    Click="ShowFilter" ToolTip="Фильтры для поиска пользователей"
                     >
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{StaticResource ion_filter_outlineDrawingImage}" Width="20" Height="20"/>
@@ -195,7 +202,12 @@
                             </Button>
                         </Border>
 
-
+                        <Button Width="40" HorizontalAlignment="Right" 
+                                BorderThickness="0"
+                                Background="Transparent"
+                                FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_word" ToolTip="Выгрузить данные пользователей">
+                            <Image Source="{StaticResource export_lineDrawingImage}" Width="30" Margin="0"/>
+                        </Button>
 
                     </Grid>
 
@@ -391,19 +403,19 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Margin="0 0 20 0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
-                                            Command="{Binding DataContext.CmdAddPurpose, ElementName=myPageUsers}"
+                                            Command="{Binding DataContext.CmdAddPurpose, ElementName=myPageUsers}" ToolTip="Назвачить тесты пользователю"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
                                                 <Image Source="{StaticResource mdi_note_add_outlineDrawingImage}" Width="22" Height="22"/>
                                             </Button>
                                             <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Margin="0 0 20 0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
-                                            Command="{Binding DataContext.CmdEditUser, ElementName=myPageUsers}"
+                                            Command="{Binding DataContext.CmdEditUser, ElementName=myPageUsers}" ToolTip="Редактировать данные пользователя"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                             >
                                                 <Image Source="{StaticResource tabler_editDrawingImage}" Width="18" Height="18"/>
                                             </Button>
                                             <Button Style="{DynamicResource ButtonStylePageUser}" Height="25" Width="25" Padding="0" Background="Transparent" BorderThickness="1" BorderBrush="Transparent"
-                                            Command="{Binding DataContext.CmdDeletUser, ElementName=myPageUsers}"
+                                            Command="{Binding DataContext.CmdDeletUser, ElementName=myPageUsers}" ToolTip="Удалить пользователя"
                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                                            
                                             >
@@ -507,7 +519,6 @@
                             Margin="0 30 0 40"
                             BorderBrush="Transparent"
                             Command="{Binding DataContext.CmdAddAdmin, ElementName=myPageUsers}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridCell}}, Path=DataContext}"
                             />
                 </Grid>
             </TabItem>

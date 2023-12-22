@@ -11,6 +11,31 @@
       Title="PageSubdivision"
       Background="#EDEDED">
 
+    <Page.Resources>
+
+        <Geometry x:Key="Frame_69Geometry1">F1 M16,16z M0,0z M1.48508,1.62939L14.3557,14.5</Geometry>
+        <Geometry x:Key="Frame_69Geometry2">F1 M16,16z M0,0z M1.48508,14.3706L14.3557,1.49999</Geometry>
+        <DrawingGroup x:Key="Frame_69DrawingGroup" ClipGeometry="M0,0 V16 H16 V0 H0 Z">
+            <DrawingGroup Opacity="1">
+                <DrawingGroup.ClipGeometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="0,0,16,16" />
+                </DrawingGroup.ClipGeometry>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry1}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="{StaticResource Frame_69Geometry2}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF787575" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" MiterLimit="1" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingGroup>
+        <DrawingImage x:Key="Frame_69DrawingImage" Drawing="{StaticResource Frame_69DrawingGroup}" />
+
+    </Page.Resources>
+    
     <Grid >
         <Grid Background="Transparent" Margin="0 0 0 0">
             <Grid.RowDefinitions>
@@ -28,7 +53,7 @@
                       ItemsSource="{Binding ItemsTests}" 
                       >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}" Width="300">
+                    <DataGridTextColumn Header="Наименование должности" IsReadOnly="True" Binding="{Binding Name}" MinWidth="300" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="TextWrapping" Value="Wrap"></Setter>
@@ -36,7 +61,7 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn Header="Гурппа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions2}" Width="300">
+                    <DataGridTextColumn Header="Группа специализации" IsReadOnly="True" Binding="{Binding NameGroupPositions2}" Width="300">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="TextWrapping" Value="Wrap"></Setter>
@@ -47,12 +72,98 @@
 
                 </DataGrid.Columns>
             </DataGrid>
+
+            <Button Grid.Row="2" Content="ДОБАВИТЬ ДОЛЖНОСТЬ" 
+                    Click="ButtonAdd"
+                    Margin="0 20 0 20" Width="200" 
+                    materialDesign:ButtonAssist.CornerRadius="20"
+                    Height="40"
+                    Background="#F25C4F"
+                    BorderThickness="0"
+                    />
         </Grid>
 
-        
+
+        <Border x:Name="BRquestion" Background="White" Grid.RowSpan="7" Width="800" Height="370" Visibility="Collapsed"
+                    BorderBrush="#C2C2C2" BorderThickness="1" CornerRadius="5">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.4"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="80"/>
+                </Grid.RowDefinitions>
+                
+                <Button Click="ButtonClose" Grid.Row="0" Width="16" Height="16" Style="{StaticResource MaterialDesignFlatButton}" 
+                            Padding="0" Background="Transparent" Opacity="1" Margin="0 15 15 15 "
+                        HorizontalAlignment="Right"
+                        >
+                    <Image Source="{StaticResource Frame_69DrawingImage}" Width="16" Height="16"/>
+                </Button>
+
+                <StackPanel  Grid.Row="1">
+                    <Label Content="Профиль" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 40 5"/>
+                    <ComboBox Grid.Row="1" Grid.Column="0" x:Name="profileCB"   
+                          FontSize="16" 
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="40 0 40 0" 
+                          Padding="17 0 20 0" 
+                          Height="40"
+                          SelectedIndex="0">
+                        <ComboBoxItem Content="Механик"/>
+                        <ComboBoxItem Content="Технолог" />
+                    </ComboBox>
+
+                    <Label Content="Группа специализации" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 10 40 5"/>
+
+                    <ComboBox x:Name="groupeCB" 
+                          FontSize="16" 
+                          FontFamily="Roboto"
+                          Foreground="Black" 
+                          BorderBrush="#C2C2C2"
+                          BorderThickness="1" 
+                          materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                          Margin="40 0 40 0" 
+                          Padding="17 0 20 0" 
+                          Height="40"
+                          SelectedIndex="0">
+                        <ComboBoxItem Content="Группа 1. Рабочие"/>
+                        <ComboBoxItem Content="Группа 2. Инженерные и руководящие начального уровня"/>
+                        <ComboBoxItem Content="Группа 3. Руководящие среднего уровня"/>
+                        <ComboBoxItem Content="Группа 4. Руководящие высшего уровня"/>
+                    </ComboBox>
+                    <Label Content="Должность" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 10 40 5"/>
+                    <TextBox x:Name="NameSub"  
+                         materialDesign:HintAssist.Hint="Наименование должности" 
+                         FontSize="16" BorderThickness="1" Foreground="Black" VerticalAlignment="Top"  CaretBrush="{x:Null}" BorderBrush="#C2C2C2"
+                         FontFamily="Roboto"
+                         materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                         Height="40"
+                         VerticalContentAlignment="Center"
+                         Margin="40 0 40 0" 
+                         Padding="17 0 17 0"
+                     />
+                </StackPanel>
 
 
-        
+                <Button Grid.Row="2" Width="150" Height="40" Content="ДОБАВИТЬ" FontFamily="Roboto" FontSize="16" Background="#F25C4F" BorderBrush="Transparent"
+                        materialDesign:ButtonAssist.CornerRadius="20" HorizontalAlignment="Right" Margin="0 0 100 0"
+                        Click="ButtonSubADD"
+                        />
+
+                <Button Grid.Row="2" Width="150" Height="40" Content="ОТМЕНА" FontFamily="Roboto" FontSize="16" Background="#F25C4F" BorderBrush="Transparent"
+                        materialDesign:ButtonAssist.CornerRadius="20" HorizontalAlignment="Left" Margin="100 0 0 0"
+                        Click="ButtonClose"
+                        />
+            </Grid>
+        </Border>
+
+
 
 
 

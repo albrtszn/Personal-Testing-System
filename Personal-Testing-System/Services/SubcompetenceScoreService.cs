@@ -20,7 +20,8 @@ namespace Personal_Testing_System.Services
                 MinValue = SubcompetenceScore.MinValue,
                 MaxValue = SubcompetenceScore.MaxValue,
                 Description = SubcompetenceScore.Description,
-                IdSubcompetence = SubcompetenceScore.IdSubcompetence
+                IdSubcompetence = SubcompetenceScore.IdSubcompetence,
+                NumberPoints = SubcompetenceScore.NumberPoints
             };
         }
         private SubcompetenceScore ConvertToSubcompetenceScore(SubcompetenceScoreDto SubcompetenceScoreDto)
@@ -31,7 +32,8 @@ namespace Personal_Testing_System.Services
                 MinValue = SubcompetenceScoreDto.MinValue,
                 MaxValue = SubcompetenceScoreDto.MaxValue,
                 Description = SubcompetenceScoreDto.Description,
-                IdSubcompetence = SubcompetenceScoreDto.IdSubcompetence
+                IdSubcompetence = SubcompetenceScoreDto.IdSubcompetence,
+                NumberPoints = SubcompetenceScoreDto.NumberPoints
             };
         }
         public async Task<bool> DeleteSubcompetenceScoreById(int id)
@@ -98,7 +100,8 @@ namespace Personal_Testing_System.Services
                 MinValue = SubcompetenceScoreToSave.MinValue,
                 MaxValue = SubcompetenceScoreToSave.MaxValue,
                 Description = SubcompetenceScoreToSave.Description,
-                IdSubcompetence = SubcompetenceScoreToSave.IdSubcompetence
+                IdSubcompetence = SubcompetenceScoreToSave.IdSubcompetence,
+                NumberPoints = SubcompetenceScoreToSave.NumberPoints
             });
         }
     }

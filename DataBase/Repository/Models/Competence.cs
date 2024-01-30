@@ -19,4 +19,7 @@ public partial class Competence
 
     [InverseProperty("IdCompetenceNavigation")]
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
+
+    [InverseProperty("IdCompetenceNavigation")]
+    public virtual ICollection<СompetenceСoeff> СompetenceСoeffs { get; set; } = new List<СompetenceСoeff>();
 }

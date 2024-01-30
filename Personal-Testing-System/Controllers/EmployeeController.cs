@@ -280,7 +280,8 @@ namespace Personal_Testing_System.Controllers
                     Employee? employee = await ms.Employee.GetEmployeeById(token.IdEmployee);
                     if (employee != null)
                     {
-                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} отправил новое сообщение.");
+                        //await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} отправил новое сообщение.");
+                        await notificationHub.Clients.Group(Roles.ADMIN.ToString()).MessageNotification($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} отправил новое сообщение.");
                     }
                     return Ok(new { message = "Сообщение добавлено" });
                 }
@@ -878,7 +879,7 @@ namespace Personal_Testing_System.Controllers
                         StartDate = DateOnly.Parse(testResultModel.StartDate),
                         StartTime = TimeOnly.Parse(testResultModel.StartTime),
                         EndTime = TimeOnly.Parse(testResultModel.EndTime),
-                        Duration = (int)((TimeOnly.Parse(testResultModel.EndTime).ToTimeSpan().TotalMinutes) - (TimeOnly.Parse(testResultModel.StartTime).ToTimeSpan().TotalMinutes)),
+                        Duration = (int)((TimeOnly.Parse(testResultModel.EndTime).ToTimeSpan().TotalSeconds) - (TimeOnly.Parse(testResultModel.StartTime).ToTimeSpan().TotalSeconds)),
                     };
                     await ms.Result.SaveResult(result);
 
@@ -906,7 +907,7 @@ namespace Personal_Testing_System.Controllers
 
                                     Answer answerCheck = await ms.Answer.GetAnswerById(answerModel.AnswerId.Value);
                                     //todo answer correct field
-                                    if (quest.IdQuestionType == 1 && answerCheck.Correct != null && answerCheck.Correct.Value)
+                                    if ((quest.IdQuestionType == 1 || quest.IdQuestionType == 5) && answerCheck.Correct != null && answerCheck.Correct.Value)
                                     {
                                         if (answerCheck.Weight != null && answerCheck.Weight.HasValue)
                                             score += answerCheck.Weight.Value;
@@ -1040,7 +1041,8 @@ namespace Personal_Testing_System.Controllers
                     //await ms.TestPurpose.DeleteTestPurposeByEmployeeId(testResultModel.TestId, testResultModel.EmployeeId);
                     Employee? employee = await ms.Employee.GetEmployeeById(token.IdEmployee);
                     if (employee != null) {
-                        await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} завершил тест '{testCheck.Name}'.");
+                        //await notificationHub.Clients.All.ReceiveMessage($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} завершил тест '{testCheck.Name}'.");
+                        await notificationHub.Clients.Group(Roles.ADMIN.ToString()).TestCompleteNotification($"{DateTime.Now} Пользователь '{employee.FirstName} {employee.SecondName} {employee.LastName} завершил тест '{testCheck.Name}'.");
                     }
                     logger.LogInformation($"ScoreInformation(/PushTest): OwnScore={score}, Rate={resultRate}");
                     if (resultRate != 0)

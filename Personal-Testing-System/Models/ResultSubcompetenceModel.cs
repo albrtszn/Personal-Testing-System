@@ -8,6 +8,7 @@ namespace Personal_Testing_System.Models
     {
         public int Id { get; set; }
         public string? IdResult { get; set; }
+        public double? NumberPoints { get; set; }
         public string? Description { get; set; }
         public SubcompetenceDto? Subcompetence{ get; set; }
         public int Result { get; set; }

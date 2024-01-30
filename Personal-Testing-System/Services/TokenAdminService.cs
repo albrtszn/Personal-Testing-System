@@ -1,6 +1,7 @@
 ﻿using CRUD.implementations;
 using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Microsoft.IdentityModel.Tokens;
 using Personal_Testing_System.DTOs;
 
 namespace Personal_Testing_System.Services
@@ -43,6 +44,11 @@ namespace Personal_Testing_System.Services
         {
             return (await TokenAdminRepo.GetAllTokenAdmins())
                                     .Find(x => x.Token.Equals(token));
+        }
+        public async Task<TokenAdmin?> GetTokenAdminByConnectionId(string connectionId)
+        {
+            return (await TokenAdminRepo.GetAllTokenAdmins())
+                                    .FirstOrDefault(x => x!= null && !x.ConnectionId.IsNullOrEmpty() && x.ConnectionId.Equals(connectionId));
         }
 
         public async Task<bool> SaveTokenAdmin(TokenAdmin TokenAdminToSave)

@@ -1,9 +1,11 @@
 ﻿using CRUD.implementations;
 using DataBase.Repository.Models;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using Personal_Testing_System.Services;
@@ -44,6 +46,7 @@ namespace Personal_Testing_System.Services
         private MessageService messageService;
         private TestScoreService testScoreService;
         private SubcompetenceScoreService subcompetenceScoreService;
+        private CompetenceCoeffService competenceCoeffService;
         
         private IConfiguration config;
 
@@ -60,7 +63,7 @@ namespace Personal_Testing_System.Services
                        EmployeeResultSubcompetenceService _employeeResultSubcompetenceServidce, QuestionSubcompetenceService _questionSubcompetenceService,
                        SubcompetenceService _subcompetenceService, MessageService _messageService,
                        GlobalConfigureService _globalConfigureService, TestScoreService _testScoreService,
-                       SubcompetenceScoreService _subcompetenceScoreService,
+                       SubcompetenceScoreService _subcompetenceScoreService, CompetenceCoeffService _competenceCoeffService,
                         IConfiguration _config)
         {
             answerService = _answerService;
@@ -93,6 +96,7 @@ namespace Personal_Testing_System.Services
             globalConfigureService = _globalConfigureService;
             testScoreService = _testScoreService;
             subcompetenceScoreService = _subcompetenceScoreService;
+            competenceCoeffService = _competenceCoeffService;
 
             config = _config;
         }
@@ -128,6 +132,7 @@ namespace Personal_Testing_System.Services
         public GlobalConfigureService GlobalConfigure { get { return globalConfigureService; } }
         public TestScoreService TestScore { get { return testScoreService; } }
         public SubcompetenceScoreService SubcompetenceScore { get { return subcompetenceScoreService; } }
+        public CompetenceCoeffService CompetenceCoeff { get { return competenceCoeffService; } }
 
         /*
          *  Logic
@@ -380,6 +385,168 @@ namespace Personal_Testing_System.Services
                 list.Add(await ConvertToEmployeeResultModel(res));
             }
             return list;
+        }
+
+        public async Task<List<EmployeeResultModel>> CalculateEmployeeResults(List<EmployeeResultModel> results)
+        {
+            foreach (var result in results)
+            {
+                var testScores = await TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                if (testScores.Any())
+                {
+                    int countOfScores = testScores.Count;
+                    foreach (var score in testScores)
+                    {
+
+                        int employeeScore = result.ScoreFrom.Value;
+                        if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                        {
+                            EmployeeResultModel model = results.Find(x => x.Equals(result));
+
+                            if (model != null)
+                            {
+                                model.ResultLevel = score.Description;
+                                switch (countOfScores)
+                                {
+                                    case 3:
+                                        model.NumberPoints = score.NumberPoints;
+                                        break;
+                                    case 4:
+                                        switch (score.NumberPoints)
+                                        {
+                                            case 1:
+                                                model.NumberPoints = 1;
+                                                break;
+                                            case 2:
+                                                model.NumberPoints = 1.5d;
+                                                break;
+                                            case 3:
+                                                model.NumberPoints = 2;
+                                                break;
+                                            case 4:
+                                                model.NumberPoints = 3;
+                                                break;
+                                        }
+                                        break;
+                                    case 5:
+                                        model.NumberPoints = (double)(0.5 + (double)(0.5 * score.NumberPoints));
+                                        break;
+                                    default:
+                                        model.NumberPoints = (double)(3 / countOfScores) * score.NumberPoints;
+                                        break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            return results;
+        }
+
+        public async Task<List<EmployeeResultSubcompetenceModel>> CalculateEmployeeresultsWithSubcompetence(List<EmployeeResultSubcompetenceModel> results)
+        {
+            foreach (var result in results)
+            {
+                var testScores = await TestScore.GetTestScoresByTest(result.Result.Test.Id);
+                if (testScores.Any())
+                {
+                    int countOfScores = testScores.Count;
+                    foreach (var score in testScores)
+                    {
+                        int employeeScore = result.ScoreFrom.Value;
+                        if (employeeScore >= score.MinValue && employeeScore <= score.MaxValue)
+                        {
+                            EmployeeResultSubcompetenceModel model = results.Find(x => x.Equals(result));
+
+                            if (model != null)
+                            {
+
+                                model.ResultLevel = score.Description;
+                                switch (countOfScores)
+                                {
+                                    case 3:
+                                        model.NumberPoints = score.NumberPoints;
+                                        break;
+                                    case 4:
+                                        switch (score.NumberPoints)
+                                        {
+                                            case 1:
+                                                model.NumberPoints = 1;
+                                                break;
+                                            case 2:
+                                                model.NumberPoints = 1.5d;
+                                                break;
+                                            case 3:
+                                                model.NumberPoints = 2;
+                                                break;
+                                            case 4:
+                                                model.NumberPoints = 3;
+                                                break;
+                                        }
+                                        break;
+                                    case 5:
+                                        model.NumberPoints = (double)(0.5 + (double)(0.5 * score.NumberPoints));
+                                        break;
+                                    default:
+                                        model.NumberPoints = (double)(3 / countOfScores) * score.NumberPoints;
+                                        break;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var subcompetenceResult in result.SubcompetenceResults)
+                {
+                    var subcompetenceScores = await SubcompetenceScore.GetSubcompetenceScoresBySubCompetence(subcompetenceResult.Subcompetence.Id.Value);
+                    if (subcompetenceScores.Any())
+                    {
+                        int countOfScores = subcompetenceScores.Count;
+                        foreach (var subcompetenceScore in subcompetenceScores)
+                        {
+                            int employeeSubcompetenceScore = subcompetenceResult.Result;
+                            if (employeeSubcompetenceScore >= subcompetenceScore.MinValue &&
+                                employeeSubcompetenceScore <= subcompetenceScore.MaxValue)
+                            {
+                                subcompetenceResult.Description = subcompetenceScore.Description;
+                                switch (countOfScores)
+                                {
+                                    case 3:
+                                        subcompetenceResult.NumberPoints = subcompetenceScore.NumberPoints;
+                                        break;
+                                    case 4:
+                                        switch (subcompetenceScore.NumberPoints)
+                                        {
+                                            case 1:
+                                                subcompetenceResult.NumberPoints = 1;
+                                                break;
+                                            case 2:
+                                                subcompetenceResult.NumberPoints = 1.5d;
+                                                break;
+                                            case 3:
+                                                subcompetenceResult.NumberPoints = 2;
+                                                break;
+                                            case 4:
+                                                subcompetenceResult.NumberPoints = 3;
+                                                break;
+                                        }
+                                        break;
+                                    case 5:
+                                        subcompetenceResult.NumberPoints = (double)(0.5 + (double)(0.5 * subcompetenceScore.NumberPoints));
+                                        break;
+                                    default:
+                                        subcompetenceResult.NumberPoints = (double)(3 / countOfScores) * subcompetenceScore.NumberPoints;
+                                        break;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return results;
         }
     }
 }

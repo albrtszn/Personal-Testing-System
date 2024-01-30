@@ -28,6 +28,9 @@ public partial class TokenAdmin
     [Column("issuingTime", TypeName = "datetime")]
     public DateTime? IssuingTime { get; set; }
 
+    [StringLength(50)]
+    public string? ConnectionId { get; set; }
+
     [ForeignKey("IdAdmin")]
     [InverseProperty("TokenAdmins")]
     public virtual Admin? IdAdminNavigation { get; set; }

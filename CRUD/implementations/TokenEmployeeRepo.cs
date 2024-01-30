@@ -52,6 +52,7 @@ namespace CRUD.implementations
                 TokenEmployee.Token = TokenEmployeeToSave.Token;
                 TokenEmployee.IssuingTime = TokenEmployeeToSave.IssuingTime;
                 TokenEmployee.State = TokenEmployeeToSave.State;
+                TokenEmployee.ConnectionId = TokenEmployeeToSave.ConnectionId;
 
                 await context.SaveChangesAsync();
             }

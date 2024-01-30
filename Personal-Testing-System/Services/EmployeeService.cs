@@ -93,25 +93,21 @@ namespace Personal_Testing_System.Services
         };
         }
 
-        private Employee ConvertToEmployee(UpdateEmployeeModel employeeDto)
+        private async Task<Employee> ConvertToEmployee(UpdateEmployeeModel employee)
         {
-            string employeeId = Guid.NewGuid().ToString();
-            if (employeeDto!=null && !employeeDto.Id.IsNullOrEmpty())
-            {
-                employeeId = employeeDto.Id;
-            }
+            Employee? editedEmployee = await EmployeeRepo.GetEmployeeById(employee.Id);
             return new Employee
             {
-                Id = employeeId,
-                FirstName = employeeDto.FirstName,
-                SecondName = employeeDto.SecondName,
-                LastName = employeeDto.LastName,
-                Login = employeeDto.Login,
-                Password = employeeDto.Password,
-                DateOfBirth = DateOnly.Parse(employeeDto.DateOfBirth),
-                IdSubdivision = employeeDto.IdSubdivision,
-                Phone = employeeDto.Phone,
-                RegistrationDate = DateOnly.FromDateTime(DateTime.Now)
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                SecondName = employee.SecondName,
+                LastName = employee.LastName,
+                Login = employee.Login,
+                Password = employee.Password,
+                DateOfBirth = DateOnly.Parse(employee.DateOfBirth),
+                IdSubdivision = employee.IdSubdivision,
+                Phone = employee.Phone,
+                RegistrationDate = editedEmployee.RegistrationDate.Value
             };
         }
 
@@ -123,6 +119,25 @@ namespace Personal_Testing_System.Services
         public async Task<List<Employee>> GetAllEmployees()
         {
             return await EmployeeRepo.GetAllEmployees();
+        }
+
+        public async Task<Employee> GetEmployeeByLogin(string login)
+        {
+            Employee? employee = (await EmployeeRepo.GetAllEmployees())
+                                    .FirstOrDefault(x => x != null &&
+                                                         !x.Login.IsNullOrEmpty() &&
+                                                         x.Login.Equals(login));
+            return employee;
+        }
+
+        public async Task<Employee> GetEmployeeByLoginOnUpdate(string login, string idEmployee)
+        {
+            Employee? employee = (await EmployeeRepo.GetAllEmployees())
+                                    .FirstOrDefault(x => x != null &&
+                                                         !x.Login.IsNullOrEmpty() &&
+                                                         x.Login.Equals(login) &&
+                                                         !x.Id.Equals(idEmployee));
+            return employee;
         }
 
         public async Task<List<EmployeeDto>> GetAllEmployeeDtos()
@@ -176,7 +191,7 @@ namespace Personal_Testing_System.Services
 
         public async Task<bool> SaveEmployee(UpdateEmployeeModel EmployeeToSave)
         {
-            return await EmployeeRepo.SaveEmployee(ConvertToEmployee(EmployeeToSave));
+            return await EmployeeRepo.SaveEmployee(await ConvertToEmployee(EmployeeToSave));
         }
     }
 }

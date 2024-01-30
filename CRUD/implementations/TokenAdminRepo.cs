@@ -51,6 +51,7 @@ namespace CRUD.implementations
                 TokenAdmin.Token = TokenAdminToSave.Token;
                 TokenAdmin.IssuingTime = TokenAdminToSave.IssuingTime;
                 TokenAdmin.State = TokenAdminToSave.State;
+                TokenAdmin.ConnectionId = TokenAdminToSave.ConnectionId;
 
                 await context.SaveChangesAsync();
             }

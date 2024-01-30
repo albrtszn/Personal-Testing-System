@@ -81,6 +81,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<TokenEmployee> TokenEmployees { get; set; }
 
+    public virtual DbSet<СompetenceСoeff> СompetenceСoeffs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefautConnection"),
@@ -373,6 +375,19 @@ public partial class EFDbContext : DbContext
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.TokenEmployees)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__TokenEmpl__idEmp__44952D46");
+        });
+
+        modelBuilder.Entity<СompetenceСoeff>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Сompeten__3213E83F4BB645E7");
+
+            entity.HasOne(d => d.IdCompetenceNavigation).WithMany(p => p.СompetenceСoeffs)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Сompetenc__idCom__3429BB53");
+
+            entity.HasOne(d => d.IdGroupNavigation).WithMany(p => p.СompetenceСoeffs)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Сompetenc__idGro__351DDF8C");
         });
 
         OnModelCreatingPartial(modelBuilder);

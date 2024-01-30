@@ -26,6 +26,9 @@ public partial class SubcompetenceScore
     [Column("idSubcompetence")]
     public int? IdSubcompetence { get; set; }
 
+    [Column("numberPoints")]
+    public int? NumberPoints { get; set; }
+
     [ForeignKey("IdSubcompetence")]
     [InverseProperty("SubcompetenceScores")]
     public virtual Subcompetence? IdSubcompetenceNavigation { get; set; }

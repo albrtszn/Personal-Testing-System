@@ -28,4 +28,7 @@ public partial class GroupPosition
 
     [InverseProperty("IdGroupPositionsNavigation")]
     public virtual ICollection<Subdivision> Subdivisions { get; set; } = new List<Subdivision>();
+
+    [InverseProperty("IdGroupNavigation")]
+    public virtual ICollection<СompetenceСoeff> СompetenceСoeffs { get; set; } = new List<СompetenceСoeff>();
 }

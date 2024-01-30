@@ -10,5 +10,6 @@ namespace Personal_Testing_System.DTOs
         public int? MaxValue { get; set; }
         public string? Description { get; set; }
         public int? IdSubcompetence { get; set; }
+        public int? NumberPoints { get; set; }
     }
 }

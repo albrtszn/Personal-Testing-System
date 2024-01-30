@@ -50,6 +50,7 @@ namespace CRUD.implementations
                 SubcompetenceScore.MaxValue = SubcompetenceScoreToSave.MaxValue;
                 SubcompetenceScore.Description = SubcompetenceScoreToSave.Description;
                 SubcompetenceScore.IdSubcompetence = SubcompetenceScoreToSave.IdSubcompetence;
+                SubcompetenceScore.NumberPoints = SubcompetenceScoreToSave.NumberPoints;
 
                 await context.SaveChangesAsync();
             }

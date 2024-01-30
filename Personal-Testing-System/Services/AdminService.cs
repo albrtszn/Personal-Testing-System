@@ -1,5 +1,7 @@
-﻿using CRUD.interfaces;
+﻿using CRUD.implementations;
+using CRUD.interfaces;
 using DataBase.Repository.Models;
+using Microsoft.IdentityModel.Tokens;
 using Personal_Testing_System.DTOs;
 using Personal_Testing_System.Models;
 using System.Collections.Generic;
@@ -73,6 +75,25 @@ namespace Personal_Testing_System.Services
         public async Task<Admin> GetAdminById(string id)
         {
             return await AdminRepo.GetAdminById(id);
+        }
+
+        public async Task<Admin> GetAdminByLogin(string login)
+        {
+            Admin? admin = (await AdminRepo.GetAllAdmins())
+                                    .FirstOrDefault(x => x != null &&
+                                                         !x.Login.IsNullOrEmpty() &&
+                                                         x.Login.Equals(login));
+            return admin;
+        }
+
+        public async Task<Admin> GetAdminByLoginOnUpdate(string login, string idAdmin)
+        {
+            Admin? admin = (await AdminRepo.GetAllAdmins())
+                                    .FirstOrDefault(x => x != null &&
+                                                         !x.Login.IsNullOrEmpty() &&
+                                                         x.Login.Equals(login) &&
+                                                         !x.Id.Equals(idAdmin));
+            return admin;
         }
 
         public async Task<AdminDto> GetAdminDtoById(string id)

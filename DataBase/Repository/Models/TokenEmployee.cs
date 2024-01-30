@@ -28,6 +28,9 @@ public partial class TokenEmployee
     [Column("issuingTime", TypeName = "datetime")]
     public DateTime? IssuingTime { get; set; }
 
+    [StringLength(50)]
+    public string? ConnectionId { get; set; }
+
     [ForeignKey("IdEmployee")]
     [InverseProperty("TokenEmployees")]
     public virtual Employee? IdEmployeeNavigation { get; set; }

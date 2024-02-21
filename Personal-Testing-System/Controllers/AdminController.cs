@@ -2161,7 +2161,7 @@ namespace Personal_Testing_System.Controllers
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
         /*
-         *  Competence
+         *  CompetenceCoeff
          */
         [SwaggerOperation(Tags = new[] { "Admin/CompetenceCoeff" })]
         [HttpGet("GetCompetenceCoeffs")]
@@ -2389,7 +2389,7 @@ namespace Personal_Testing_System.Controllers
 
         [SwaggerOperation(Tags = new[] { "Admin/CompetenceCoeff" })]
         [HttpPost("UpdateCompetenceCoeff")]
-        public async Task<IActionResult> UpdateCompetence([FromHeader] string Authorization, [FromBody] CompetenceCoeffDto? competence)
+        public async Task<IActionResult> UpdateCompetenceCoeff([FromHeader] string Authorization, [FromBody] CompetenceCoeffDto? competence)
         {
             if (!Authorization.IsNullOrEmpty() && competence != null &&
                 competence.Id.HasValue && competence.IdCompetence.HasValue && 
@@ -2414,9 +2414,9 @@ namespace Personal_Testing_System.Controllers
                             Params = $"Id компетенции ={competence.Id}"
                         });
 
-                        if(await ms.GroupPosition.GetGroupPositionById(competence.IdGroup.Value) != null)
+                        if(await ms.GroupPosition.GetGroupPositionById(competence.IdGroup.Value) == null)
                             return NotFound(new { message = "Ошибка. Группа не найдена" });
-                        if (await ms.TestType.GetCompetenceById(competence.Id.Value) != null)
+                        if (await ms.TestType.GetCompetenceById(competence.Id.Value) == null)
                             return NotFound(new { message = "Ошибка. Компетенция не найдена" });
 
                         await ms.CompetenceCoeff.SaveCompetenceCoeff(competence);
@@ -2454,7 +2454,7 @@ namespace Personal_Testing_System.Controllers
                         });
                         if (id.Id.HasValue && id.Id != 0 && await ms.CompetenceCoeff.GetCompetenceCoeffById(id.Id.Value) != null)
                         {
-                            await ms.TestType.DeleteCompetenceById(id.Id.Value);
+                            await ms.CompetenceCoeff.DeleteCompetenceCoeffById(id.Id.Value);
                             return Ok(new { message = "Коэффицент удален" });
                         }
                         return NotFound(new { message = "Ошибка. Коэфицент не найдена" });
@@ -2464,6 +2464,314 @@ namespace Personal_Testing_System.Controllers
             }
             return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
         }
+
+        /*
+        *  CompetenceScore
+        */
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpGet("GetCompetenceScores")]
+        public async Task<IActionResult> GetCompetenceScores([FromHeader] string Authorization)
+        {
+            if (!Authorization.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenceScores");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenceScores",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        return Ok(await ms.CompetenceScore.GetAllCompetenceScoreDtos());
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpGet("GetCompetenceScoresPage")]
+        public async Task<IActionResult> GetCompetenceScorePage([FromHeader] string Authorization, [FromQuery] PageParamsModel pageParams)
+        {
+            if (!Authorization.IsNullOrEmpty() && pageParams.PageNumber.HasValue && pageParams.ItemsPerPage.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenceScorePage");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenceScorePage",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+
+                        var AlcompetenceCoeffs = (await ms.CompetenceScore.GetAllCompetenceScoreDtos())
+                                                    .OrderBy(x => x.Id);
+
+                        var pageHeader = new PageHeader(pageParams.PageNumber.Value, AlcompetenceCoeffs.Count(), pageParams.ItemsPerPage.Value);
+                        Response.Headers.Add("PageHeader", JsonConvert.SerializeObject(pageHeader));
+
+                        var competenceCoeffs = AlcompetenceCoeffs
+                            .Skip((pageParams.PageNumber.Value - 1) * pageParams.ItemsPerPage.Value)
+                            .Take(pageParams.ItemsPerPage.Value)
+                            .ToList();
+
+                        return Ok(competenceCoeffs);
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("GetCompetenceScoresByCompetenceAndGroupId")]
+        public async Task<IActionResult> GetCompetenceScoresByCompetenceAndGroupId([FromHeader] string Authorization, [FromBody] QuerryCompetenceCoeffModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null && model.IdCompetence.HasValue && model.IdGroup.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenceCoeffs",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        if (await ms.TestType.GetCompetenceById(model.IdCompetence.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой компетенции нет" });
+
+                        if (await ms.GroupPosition.GetGroupPositionById(model.IdGroup.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой группы нет" });
+
+                        return Ok(await ms.CompetenceScore.GetCompetenceScoreDtoByCompetenceAndGroupId(model.IdCompetence.Value, model.IdGroup.Value));
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("GetCompetenceScoresByGroupId")]
+        public async Task<IActionResult> GetCompetenceScoresByGroupId([FromHeader] string Authorization, [FromBody] IntIdModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null && model.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenceCoeffs");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenceCoeffs",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                        });
+                        if (await ms.GroupPosition.GetGroupPositionById(model.Id.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой группы нет" });
+
+                        return Ok(await ms.CompetenceScore.GetCompetenceScoreDtosByGroupId(model.Id.Value));
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("GetCompetenceScore")]
+        public async Task<IActionResult> GetCompetenceScore([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null && id.Id.HasValue)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/GetCompetenceScore :Id={id.Id}");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/GetCompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id оценки компетенции ={id.Id}"
+                        });
+                        if (await ms.CompetenceScore.GetCompetenceScoreById(id.Id.Value) != null)
+                        {
+                            CompetenceScoreDto? competenceScoreDto = await ms.CompetenceScore.GetCompetenceScoreDtoById(id.Id.Value);
+                            return Ok(competenceScoreDto);
+                        }
+                        return NotFound(new { message = "Ошибка. Оценка компетенции не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("AddCompetenceScore")]
+        public async Task<IActionResult> AddCompetenceScore([FromHeader] string Authorization, [FromBody] AddCompetenceScoreModel? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model.IdCompetence.HasValue && model.IdGroup.HasValue
+                && !model.Name.IsNullOrEmpty() && !model.Description.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/AddCompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/AddCompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id компетенции теста={model.IdCompetence}"
+                        });
+
+                        if (await ms.TestType.GetCompetenceById(model.IdCompetence.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой компетенции нет" });
+
+                        if (await ms.GroupPosition.GetGroupPositionById(model.IdGroup.Value) == null)
+                            return BadRequest(new { message = "Ошибка. Такой группы нет" });
+
+                        await ms.CompetenceScore.SaveCompetenceScore(model);
+                        return Ok(new { message = "Оценка компетенции добавлена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("UpdateCompetenceScore")]
+        public async Task<IActionResult> UpdateCompetenceScore([FromHeader] string Authorization, [FromBody] CompetenceScoreDto? model)
+        {
+            if (!Authorization.IsNullOrEmpty() && model != null &&
+                model.Id.HasValue && model.IdGroup.HasValue &&
+                model.NumberPoints.HasValue && !model.Description.IsNullOrEmpty())
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/UpdateCompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/UpdateCompetenceCoeff",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id jwtyrb компетенции ={model.Id}"
+                        });
+
+                        if (await ms.CompetenceScore.GetCompetenceScoreById(model.Id.Value) == null)
+                            return NotFound(new { message = "Ошибка. Группа не найдена" });
+                        if (await ms.GroupPosition.GetGroupPositionById(model.IdGroup.Value) == null)
+                            return NotFound(new { message = "Ошибка. Группа не найдена" });
+                        if (await ms.TestType.GetCompetenceById(model.Id.Value) == null)
+                            return NotFound(new { message = "Ошибка. Компетенция не найдена" });
+
+                        await ms.CompetenceScore.SaveCompetenceScore(model);
+                        return Ok(new { message = "Оценка компетенции обновлен" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
+        [SwaggerOperation(Tags = new[] { "Admin/CompetenceScore" })]
+        [HttpPost("DeleteCompetenceScore")]
+        public async Task<IActionResult> DeleteCompetenceScore([FromHeader] string Authorization, [FromBody] IntIdModel? id)
+        {
+            if (!Authorization.IsNullOrEmpty() && id != null)
+            {
+                TokenAdmin? token = await ms.TokenAdmin.GetTokenAdminByToken(Authorization);
+                if (token != null)
+                {
+                    if (await ms.IsTokenAdminExpired(token))
+                    {
+                        return BadRequest(new { message = "Время сессии истекло. Авторизуйтесь для работы в системе" });
+                    }
+                    else
+                    {
+                        logger.LogInformation($"/admin-api/DeleteCompetenceScore");
+                        await ms.Log.SaveLog(new Log
+                        {
+                            UrlPath = "admin-api/DeleteCompetenceScore",
+                            UserId = token.IdAdmin,
+                            UserIp = this.HttpContext.Connection.RemoteIpAddress.ToString(),
+                            DataTime = DateTime.Now,
+                            Params = $"Id оценки компетенции={id.Id}"
+                        });
+                        if (id.Id.HasValue && id.Id != 0 && await ms.CompetenceScore.GetCompetenceScoreById(id.Id.Value) != null)
+                        {
+                            await ms.CompetenceScore.DeleteCompetenceScoreById(id.Id.Value);
+                            return Ok(new { message = "Оценка компетенции удалена" });
+                        }
+                        return NotFound(new { message = "Ошибка. Оценка компетеенции не найдена" });
+                    }
+                }
+                return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });
+            }
+            return BadRequest(new { message = "Ошибка. Не все поля заполнены" });
+        }
+
         /*
          *  Subcompetence
          */
@@ -2859,8 +3167,15 @@ namespace Personal_Testing_System.Controllers
                             DataTime = DateTime.Now,
                             Params = $"id подкомпентенции={model.IdSubcompetence}"
                         });
-                        await ms.SubcompetenceScore.SaveSubcompetenceScore(model);
-                        return Ok(new { message = "Оценка подкомпетенции добавлена" });
+                        if (await ms.Subcompetence.GetSubcompetenceById(model.IdSubcompetence.Value) != null)
+                        {
+                            await ms.SubcompetenceScore.SaveSubcompetenceScore(model);
+                            return Ok(new { message = "Оценка подкомпетенции добавлена" });
+                        }
+                        else
+                        {
+                            return Ok(new { message = "Ошибка. Такой подкомпетенции нет" });
+                        }
                     }
                 }
                 return BadRequest(new { message = "Ошибка. Вы не авторизованы в системе" });

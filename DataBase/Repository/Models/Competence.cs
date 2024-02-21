@@ -18,6 +18,9 @@ public partial class Competence
     public string? Name { get; set; }
 
     [InverseProperty("IdCompetenceNavigation")]
+    public virtual ICollection<CompetenceScore> CompetenceScores { get; set; } = new List<CompetenceScore>();
+
+    [InverseProperty("IdCompetenceNavigation")]
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     [InverseProperty("IdCompetenceNavigation")]

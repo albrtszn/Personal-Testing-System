@@ -19,6 +19,9 @@ public partial class GroupPosition
     [Column("idProfile")]
     public int? IdProfile { get; set; }
 
+    [InverseProperty("IdGroupNavigation")]
+    public virtual ICollection<CompetenceScore> CompetenceScores { get; set; } = new List<CompetenceScore>();
+
     [InverseProperty("IdGroupPositionsNavigation")]
     public virtual ICollection<CompetenciesForGroup> CompetenciesForGroups { get; set; } = new List<CompetenciesForGroup>();
 

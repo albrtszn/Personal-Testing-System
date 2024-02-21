@@ -27,6 +27,8 @@ public partial class EFDbContext : DbContext
 
     public virtual DbSet<Competence> Competences { get; set; }
 
+    public virtual DbSet<CompetenceScore> CompetenceScores { get; set; }
+
     public virtual DbSet<CompetenciesForGroup> CompetenciesForGroups { get; set; }
 
     public virtual DbSet<ElployeeResultSubcompetence> ElployeeResultSubcompetences { get; set; }
@@ -116,6 +118,15 @@ public partial class EFDbContext : DbContext
         modelBuilder.Entity<Competence>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F7021A3A8");
+        });
+
+        modelBuilder.Entity<CompetenceScore>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Competen__3213E83F941D0883");
+
+            entity.HasOne(d => d.IdCompetenceNavigation).WithMany(p => p.CompetenceScores).HasConstraintName("FK__Competenc__idCom__4B0D20AB");
+
+            entity.HasOne(d => d.IdGroupNavigation).WithMany(p => p.CompetenceScores).HasConstraintName("FK__Competenc__idGro__4C0144E4");
         });
 
         modelBuilder.Entity<CompetenciesForGroup>(entity =>

@@ -26,6 +26,7 @@ using Wordroller.Styles;
 using Wordroller.Content.Properties.Sections.PageSizes;
 using Wordroller.Content.Properties.Sections;
 using Wordroller.Content.Text;
+using Client.classDTO;
 
 namespace Client.forms
 {
@@ -133,6 +134,17 @@ namespace Client.forms
                 }
             }
 
+        }
+
+        private void DataGridD_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            UserEmployee tmp = (UserEmployee)e.Row.DataContext;
+            if (tmp.employee.CountOfResults == tmp.employee.CountOfPurposes)
+
+            {
+                e.Row.Background = new SolidColorBrush(Color.FromRgb(0xF0, 0xFF, 0xFF));
+            }
+           
         }
     }
 }

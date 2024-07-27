@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
+using System.Windows;
 
 namespace Client
 {
@@ -64,6 +65,81 @@ namespace Client
             var jObject = await ProcessRequest(data_payload);
             return jObject;
         }
+
+    
+        public async Task<JToken> GetCompetenceScoresByGroupId(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetCompetenceScoresByGroupId";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetCompetenceScoresByGroupId";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> GetResultsOfPurposesByEmployeeId(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetResultsOfPurposesByEmployeeId";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetResultsOfPurposesByEmployeeId";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> GetEmployeesBySubdivisionId(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetEmployeesBySubdivisionId";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetEmployeesBySubdivisionId";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+        
+
+        public async Task<JToken> UpdateCompetenceCoeff(string pay_data)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateCompetenceCoeff";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateCompetenceCoeff";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+        
 
         public async Task<JToken> DeleteQuestionInTest(string pay_data)
         {
@@ -195,7 +271,7 @@ namespace Client
         }
         
 
-        public async Task<JToken> AddQuestionInTest(string pay_data)
+        public async Task<JToken> AddQuestionInTest(string pay_data, List<Payload_files> pay_Files)
         {
             Payload data_payload = new Payload();
             if (userRole == 1)
@@ -209,7 +285,25 @@ namespace Client
             data_payload.payload = pay_data;
             data_payload.metod = (int)connMetod.POST;
             data_payload.token = token;
-            var jObject = await ProcessRequestForm(data_payload, null);
+            var jObject = await ProcessRequestForm(data_payload, pay_Files);
+            return jObject;
+        }
+
+        public async Task<JToken> UpdateQuestionInTest(string pay_data, List<Payload_files> pay_Files)
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateQuestionInTest";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/UpdateQuestionInTest";
+            }
+            data_payload.payload = pay_data;
+            data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequestForm(data_payload, pay_Files);
             return jObject;
         }
 
@@ -265,6 +359,25 @@ namespace Client
 
             data_payload.payload = pay_data;
             data_payload.metod = (int)connMetod.POST;
+            data_payload.token = token;
+            var jObject = await ProcessRequest(data_payload);
+            return jObject;
+        }
+
+        public async Task<JToken> GetCompetenceCoeffs()
+        {
+            Payload data_payload = new Payload();
+            if (userRole == 1)
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetCompetenceCoeffs";
+            }
+            else
+            {
+                data_payload.uri = proсHost + "://" + urlHost + "/admin-api/GetCompetenceCoeffs";
+            }
+
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
             data_payload.token = token;
             var jObject = await ProcessRequest(data_payload);
             return jObject;
@@ -936,7 +1049,7 @@ namespace Client
 
         }
 
-        private async Task<JToken> ProcessRequestForm(Payload payload, Payload_files[] payfile)
+        private async Task<JToken> ProcessRequestForm(Payload payload, List<Payload_files> payfile)
         {
             string xjson = "";
 
@@ -956,8 +1069,12 @@ namespace Client
             { 
                 foreach (var file in payfile)
                 {
-                    var fileStreamContent = new StreamContent(File.OpenRead(file.filePath));
-                    formContent.Add(fileStreamContent, "files", file.name);
+                    byte[] fileToBytes = File.ReadAllBytes(file.filePath);
+                    // формируем отправляемое содержимое
+                    var content = new ByteArrayContent(fileToBytes);
+                    // Устанавливаем заголовок Content-Type
+                    // Добавляем загруженный файл в MultipartFormDataContent
+                    formContent.Add(content, name: "files", fileName: file.name);
                 }
             }
 
@@ -986,7 +1103,7 @@ namespace Client
                         break;
 
                     default:
-
+                        MessageBox.Show("КОД ОТВЕТА СЕРВЕРА: " + (int)response.StatusCode);
                         break;
                 }
             }
@@ -1009,7 +1126,6 @@ namespace Client
 
         public class Payload_files
         {
-            public byte[] paramFileStream { get; set; }
             public string name { get; set; }
             public string filePath { get; set; }
         }

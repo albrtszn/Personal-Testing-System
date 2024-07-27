@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Runtime.InteropServices.ComTypes;
 using Client.windows;
-using ScottPlot.Drawing.Colormaps;
+
 using static Client.SettingConnHost;
 
 namespace Client.VM

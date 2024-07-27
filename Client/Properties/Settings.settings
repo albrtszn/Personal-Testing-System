@@ -6,7 +6,7 @@
       <Value Profile="(Default)">https</Value>
     </Setting>
     <Setting Name="hostUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">fitpsu.online</Value>
+      <Value Profile="(Default)">kaftp.online</Value>
     </Setting>
   </Settings>
 </SettingsFile>

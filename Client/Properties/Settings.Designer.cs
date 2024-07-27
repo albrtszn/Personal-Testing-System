@@ -37,7 +37,7 @@ namespace Client.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("fitpsu.online")]
+        [global::System.Configuration.DefaultSettingValueAttribute("kaftp.online")]
         public string hostUrl {
             get {
                 return ((string)(this["hostUrl"]));

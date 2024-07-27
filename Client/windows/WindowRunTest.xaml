@@ -64,7 +64,7 @@
                                 </Grid.RowDefinitions>
                                 <StackPanel Margin="10">
                                     <TextBlock Text="{Binding SelectedQuestion.Text, UpdateSourceTrigger=PropertyChanged}" FontSize="16" FontFamily="Roboto"   Padding="0" TextWrapping="Wrap" Margin="0 0 0 10"/>
-                                    <Image x:Name="QNameImg" Source="{Binding SelectedQuestion.Img}"  MaxHeight="250" Stretch="UniformToFill"/>
+                                    <Image x:Name="QNameImg" Source="{Binding SelectedQuestion.Img}"  MaxHeight="250" Stretch="Uniform"/>
                                     <Separator Margin="10 0 10 10"/>
                                 </StackPanel>
 

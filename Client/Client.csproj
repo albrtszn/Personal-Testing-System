@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>22</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -67,6 +67,9 @@
   <ItemGroup>
     <Reference Include="DotNetProjects.SVGImage, Version=5.0.117.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetProjects.SVGImage.5.0.117\lib\net47\DotNetProjects.SVGImage.dll</HintPath>
+    </Reference>
+    <Reference Include="GLWpfControl, Version=3.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLWpfControl.3.3.0\lib\net452\GLWpfControl.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.PixelartIcons.4.11.0\lib\net47\MahApps.Metro.IconPacks.Core.dll</HintPath>
@@ -125,11 +128,23 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="ScottPlot, Version=4.1.68.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
-      <HintPath>..\packages\ScottPlot.4.1.68\lib\net462\ScottPlot.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.3.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.3.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="ScottPlot.WPF, Version=4.1.68.0, Culture=neutral, PublicKeyToken=e53b06131e34a3aa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ScottPlot.WPF.4.1.68\lib\net472\ScottPlot.WPF.dll</HintPath>
+    <Reference Include="ScottPlot, Version=5.0.27.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.5.0.27\lib\net462\ScottPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot.WPF, Version=5.0.27.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.WPF.5.0.27\lib\net462\ScottPlot.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp, Version=2.88.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.2.88.8\lib\net462\SkiaSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp.Views.Desktop.Common, Version=2.88.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.Views.Desktop.Common.2.88.8\lib\net462\SkiaSharp.Views.Desktop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SkiaSharp.Views.WPF, Version=2.88.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.Views.WPF.2.88.8\lib\net462\SkiaSharp.Views.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -252,12 +267,15 @@
     <Compile Include="classDTO\AnswersAnswer.cs" />
     <Compile Include="classDTO\AnswersQuestion.cs" />
     <Compile Include="classDTO\AnswersUserTest.cs" />
+    <Compile Include="classDTO\CompetenceCoeffsDTO.cs" />
+    <Compile Include="classDTO\CompetenceScoreDto.cs" />
     <Compile Include="classDTO\EmployeeLogin.cs" />
     <Compile Include="classDTO\JournalDto.cs" />
     <Compile Include="classDTO\MessageDTO.cs" />
     <Compile Include="classDTO\MyValueConverter.cs" />
     <Compile Include="classDTO\NotificationDTO.cs" />
     <Compile Include="classDTO\OneEmployee.cs" />
+    <Compile Include="classDTO\OneQuestionEdit.cs" />
     <Compile Include="classDTO\OneResult.cs" />
     <Compile Include="classDTO\OneSubdivision.cs" />
     <Compile Include="classDTO\OneTestResult.cs" />
@@ -282,14 +300,23 @@
     <Compile Include="pages\PageChoiceUser.xaml.cs">
       <DependentUpon>PageChoiceUser.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\PageCompetenceCoeff.xaml.cs">
+      <DependentUpon>PageCompetenceCoeff.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pages\PageCompetencyAsses.xaml.cs">
       <DependentUpon>PageCompetencyAsses.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\PageCompetencyAssesPie.xaml.cs">
+      <DependentUpon>PageCompetencyAssesPie.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\PageLoad.xaml.cs">
       <DependentUpon>PageLoad.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\PageLogs.xaml.cs">
       <DependentUpon>PageLogs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\PageOneQuestionEdit.xaml.cs">
+      <DependentUpon>PageOneQuestionEdit.xaml</DependentUpon>
     </Compile>
     <Compile Include="pages\PageResults.xaml.cs">
       <DependentUpon>PageResults.xaml</DependentUpon>
@@ -311,6 +338,9 @@
     </Compile>
     <Compile Include="pages\PageViewTestAnswers.xaml.cs">
       <DependentUpon>PageViewTestAnswers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pages\PageСomparateResult.xaml.cs">
+      <DependentUpon>PageСomparateResult.xaml</DependentUpon>
     </Compile>
     <Compile Include="VM\PageChoiceUserVM.cs" />
     <Compile Include="VM\PageResultsVM.cs" />
@@ -370,6 +400,9 @@
     <Compile Include="windows\SettingConnHost.xaml.cs">
       <DependentUpon>SettingConnHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="windows\UserTestResult.xaml.cs">
+      <DependentUpon>UserTestResult.xaml</DependentUpon>
+    </Compile>
     <Compile Include="windows\UserWindow.xaml.cs">
       <DependentUpon>UserWindow.xaml</DependentUpon>
     </Compile>
@@ -404,15 +437,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pages\PageCompetenceCoeff.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pages\PageCompetencyAsses.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\PageCompetencyAssesPie.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="pages\PageLoad.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\PageLogs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\PageOneQuestionEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -441,6 +486,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pages\PageViewTestAnswers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pages\PageСomparateResult.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -520,6 +569,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="windows\UserTestResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="windows\UserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -553,6 +606,7 @@
     </EmbeddedResource>
     <None Include="Client_TemporaryKey.pfx" />
     <Resource Include="Fonts\terminatorcyr.ttf" />
+    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -606,5 +660,11 @@
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets'))" />
+    <Error Condition="!Exists('..\packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets'))" />
+    <Error Condition="!Exists('..\packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets'))" />
+    <Error Condition="!Exists('..\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.2.88.8\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.2.88.8\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets'))" />
   </Target>
+  <Import Project="..\packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets" Condition="Exists('..\packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets')" />
+  <Import Project="..\packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets" Condition="Exists('..\packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets')" />
+  <Import Project="..\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.2.88.8\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets" Condition="Exists('..\packages\SkiaSharp.NativeAssets.Linux.NoDependencies.2.88.8\build\net462\SkiaSharp.NativeAssets.Linux.NoDependencies.targets')" />
 </Project>

@@ -49,10 +49,14 @@ namespace Client.pages
         private BitmapImage image3 = null;
         private BitmapImage image4 = null;
 
+        private List<Client.ConnectHost.Payload_files> payload_Files = new List<ConnectHost.Payload_files>();
+
+
         public PageAddQuestion(string ID_test)
         {
             InitializeComponent();
             curID = ID_test;
+            payload_Files.Clear();
         }
 
         private async void Button_Click_final(object sender, RoutedEventArgs e)
@@ -86,7 +90,7 @@ namespace Client.pages
             if (addTextA1.Text == null || addTextA1.Text == "" || addTextA1.Text.Length < 5)
             {
                 addTextA1.Background = Brushes.Pink;
-                MessageBox.Show("Поле текста вопроса заполнено неверно!");
+                MessageBox.Show("Поле текста ответа заполнено неверно!");
                 addQFinal.IsEnabled = true;
                 return;
             }
@@ -107,7 +111,7 @@ namespace Client.pages
             else
             {
                 addBallA1.Background = Brushes.Pink;
-                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                MessageBox.Show("Поле весовой коэффициент заволнено неверно");
                 addQFinal.IsEnabled = true;
                 return ;
             }
@@ -150,7 +154,7 @@ namespace Client.pages
             else
             {
                 addBallA2.Background = Brushes.Pink;
-                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                MessageBox.Show("Поле весовой коэффициент заволнено неверно");
                 addQFinal.IsEnabled = true;
                 return;
             }
@@ -191,7 +195,7 @@ namespace Client.pages
             else
             {
                 addBallA3.Background = Brushes.Pink;
-                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                MessageBox.Show("Поле весовой коэффициент заволнено неверно");
                 addQFinal.IsEnabled = true;
                 return;
             }
@@ -230,7 +234,7 @@ namespace Client.pages
             else
             {
                 addBallA4.Background = Brushes.Pink;
-                MessageBox.Show("Поля весовый коэффициентов заволнены неверно");
+                MessageBox.Show("Поле весовой коэффициент заволнено неверно");
                 addQFinal.IsEnabled = true;
                 return;
             }
@@ -247,7 +251,15 @@ namespace Client.pages
 
             string jout = JsonConvert.SerializeObject(ans);
             ConnectHost conn = new ConnectHost();
-            JToken jObject = await conn.AddQuestionInTest(jout);
+            JToken jObject = null;
+            if (payload_Files.Count > 0)
+            {
+                jObject = await conn.AddQuestionInTest(jout, payload_Files);
+            }
+            else
+            {
+                jObject = await conn.AddQuestionInTest(jout, null);
+            }
 
             if (jObject == null)
             {
@@ -301,6 +313,14 @@ namespace Client.pages
 
         }
 
+        private string NameFileUuid(string name)
+        {
+            string str_buf = string.Empty;
+            Guid myuuid = Guid.NewGuid();
+            str_buf = myuuid.ToString() + '.' + name.Split('.')[1];
+            return str_buf;
+        }
+
         private void ButtonImgADD(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofdPicture = new OpenFileDialog();
@@ -310,11 +330,20 @@ namespace Client.pages
             if (ofdPicture.ShowDialog() == true)
             {
                 imageQ = new BitmapImage(new Uri(ofdPicture.FileName));
-                addImgNameQ.Text = ofdPicture.FileName;
+
+
+                addImgNameQ.Text = NameFileUuid(ofdPicture.SafeFileName);
+              
+
                 addImgNameQ.Visibility = Visibility.Visible;
                 addImg.Visibility = Visibility.Collapsed;
                 addImgQ.Source = imageQ;
                 addImgQ.Visibility = Visibility.Visible;
+                Client.ConnectHost.Payload_files file_buf = new Client.ConnectHost.Payload_files();
+                file_buf.filePath = ofdPicture.FileName;
+                file_buf.name = addImgNameQ.Text;
+
+                payload_Files.Add(file_buf);
             }
 
         }
@@ -331,8 +360,14 @@ namespace Client.pages
                 addImgA11.Source = image1;
                 addImgA11.Visibility = Visibility.Visible;
                 addImgA1.Visibility = Visibility.Collapsed;
-                addImgNameA1.Text = ofdPicture.FileName;
+                addImgNameA1.Text = NameFileUuid(ofdPicture.SafeFileName);
                 addImgNameA1.Visibility = Visibility.Visible;
+
+                Client.ConnectHost.Payload_files file_buf = new Client.ConnectHost.Payload_files();
+                file_buf.filePath = ofdPicture.FileName;
+                file_buf.name = addImgNameA1.Text;
+
+                payload_Files.Add(file_buf);
             }
         }
 
@@ -348,8 +383,14 @@ namespace Client.pages
                 addImgA12.Source = image2;
                 addImgA12.Visibility = Visibility.Visible;
                 addImgA2.Visibility = Visibility.Collapsed;
-                addImgNameA2.Text = ofdPicture.FileName;
+                addImgNameA2.Text = NameFileUuid(ofdPicture.SafeFileName);
                 addImgNameA2.Visibility = Visibility.Visible;
+
+                Client.ConnectHost.Payload_files file_buf = new Client.ConnectHost.Payload_files();
+                file_buf.filePath = ofdPicture.FileName;
+                file_buf.name = addImgNameA2.Text;
+
+                payload_Files.Add(file_buf);
             }
         }
 
@@ -365,8 +406,14 @@ namespace Client.pages
                 addImgA13.Source = image3;
                 addImgA13.Visibility = Visibility.Visible;
                 addImgA3.Visibility = Visibility.Collapsed;
-                addImgNameA3.Text = ofdPicture.FileName;
+                addImgNameA3.Text = NameFileUuid(ofdPicture.SafeFileName);
                 addImgNameA3.Visibility = Visibility.Visible;
+                
+                Client.ConnectHost.Payload_files file_buf = new Client.ConnectHost.Payload_files();
+                file_buf.filePath = ofdPicture.FileName;
+                file_buf.name = addImgNameA3.Text;
+
+                payload_Files.Add(file_buf);
             }
         }
 
@@ -382,8 +429,15 @@ namespace Client.pages
                 addImgA14.Source = image4;
                 addImgA14.Visibility = Visibility.Visible;
                 addImgA4.Visibility = Visibility.Collapsed;
-                addImgNameA4.Text = ofdPicture.FileName;
+                addImgNameA4.Text = NameFileUuid(ofdPicture.SafeFileName);
                 addImgNameA4.Visibility = Visibility.Visible;
+
+                Client.ConnectHost.Payload_files file_buf = new Client.ConnectHost.Payload_files();
+                file_buf.filePath = ofdPicture.FileName;
+                file_buf.name = addImgNameA4.Text;
+
+                payload_Files.Add(file_buf);
+
             }
         }
 

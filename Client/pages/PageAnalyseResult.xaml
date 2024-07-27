@@ -36,7 +36,8 @@
                 BorderThickness="0"
                 Background="Transparent"
                 FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_word"
-                
+                x:Name="BT_exportWord"
+                IsEnabled="False"
                 >
             <Image Source="{StaticResource export_lineDrawingImage}" Width="30" Margin="0"/>
         </Button>
@@ -108,7 +109,8 @@
         </StackPanel>
 
         <DataGrid x:Name="ResultDG" Grid.Row="2" Margin="5" Visibility="Visible"
-                  ItemsSource="{Binding resualts}" d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
+                  ItemsSource="{Binding resualts}" 
+                  d:ItemsSource="{d:SampleData ItemCount=3}" AutoGenerateColumns="False"
                     CellStyle="{DynamicResource DataGridCellStyle1}"
                     RowStyle="{DynamicResource DataGridRowStyle1}" 
                     ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
@@ -155,9 +157,9 @@
                             <StackPanel Orientation="Horizontal">
                                 <ProgressBar Width="150"
                                              materialDesign:TransitionAssist.DisableTransitions="True"
-                                             Value="{Binding Point}"
+                                             Value="{Binding Level}"
                                              Height="6"/>
-                                <Label  Content="{Binding Point}" Margin="15 0 0 0"/>
+                                <Label  Content="{Binding Level}" Margin="15 0 0 0"/>
                                 <Label  Content="%" Margin="0 0 0 0"/>
                             </StackPanel>
                         </DataTemplate>
@@ -182,12 +184,20 @@
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox />
+                            <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Click="CheckBox_Click"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
             </DataGrid.Columns>
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Результаты тестов" Click="MenuItem_Click1"  
+                                          />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+
         </DataGrid>
         <!--<Button x:Name="BTBackGo" Grid.Row="3" Content="НАЗАД" Width="100" HorizontalAlignment="Left" Margin="15 0 0 0" Command="{Binding CmdBackGO}" Background="#F25C4F" BorderThickness="0"
                 materialDesign:ButtonAssist.CornerRadius="20" FontFamily="Roboto" FontSize="16"
@@ -195,7 +205,9 @@
 
 
         <!--Visibility="{Binding vis}"-->
-        <Border x:Name="PageLoad"  Background="White" Visibility="Collapsed">
+        <Border x:Name="PageLoad"  
+                Grid.Row="2"
+                Background="White" Visibility="Collapsed" >
             <Border Width="100" Height="100" CornerRadius="15" Background="#E3E5E5" BorderBrush="#C2C2C2" BorderThickness="1">
                 <ProgressBar
                         Width="60"
@@ -209,5 +221,11 @@
 
         </Border>
 
+        <Button Grid.Row="3" Margin="40 0 0 0"
+                    x:Name="BT_Comparate"
+                IsEnabled="False"
+                    HorizontalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" 
+                    FontFamily="Roboto" Content="СРАВНИТЬ" FontSize="15" Width="120" Height="40" VerticalAlignment="Center" BorderBrush="Transparent" 
+                    Click="Button_Click_Comparate" />
     </Grid>
 </Page>

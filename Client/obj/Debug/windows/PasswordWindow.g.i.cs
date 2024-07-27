@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 
 using Client.windows;
-using ScottPlot;
 using System;
 using System.Diagnostics;
 using System.Windows;

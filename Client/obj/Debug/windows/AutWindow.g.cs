@@ -18,7 +18,6 @@ using SVGImage.SVG.FileLoaders;
 using SVGImage.SVG.Filters;
 using SVGImage.SVG.PaintServers;
 using SVGImage.SVG.Shapes;
-using ScottPlot;
 using System;
 using System.Diagnostics;
 using System.Windows;

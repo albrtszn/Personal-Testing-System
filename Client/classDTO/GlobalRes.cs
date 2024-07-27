@@ -29,6 +29,7 @@ namespace Client.classDTO
         public static bool flagUpdateAdmin = true;
         
         public static int indexItemsUserEmployee = 0;
+        public static float[,] matrixCoeff = new float[5, 11];
 
         public GlobalRes()
         {
@@ -37,21 +38,26 @@ namespace Client.classDTO
 
         public async Task LoadSubdivisions()
         {
-            
+            CompetenceCoeffsDTO[] coeffs;
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
             ConnectHost conn = new ConnectHost();
             JToken jObject = await conn.GetGroupPositions();
-            itemsGroupPosition = JsonConvert.DeserializeObject<GroupPositionDto[]>(jObject.ToString());
+            itemsGroupPosition = JsonConvert.DeserializeObject<GroupPositionDto[]>(jObject.ToString(), jsonSettings);
 
            
             jObject = await conn.GetCompetences();
-            itemsCompetence = JsonConvert.DeserializeObject<CompetenceDto[]>(jObject.ToString());
+            itemsCompetence = JsonConvert.DeserializeObject<CompetenceDto[]>(jObject.ToString(), jsonSettings);
 
            
             jObject =  await conn.GetSubdivisions();
 
             
 
-            itemsSubdivision = JsonConvert.DeserializeObject<SubdivisionDto[]>(jObject.ToString());
+            itemsSubdivision = JsonConvert.DeserializeObject<SubdivisionDto[]>(jObject.ToString(), jsonSettings);
             foreach (var item in itemsSubdivision)
             {
                 var index = searchID_Groupe(item.IdGroupPositions);
@@ -75,7 +81,14 @@ namespace Client.classDTO
                 }
             }
 
-           
+            jObject = await conn.GetCompetenceCoeffs();
+            coeffs = JsonConvert.DeserializeObject<CompetenceCoeffsDTO[]>(jObject.ToString(), jsonSettings);
+            foreach (var coefficient in coeffs)
+            {
+                matrixCoeff[coefficient.IdCompetence, coefficient.IdGroup] = coefficient.Coefficient;
+            }
+
+
         }
 
         public static int searchID_Groupe(int index)

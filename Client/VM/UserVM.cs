@@ -16,6 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Client.windows;
 using static System.Net.Mime.MediaTypeNames;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Client.VM
 {
@@ -29,6 +30,7 @@ namespace Client.VM
         public RelayCommand CmdDeletAdmin { get; }
         public RelayCommand CmdEditAdmin { get; }
         public RelayCommand CmdAddAdmin { get; }
+        public RelayCommand CmdViewResult { get; }
 
         public static UserEmployee SelectedItems { get; set; }
         public static AdminDto SelectedItemsAdmin { get; set; }
@@ -157,6 +159,19 @@ namespace Client.VM
             this.CmdDeletAdmin = new RelayCommand(FuncDeletAdmin);
             this.CmdEditAdmin = new RelayCommand(FuncEditAdmin);
             this.CmdAddAdmin = new RelayCommand(FuncAddAdmin);
+            this.CmdViewResult = new RelayCommand(FuncViewResult);
+
+        }
+
+        void FuncViewResult(object param)
+        {
+            UserEmployee tmp = param as UserEmployee;
+            if (tmp.employee.CountOfResults == 0)
+            {
+                MessageBox.Show("Выбранный пользователь не выполнял тесты");
+                return;
+            }
+            myGlobal.NavigationService.Navigate(new PageCompetencyAsses(tmp.employee.Id));
         }
 
         void FuncAddAdmin(object param)

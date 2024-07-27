@@ -45,9 +45,11 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <Label Content="Компетенции" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" Margin="40 40 0 0"/>
-
+            <Button Margin="0 40 60 0" HorizontalAlignment="Right" Width="220"
+                    materialDesign:ButtonAssist.CornerRadius="20" Background="#F25C4F" FontFamily="Roboto" Content="весовые коэффициенты" FontSize="15" BorderBrush="Transparent" Click="Button_Click"
+                    ></Button>
             <StackPanel x:Name="SPProfile" Grid.Row="1" Visibility="Visible">
-                <Label Content="Профиль" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 40 5"/>
+                <Label Content="Профиль" FontFamily="Roboto" FontSize="16" Foreground="Black" FontWeight="Bold" Margin="40 0 60 5"/>
                 <ComboBox Grid.Row="1" Grid.Column="0" x:Name="profileCB"  
                           FontSize="16" 
                           Foreground="Black" 

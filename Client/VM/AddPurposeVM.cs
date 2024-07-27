@@ -13,7 +13,6 @@ using System.Windows.Data;
 using System.ComponentModel;
 using System.Security.Policy;
 using Client.pages;
-using ScottPlot.Plottable;
 
 namespace Client.VM
 {

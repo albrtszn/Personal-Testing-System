@@ -329,7 +329,8 @@
                   
                                   CanUserResizeColumns="True" 
                                   Grid.ColumnSpan="2"
-                  
+                                  Tag="{Binding ElementName=myPageUsers}" LoadingRow="DataGridD_LoadingRow"
+                              
                   >
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Фамилия" MinWidth="150" Width="*" Binding="{Binding employee.LastName}"/>
@@ -427,6 +428,22 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Назначить тесты"  
+                                          Command="{Binding Parent.PlacementTarget.Tag.DataContext.CmdAddPurpose, RelativeSource={RelativeSource Self}}"
+                                          CommandParameter="{Binding Parent.PlacementTarget.Tag.DataContext.SelectedItems, RelativeSource={RelativeSource Self}}"
+                                          />
+                                <MenuItem Header="Редактировать данные"  
+                                          Command="{Binding Parent.PlacementTarget.Tag.DataContext.CmdEditUser, RelativeSource={RelativeSource Self}}"
+                                          CommandParameter="{Binding Parent.PlacementTarget.Tag.DataContext.SelectedItems, RelativeSource={RelativeSource Self}}"
+                                          />
+                                <MenuItem Header="Результаты оценки компетенций"  
+                                          Command="{Binding Parent.PlacementTarget.Tag.DataContext.CmdViewResult, RelativeSource={RelativeSource Self}}"
+                                          CommandParameter="{Binding Parent.PlacementTarget.Tag.DataContext.SelectedItems, RelativeSource={RelativeSource Self}}"
+                                          />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                     </DataGrid>
                 </Grid>
             </TabItem>

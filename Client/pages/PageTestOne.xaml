@@ -145,14 +145,14 @@
                                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Height="50" Margin="0 0 20 0"
                                             Visibility="{Binding Path=Visibility, ElementName=BT_ADD_Q, Mode=OneWay}"
                                             >
-                                    <Button Visibility="Hidden"
+                                    <Button Visibility="Visible"
                                             Height="25" Width="25" Padding="0" Margin="0 0 20 0" 
                                             Background="Transparent" BorderThickness="1" 
                                             BorderBrush="Transparent" 
                                             Click="Button_Edit">
                                         <Image Source="{StaticResource tabler_editDrawingImage}" Width="18" Height="18"/>
                                     </Button>
-                                    <Button 
+                                    <Button Visibility="Visible"
                                             Height="25" Width="25" Padding="0" 
                                             Background="Transparent" BorderThickness="1" 
                                             BorderBrush="Transparent"

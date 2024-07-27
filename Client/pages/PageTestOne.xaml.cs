@@ -21,7 +21,7 @@ using static Client.pages.PageAddQuestion;
 using System.Runtime.CompilerServices;
 using Microsoft.Win32;
 using System.Windows.Markup;
-using ScottPlot.Drawing.Colormaps;
+
 
 namespace Client.pages
 {
@@ -31,6 +31,11 @@ namespace Client.pages
         private string IDTest = string.Empty;
         private Visibility pageLoadOk = Visibility.Visible;
         private string strDel = string.Empty;
+
+
+        Myid myid = new Myid();
+        
+
         public PageTestOne(string idTest)
         {
             IDTest = idTest;
@@ -42,6 +47,13 @@ namespace Client.pages
         private void PageTestOne_Loaded(object sender, RoutedEventArgs e)
         {
             LoadProgress.Visibility = pageLoadOk;
+            
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            myid = JsonConvert.DeserializeObject<Myid>(IDTest, jsonSettings);
+
             LeadTest();
         }
 
@@ -127,12 +139,7 @@ namespace Client.pages
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //string tmp = "{\"Id\"" + ":\"" + IDTest + "\"}";
-            var jsonSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-            Myid myid = new Myid();
-            myid = JsonConvert.DeserializeObject<Myid>(IDTest, jsonSettings);
+
             this.NavigationService.Navigate(new PageAddQuestion(myid.Id));
         }
 
@@ -143,7 +150,9 @@ namespace Client.pages
 
         private void Button_Edit(object sender, RoutedEventArgs e)
         {
-
+            var tmp = sender as System.Windows.Controls.Button;
+            var dat = tmp.DataContext as OneQuestion;
+            this.NavigationService.Navigate(new PageOneQuestionEdit(dat, myid.Id));
         }
 
         private void Button_Delet(object sender, RoutedEventArgs e)

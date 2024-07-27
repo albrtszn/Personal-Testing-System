@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <Label Content="Результаты тестов по копметенциям" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" 
+            <Label Content="Результаты тестов по компетенциям" HorizontalAlignment="Left" FontSize="30" FontFamily="Roboto" Foreground="#555" 
                    Margin="0 0 0 0"/>
             <Border Width="260" Height="40" 
                     HorizontalAlignment="Right" 

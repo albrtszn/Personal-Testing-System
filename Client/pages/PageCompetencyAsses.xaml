@@ -3,9 +3,10 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+	  xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
       xmlns:local="clr-namespace:Client.pages"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      
       mc:Ignorable="d" 
       d:DesignHeight="750" 
       d:DesignWidth="1120"
@@ -27,7 +28,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="3*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
@@ -36,19 +37,43 @@
                 BorderThickness="0"
                 Background="Transparent"
                 FontFamily="Roboto" FontSize="16" Padding="0" Click="Button_export_word"
-                
+                x:Name="BT_exportWord"
+                IsEnabled="False"
                 >
             <Image Source="{StaticResource export_lineDrawingImage}" Width="30" Margin="0"/>
         </Button>
+        <StackPanel
+          Margin="0 0 50 0"
+          Orientation="Horizontal"
+            HorizontalAlignment="Right">
+            <Label Content="Вид представления:" FontSize="20" FontFamily="Roboto" VerticalContentAlignment="Center"/>
+
+
+            <RadioButton x:Name="RB_table"
+                       Content="ТАБЛИЦА"
+                       IsChecked="True"
+                       Style="{StaticResource MaterialDesignTabRadioButton}" 
+                       FontSize="20" FontFamily="Roboto" Checked="RB_table_Checked"
+            />
+
+            <RadioButton x:Name="RB_pie"
+                       Content="ДИАГРАММА"
+                       IsChecked="False"
+                        Style="{StaticResource MaterialDesignTabRadioButton}" 
+                        FontSize="20" FontFamily="Roboto" Checked="RB_pie_Checked"
+            />
+
+        </StackPanel>
         <StackPanel Grid.Row="1" Margin="0 20">
             <StackPanel Orientation="Horizontal">
                 <Label Grid.Row="0" Content="{Binding LastName}" FontSize="18" FontFamily="Roboto" Foreground="Black" />
                 <Label Grid.Row="0" Content="{Binding FirstName}" FontSize="18" FontFamily="Roboto" Foreground="Black" />
                 <Label Grid.Row="0" Content="{Binding SecondName}" FontSize="18" FontFamily="Roboto" Foreground="Black" />
-                <Label Grid.Row="0" Content="-" FontSize="18" FontFamily="Roboto" Foreground="Black" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <Label Grid.Row="0" Content="{Binding Profile}" FontSize="18" FontFamily="Roboto" Foreground="Black" />
                 <Label Grid.Row="0" Content=":" FontSize="18" FontFamily="Roboto" Foreground="Black" />
-                <Label Grid.Row="0" Content="{Binding Subdevision}" FontSize="18" FontFamily="Roboto" Foreground="Black" />
+                <Label Grid.Row="0" Content="{Binding Subdevision}" FontSize="18" FontFamily="Roboto" Foreground="Black" FontWeight="DemiBold"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Grid.Row="0" Content="Дата рождения:" FontSize="18" FontFamily="Roboto" Foreground="Black" />
@@ -60,100 +85,404 @@
             </StackPanel>
         </StackPanel>
 
+        <!--Visibility="{Binding vis}"-->
+        <Border x:Name="PageLoad"  
+                Grid.Row="2"
+                Background="White" Visibility="Visible" Margin="0 0 15 0" CornerRadius="5">
+            <Border Width="100" Height="100" CornerRadius="15" Background="#E3E5E5" BorderBrush="#C2C2C2" BorderThickness="1">
+                <ProgressBar
+                        Width="60"
+                        Height="60"
+                       Foreground="#6970B5"
+                       IsIndeterminate="True"
+                       Style="{StaticResource MaterialDesignCircularProgressBar}"
+                       Value="0"
+                        />
+            </Border>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="5">
+        </Border>
 
-            <Grid Margin="20 20 20 10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+        <Border Grid.Row="2" x:Name="View_pie" Background="White" CornerRadius="5" Margin="0 0 15 0" Visibility="Collapsed">
+            <ScottPlot:WpfPlot x:Name="myPlot" />
+        </Border>
+            
+        <ScrollViewer x:Name="View_table" Grid.Row="2" Visibility="Collapsed">
+            
+            <Border Background="White" CornerRadius="5">
 
-                <TextBlock Grid.Row="0" Text="Группа компетенций" TextAlignment="Left" FontSize="18" FontWeight="Bold" Margin="5 0 0 10"/>
-                <TextBlock Grid.Row="1" Text="Профессиональные" TextAlignment="Left" FontSize="18"  VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Text="Корпоративные" TextAlignment="Left" FontSize="18"  VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="3" Text="Управленческие" TextAlignment="Left" FontSize="18" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="4" Text="Профессионально-психологические" TextAlignment="Left" TextWrapping="Wrap" FontSize="18"  VerticalAlignment="Center" />
+                <Grid Margin="20 20 20 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-                <Expander Grid.Row="1" Grid.ColumnSpan="3" Background="Transparent" Height="40">
+                    <materialDesign:Card
+                        Margin="0 5 0 5"
+                        Grid.Row="1" Grid.ColumnSpan="4"
+                        Padding="8"
+                        Background="Pink"
+                        UniformCornerRadius="6">
+                    </materialDesign:Card>
+                    <materialDesign:Card
+                        Margin="0 5 0 5"
+                        Grid.Row="2" Grid.ColumnSpan="4"
+                        Padding="8"
+                        Background="LightBlue"
+                        UniformCornerRadius="6">
+                    </materialDesign:Card>
+                    <materialDesign:Card
+                        Margin="0 5 0 5"
+                        Grid.Row="3" Grid.ColumnSpan="4"
+                        Padding="8"
+                        Background="LightGreen"
+                        UniformCornerRadius="6">
+                    </materialDesign:Card>
+                    <materialDesign:Card
+                        Margin="0 5 0 5"
+                        Grid.Row="4" Grid.ColumnSpan="4"
+                        Padding="8"
+                        Background="LightGoldenrodYellow"
+                        UniformCornerRadius="6">
+                    </materialDesign:Card>
 
-                </Expander>                
-                
-                <Expander Grid.Row="2" Grid.ColumnSpan="3" Background="Transparent" Height="40">
+                    <TextBlock Grid.Row="0" Text="Группа компетенций" TextAlignment="Left" FontSize="14" FontWeight="Bold"  VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Text="Профессиональные" TextAlignment="Left" FontSize="14"  VerticalAlignment="Top" Margin="5 15 0 0"/>
+                    <TextBlock Grid.Row="2" Text="Корпоративные" TextAlignment="Left" FontSize="14"  VerticalAlignment="Top" Margin="5 15 0 0"/>
+                    <TextBlock Grid.Row="3" Text="Управленческие" TextAlignment="Left" FontSize="14" VerticalAlignment="Top" Margin="5 15 0 0"/>
+                    <TextBlock Grid.Row="4" Text="Профессионально-психологические" TextAlignment="Left" TextWrapping="Wrap" FontSize="14"  VerticalAlignment="Top" Margin="5 10 0 0"/>
 
-                </Expander>
-                
-                <Expander Grid.Row="3" Grid.ColumnSpan="3" Background="Transparent" Height="40">
+                    <Expander Grid.Row="1" Grid.ColumnSpan="4" Background="Transparent" >
+                        <ListView x:Name="LV_ListComp1" Padding="0" Margin="0 0 0 10">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Path=Name}">Компетенция</GridViewColumn>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Path=Point}">Балл</GridViewColumn>
+                                    <GridViewColumn Header="Уровень" Width="200">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="5 10 5 0" VerticalAlignment="Top">
+                                                    <ProgressBar Width="150"
+                                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                                 Value="{Binding Level}"
+                                                                 Height="7"/>
+                                                    <Label  Content="{Binding Level}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                    <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Описание" Width="Auto">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="5 0 5 0"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
 
-                </Expander>
-                
-                <Expander Grid.Row="4" Grid.ColumnSpan="3" Background="Transparent" Height="40"> 
-                    
-                </Expander>
+                    <Expander Grid.Row="2" Grid.ColumnSpan="4" Background="Transparent" >
+                        <ListView x:Name="LV_ListComp2"  Padding="0" Margin="0 0 0 10" d:ItemsSource="{d:SampleData ItemCount=1}">
+                            <ListView.View>
+
+                                <GridView>
+                                    <GridViewColumn>
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="950">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="150"/>
+                                                        <ColumnDefinition Width="280"/>
+                                                        <ColumnDefinition Width="*"/>
+
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding Path=Name}" TextAlignment="Left" TextWrapping="Wrap" FontSize="14"  VerticalAlignment="Top" Margin="0 10 0 0"/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5 10 5 0" VerticalAlignment="Top">
+                                                        <ProgressBar Width="210"
+                                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                                     Foreground="LightGreen"
+                                                                 Value="{Binding Level}"
+                                                                 Height="7"/>
+                                                        <Label  Content="{Binding Level}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Description}" TextAlignment="Left" TextWrapping="Wrap" FontSize="14"  VerticalAlignment="Top" Margin="0 10 0 0"/>
+                                                </Grid>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
+
+                    <Expander Grid.Row="3" Grid.ColumnSpan="4" Background="Transparent" >
+                        <ListView x:Name="LV_ListComp3"  Padding="0" Margin="0 0 0 10">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Path=Name}">Компетенция</GridViewColumn>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Path=Point}">Балл</GridViewColumn>
+                                    <GridViewColumn Header="Уровень" Width="200">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="5 10 5 0" VerticalAlignment="Top">
+                                                    <ProgressBar Width="150"
+                                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                                 Value="{Binding Level}"
+                                                                 Height="7"/>
+                                                    <Label  Content="{Binding Level}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                    <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Описание" Width="Auto">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="5 0 5 0"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
+
+                    <Expander Grid.Row="4" Grid.ColumnSpan="4" Background="Transparent">
+                        <ListView x:Name="LV_ListComp4"  Padding="0" Margin="0 0 0 10" d:ItemsSource="{d:SampleData ItemCount=1}" >
+                            <ListView.View>
+
+                                <GridView>
+                                    <GridViewColumn>
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="950">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="150"/>
+                                                        <ColumnDefinition Width="280"/>
+                                                        <ColumnDefinition Width="1*"/>
+
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding Path=Name}" TextAlignment="Left" TextWrapping="Wrap" FontSize="14"  VerticalAlignment="Top" Margin="0 10 0 0"/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5 10 5 0" VerticalAlignment="Top">
+                                                        <ProgressBar Width="210"
+                                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                                     Foreground="LightGreen"
+                                                                 Value="{Binding Level}"
+                                                                 Height="7"/>
+                                                        <Label  Content="{Binding Level}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Description}" TextAlignment="Left" TextWrapping="Wrap" FontSize="14"  VerticalAlignment="Top" Margin="0 10 0 0"/>
+                                                </Grid>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
 
 
 
-                <TextBlock Grid.Column="1" Grid.Row="0" Text="Уровень компетенций" TextAlignment="Left" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Competence1}" TextAlignment="Left" FontSize="18" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Competence2}" TextAlignment="Left" FontSize="18" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Competence3}" TextAlignment="Left" FontSize="18" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Competence3}" TextAlignment="Left" FontSize="18" VerticalAlignment="Center"/>
 
 
-                    <TextBlock Grid.Column="2" Text="Показатель компетенций" TextAlignment="Left" FontSize="18" FontWeight="Bold" Margin="5 0 0 10"/>
-                    <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
+
+                    <TextBlock Grid.Column="1" Text="Показатель компетенций" TextAlignment="Center" FontSize="14" FontWeight="Bold"  VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="5 15 5 0" VerticalAlignment="Top">
                         <ProgressBar Width="230"
                                      materialDesign:TransitionAssist.DisableTransitions="True"
                                      Value="{Binding Point1}"
                                      Height="7"/>
-                        <Label  Content="{Binding Point1}" Margin="15 0 0 0"  FontSize="18"/>
-                        <Label  Content="%" Margin="0 0 0 0"  FontSize="18"/>
+                        <Label  Content="{Binding Point1}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
                     </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="2">
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Margin="5 15 5 0" VerticalAlignment="Top">
                         <ProgressBar Width="230"
                                      materialDesign:TransitionAssist.DisableTransitions="True"
                                      Value="{Binding Point2}"
                                      Height="7"/>
-                        <Label  Content="{Binding Point2}" Margin="15 0 0 0"  FontSize="18"/>
-                        <Label  Content="%" Margin="0 0 0 0"  FontSize="18"/>
+                        <Label  Content="{Binding Point2}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
                     </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="3">
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3" Margin="5 15 5 0" VerticalAlignment="Top">
                         <ProgressBar Width="230"
                                      materialDesign:TransitionAssist.DisableTransitions="True"
                                      Value="{Binding Point3}"
                                      Height="7"/>
-                        <Label  Content="{Binding Point3}" Margin="15 0 0 0"  FontSize="18"/>
-                        <Label  Content="%" Margin="0 0 0 0"  FontSize="18"/>
+                        <Label  Content="{Binding Point3}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
                     </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="4">
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4" Margin="5 15 5 0" VerticalAlignment="Top">
                         <ProgressBar Width="230"
                                      materialDesign:TransitionAssist.DisableTransitions="True"
                                      Value="{Binding Point4}"
                                      Height="7"/>
-                        <Label  Content="{Binding Point4}" Margin="15 0 0 0"  FontSize="18"/>
-                        <Label  Content="%" Margin="0 0 0 0"  FontSize="18"/>
+                        <Label  Content="{Binding Point4}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                        <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
                     </StackPanel>
-                    
+
+                    <TextBlock Grid.Column="2" Grid.Row="0" Text="Уровень компетенций / Описание" TextWrapping="Wrap" TextAlignment="Center" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                    <Grid  Grid.Column="2" Grid.Row="1" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Competence1}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="5 15 5 0"/>
+                        <materialDesign:PopupBox Grid.Column="1" Margin="0 15 0 0"
+                               Padding="0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               PlacementMode="LeftAndAlignMiddles"
+                               PopupElevation="Dp8"
+                               PopupHorizontalOffset="0"
+                               PopupUniformCornerRadius="10"
+                               PopupVerticalOffset="0"
+                               SnapsToDevicePixels="True"
+                               >
+                            <ContentControl >
+                                <Border Width="500"  Background="Pink">
+                                    <TextBlock Text="{Binding Description1}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="10 10 10 10"/>
+                                </Border>
+
+                            </ContentControl>
+                        </materialDesign:PopupBox>
+                    </Grid>
+                    <Grid  Grid.Column="2" Grid.Row="2" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Competence2}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="5 15 5 0"/>
+                        <materialDesign:PopupBox Grid.Column="1" Margin="0 15 0 0"
+                               Padding="0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               PlacementMode="LeftAndAlignMiddles"
+                               PopupElevation="Dp8"
+                               PopupHorizontalOffset="0"
+                               PopupUniformCornerRadius="10"
+                               PopupVerticalOffset="0"
+                               SnapsToDevicePixels="True"
+                               >
+                            <ContentControl >
+                                <Border Width="500"  Background="LightBlue">
+                                    <TextBlock Text="{Binding Description2}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="10 10 10 10"/>
+                                </Border>
+
+                            </ContentControl>
+                        </materialDesign:PopupBox>
+                    </Grid>
+
+                    <Grid  Grid.Column="2" Grid.Row="3" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Competence3}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="5 15 5 0"/>
+                        <materialDesign:PopupBox Grid.Column="1" Margin="0 15 0 0"
+                               Padding="0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               PlacementMode="LeftAndAlignMiddles"
+                               PopupElevation="Dp8"
+                               PopupHorizontalOffset="0"
+                               PopupUniformCornerRadius="10"
+                               PopupVerticalOffset="0"
+                               SnapsToDevicePixels="True"
+                               >
+                            <ContentControl >
+                                <Border Width="500"  Background="LightGreen">
+                                    <TextBlock Text="{Binding Description3}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="10 10 10 10"/>
+                                </Border>
+
+                            </ContentControl>
+                        </materialDesign:PopupBox>
+                    </Grid>
+                    <Grid  Grid.Column="2" Grid.Row="4" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Competence4}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="5 15 5 0"/>
+                        <materialDesign:PopupBox Grid.Column="1" Margin="0 15 0 0"
+                               Padding="0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               PlacementMode="LeftAndAlignMiddles"
+                               PopupElevation="Dp8"
+                               PopupHorizontalOffset="0"
+                               PopupUniformCornerRadius="10"
+                               PopupVerticalOffset="0"
+                               SnapsToDevicePixels="True"
+                               >
+                            <ContentControl >
+                                <Border Width="500"  Background="LightGoldenrodYellow">
+                                    <TextBlock Text="{Binding Description4}" TextWrapping="Wrap" TextAlignment="Left" FontSize="14"  Margin="10 10 10 10"/>
+                                </Border>
+
+                            </ContentControl>
+                        </materialDesign:PopupBox>
+                    </Grid>
 
 
+
+                </Grid>
+            </Border>
+        </ScrollViewer>
+
+        <Border Grid.Row="3" Background="White" CornerRadius="5" Margin="0 10 15 10">
+            <Grid Margin="20 20 20 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="320"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Text="Итоговый показатель компетенций 
+                           (с учетом весовых коэффициентов)" TextWrapping="Wrap" TextAlignment="Left" FontSize="14" FontWeight="DemiBold"  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal"  VerticalAlignment="Center" HorizontalAlignment="Left" >
+                    <ProgressBar Width="250"
+                                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                                 Value="{Binding ItogLevel}"
+                                                                 Height="7"/>
+                    <Label  Content="{Binding ItogLevel}" Margin="15 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                    <Label  Content="%" Margin="0 0 0 0"  FontSize="14" VerticalAlignment="Center" FontWeight="DemiBold"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="40 0 0 0">
+                    <Label  Content="{Binding ItogPoint}" Margin="15 0 0 0"  FontSize="16" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <Label  Content=" Баллов" Margin="0 0 0 0"  FontSize="16" VerticalAlignment="Center" FontWeight="Bold"/>
+                </StackPanel>
             </Grid>
         </Border>
-
-
 
         <Button Grid.Row="4" x:Name="BT_BackGo" Content="НАЗАД" Width="90" Height="40" HorizontalAlignment="Left" 
                 Margin="20 0 0 0" Click="Button_Click_Back" Background="#F25C4F"
                 materialDesign:ButtonAssist.CornerRadius="20"
                 BorderThickness="0"
                 BorderBrush="Transparent"
+                />
+
+        <Button Grid.Row="4" x:Name="BT_GoPie" Content="Диаграмма" Width="120" Height="40" HorizontalAlignment="Right" 
+                Margin="20 0 0 0" Click="BT_GoPie_Click" Background="#F25C4F"
+                materialDesign:ButtonAssist.CornerRadius="20"
+                BorderThickness="0"
+                BorderBrush="Transparent"
+                
                 />
     </Grid>
 </Page>

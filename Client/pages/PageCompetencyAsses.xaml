@@ -477,12 +477,5 @@
                 BorderBrush="Transparent"
                 />
 
-        <Button Grid.Row="4" x:Name="BT_GoPie" Content="Диаграмма" Width="120" Height="40" HorizontalAlignment="Right" 
-                Margin="20 0 0 0" Click="BT_GoPie_Click" Background="#F25C4F"
-                materialDesign:ButtonAssist.CornerRadius="20"
-                BorderThickness="0"
-                BorderBrush="Transparent"
-                
-                />
     </Grid>
 </Page>

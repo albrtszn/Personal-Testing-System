@@ -249,7 +249,7 @@
                                              Height="40"
                                              HorizontalContentAlignment="Left"
                                              SelectedIndex="{Binding Correct}" >
-                                        <ComboBoxItem Content="Невервый"/>
+                                        <ComboBoxItem Content="Неверный"/>
                                         <ComboBoxItem Content="Верный"/>
                                     </ComboBox>
 

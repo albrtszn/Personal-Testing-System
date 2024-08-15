@@ -27,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>24</ApplicationRevision>
+    <ApplicationRevision>27</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -306,9 +306,6 @@
     <Compile Include="pages\PageCompetencyAsses.xaml.cs">
       <DependentUpon>PageCompetencyAsses.xaml</DependentUpon>
     </Compile>
-    <Compile Include="pages\PageCompetencyAssesPie.xaml.cs">
-      <DependentUpon>PageCompetencyAssesPie.xaml</DependentUpon>
-    </Compile>
     <Compile Include="pages\PageLoad.xaml.cs">
       <DependentUpon>PageLoad.xaml</DependentUpon>
     </Compile>
@@ -444,10 +441,6 @@
     <Page Include="pages\PageCompetencyAsses.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="pages\PageCompetencyAssesPie.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="pages\PageLoad.xaml">
       <SubType>Designer</SubType>

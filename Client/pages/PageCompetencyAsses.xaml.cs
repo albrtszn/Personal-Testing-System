@@ -512,11 +512,13 @@ namespace Client.pages
 
             //paragraph.AppendText("\r\n");
 
-            var table = section.AppendTable(new CreateTableParameters(WidthUnit.Pc, 100, 4 + 1, WidthUnit.Pc, new double[] { 5f, 20f, 20f, 15f, 40f }, DefaultTableStyles.TableGrid));
+            int kolRows = 5 + listComp1.Count + listComp2.Count + listComp3.Count + listComp4.Count;
+            var table = section.AppendTable(new CreateTableParameters(WidthUnit.Pc, 100, kolRows, WidthUnit.Pc, new double[] { 5f, 20f, 20f, 15f, 40f }, DefaultTableStyles.TableGrid));
             var rows = table.Rows.ToArray();
-
+            
             var cells = rows[0].Cells.ToArray();
 
+            
             cells[0].Paragraphs.First().AppendText("№");
             cells[1].Paragraphs.First().AppendText("Групповая компетенция");
             cells[2].Paragraphs.First().AppendText("Компетенция");
@@ -525,51 +527,98 @@ namespace Client.pages
 
             int i = 0;
             cells = rows[i + 1].Cells.ToArray();
-            cells[0].Paragraphs.First().AppendText((i + 1).ToString());
+            cells[0].Paragraphs.First().AppendText("1");
             cells[1].Paragraphs.First().AppendText("Профессиональные");
-            cells[2].Paragraphs.First().AppendText("");
-            cells[3].Paragraphs.First().AppendText(userCom.Point1.ToString());
-            cells[4].Paragraphs.First().AppendText(userCom.Description1);
+            cells[1].Properties.GridSpan = 2;
+
+
+            cells[2].Paragraphs.First().AppendText(userCom.Point1.ToString());
+            cells[3].Paragraphs.First().AppendText(userCom.Description1);
+            cells[4].Remove();
+
+
+            int j = 0;
+            foreach (var item in listComp1)
+            {
+                i++;
+                cells = rows[i + 1].Cells.ToArray();
+                cells[0].Paragraphs.First().AppendText("1." + (j + 1).ToString());
+                cells[1].Paragraphs.First().AppendText("");
+                cells[2].Paragraphs.First().AppendText(item.Name);
+                cells[3].Paragraphs.First().AppendText(item.Level.ToString());
+                cells[4].Paragraphs.First().AppendText(item.Description);
+                j++;
+            }
+
 
             i++;
             cells = rows[i + 1].Cells.ToArray();
-            cells[0].Paragraphs.First().AppendText((i + 1).ToString());
+            cells[0].Paragraphs.First().AppendText("2");
             cells[1].Paragraphs.First().AppendText("Корпоративные");
-            cells[2].Paragraphs.First().AppendText("");
-            cells[3].Paragraphs.First().AppendText(userCom.Point2.ToString());
-            cells[4].Paragraphs.First().AppendText(userCom.Description2);
+            cells[1].Properties.GridSpan = 2;
+
+            cells[2].Paragraphs.First().AppendText(userCom.Point2.ToString());
+            cells[3].Paragraphs.First().AppendText(userCom.Description2);
+            cells[4].Remove();
+                
+            j = 0;
+            foreach (var item in listComp2)
+            {
+                i++;
+                cells = rows[i + 1].Cells.ToArray();
+                cells[0].Paragraphs.First().AppendText( "2." + (j + 1).ToString());
+                cells[1].Paragraphs.First().AppendText("");
+                cells[2].Paragraphs.First().AppendText(item.Name);
+                cells[3].Paragraphs.First().AppendText(item.Level.ToString());
+                cells[4].Paragraphs.First().AppendText(item.Description);
+                j++;
+            }
 
             i++;
-
             cells = rows[i + 1].Cells.ToArray();
-            cells[0].Paragraphs.First().AppendText((i + 1).ToString());
+            cells[0].Paragraphs.First().AppendText("3");
             cells[1].Paragraphs.First().AppendText("Управленческие");
-            cells[2].Paragraphs.First().AppendText("");
-            cells[3].Paragraphs.First().AppendText(userCom.Point3.ToString());
-            cells[4].Paragraphs.First().AppendText(userCom.Description3);
+            cells[1].Properties.GridSpan = 2;
+            
+            cells[2].Paragraphs.First().AppendText(userCom.Point3.ToString());
+            cells[3].Paragraphs.First().AppendText(userCom.Description3);
+            cells[4].Remove();
+            j = 0;
+            foreach (var item in listComp3)
+            {
+                i++;
+                cells = rows[i + 1].Cells.ToArray();
+                cells[0].Paragraphs.First().AppendText("3." + (j + 1).ToString());
+                cells[1].Paragraphs.First().AppendText("");
+                cells[2].Paragraphs.First().AppendText(item.Name);
+                cells[3].Paragraphs.First().AppendText(item.Level.ToString());
+                cells[4].Paragraphs.First().AppendText(item.Description);
+                j++;
+            }
 
             i++;
-
             cells = rows[i + 1].Cells.ToArray();
-            cells[0].Paragraphs.First().AppendText((i + 1).ToString());
+            cells[0].Paragraphs.First().AppendText("4");
             cells[1].Paragraphs.First().AppendText("Профессионально-психологические");
-            cells[2].Paragraphs.First().AppendText("");
-            cells[3].Paragraphs.First().AppendText(userCom.Point4.ToString());
-            cells[4].Paragraphs.First().AppendText(userCom.Description4);
+            cells[1].Properties.GridSpan = 2;
+
+            cells[2].Paragraphs.First().AppendText(userCom.Point4.ToString());
+            cells[3].Paragraphs.First().AppendText(userCom.Description4);
+            cells[4].Remove();
+            j = 0;
+            foreach (var item in listComp4)
+            {
+                i++;
+                cells = rows[i + 1].Cells.ToArray();
+                cells[0].Paragraphs.First().AppendText( "4." + (j + 1).ToString());
+                cells[1].Paragraphs.First().AppendText("");
+                cells[2].Paragraphs.First().AppendText(item.Name);
+                cells[3].Paragraphs.First().AppendText(item.Level.ToString());
+                cells[4].Paragraphs.First().AppendText(item.Description);
+                j++;
+            }
 
             i++;
-            //foreach (var item in result)
-            //{
-
-            //    cells = rows[i + 1].Cells.ToArray();
-            //    cells[0].Paragraphs.First().AppendText((i + 1).ToString());
-            //    cells[1].Paragraphs.First().AppendText(item.FIO);
-            //    cells[2].Paragraphs.First().AppendText(item.DateOfBirth);
-            //    cells[3].Paragraphs.First().AppendText(item.LevelCom1.ToString());
-            //    cells[4].Paragraphs.First().AppendText(item.LevelCom1.ToString());
-
-            //    i++;
-            //}
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Word file (*.docx)|*.docx";
@@ -580,11 +629,6 @@ namespace Client.pages
                     doc.Save(fileStream);
                 }
             }
-        }
-
-        private void BT_GoPie_Click(object sender, RoutedEventArgs e)
-        {
-            this.NavigationService.Navigate(new PageCompetencyAssesPie());
         }
 
         private void RB_table_Checked(object sender, RoutedEventArgs e)

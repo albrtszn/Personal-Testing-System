@@ -233,7 +233,7 @@
                               Height="40"
                               HorizontalContentAlignment="Left"
                               SelectedIndex="0" >
-                            <ComboBoxItem Content="Невервый"/>
+                            <ComboBoxItem Content="Неверный"/>
                             <ComboBoxItem Content="Верный"/>
                         </ComboBox>
 
@@ -334,7 +334,7 @@
                                  Height="40"
                                 HorizontalContentAlignment="Left"
                                 SelectedIndex="0"                 >
-                            <ComboBoxItem Content="Невервый"/>
+                            <ComboBoxItem Content="Неверный"/>
                             <ComboBoxItem Content="Верный"/>
                         </ComboBox>
 
@@ -430,7 +430,7 @@
                                  Height="40"
                                 HorizontalContentAlignment="Left"
                                 SelectedIndex="0"                 >
-                            <ComboBoxItem Content="Невервый"/>
+                            <ComboBoxItem Content="Неверный"/>
                             <ComboBoxItem Content="Верный"/>
                         </ComboBox>
 
@@ -526,7 +526,7 @@
                                  Height="40"
                                 HorizontalContentAlignment="Left"
                                 SelectedIndex="0"                 >
-                            <ComboBoxItem Content="Невервый"/>
+                            <ComboBoxItem Content="Неверный"/>
                             <ComboBoxItem Content="Верный"/>
                         </ComboBox>
 

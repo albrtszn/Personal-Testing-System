@@ -123,6 +123,8 @@ namespace Client.pages
             if (jObject != null)
             {
                 System.Windows.MessageBox.Show("Обновление вопроса прошло успешно!");
+                addQFinal.IsEnabled = true;
+                this.NavigationService?.GoBack();
             }
             addQFinal.IsEnabled = true;
         }

@@ -84,6 +84,11 @@ namespace Personal_Testing_System.Services
             return (await GetAllCompetenceScoreDtos()).Where(x => x.IdGroup != null && x.IdGroup.Equals(id)).ToList();
         }
 
+        public async Task<List<CompetenceScoreDto>> GetCompetenceScoreDtosByCompetenceId(int id)
+        {
+            return (await GetAllCompetenceScoreDtos()).Where(x => x.IdCompetence != null && x.IdCompetence.Equals(id)).ToList();
+        }
+
         public async Task<CompetenceScore> GetCompetenceScoreById(int id)
         {
             return await CompetenceScoreRepo.GetCompetenceScoreById(id);

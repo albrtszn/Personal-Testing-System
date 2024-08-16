@@ -27,8 +27,8 @@ public partial class CompetenceScore
     public int NumnerPoints { get; set; }
 
     [Column("description")]
-    [StringLength(1500)]
-    public string Description { get; set; } = null!;
+    [StringLength(4000)]
+    public string? Description { get; set; }
 
     [ForeignKey("IdCompetence")]
     [InverseProperty("CompetenceScores")]

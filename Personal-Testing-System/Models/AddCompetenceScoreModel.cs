@@ -10,7 +10,7 @@ namespace Personal_Testing_System.Models
         public string Name { get; set; } = null!;
         public int? NumberPoints { get; set; }
 
-        [StringLength(1500)]
+        [StringLength(4000)]
         public string Description { get; set; } = null;
     }
 }

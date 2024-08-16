@@ -57,6 +57,11 @@ namespace Personal_Testing_System.Services
             return (await GetAllCompetenceCoeffs()).Where(x => x.IdGroup != null && x.IdGroup.Equals(id)).ToList();
         }
 
+        public async Task<List<СompetenceСoeff>> GetCompetenceCoeffsByCompetenceId(int id)
+        {
+            return (await GetAllCompetenceCoeffs()).Where(x => x.IdCompetence != null && x.IdCompetence.Equals(id)).ToList();
+        }
+
         public async Task<List<CompetenceCoeffDto>> GetCompetenceCoeffDtosByGroupId(int id)
         {
             var coeffs = (await GetAllCompetenceCoeffs()).Where(x => x.IdGroup != null && x.IdGroup.Equals(id)).ToList();

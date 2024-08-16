@@ -74,6 +74,13 @@ namespace Personal_Testing_System.Services
             return list.Find(x => x!=null && x.IdTest != null && x.IdEmployee != null && x.IdTest.Equals(testId) && x.IdEmployee.Equals(employeeId));
         }
 
+        public async Task<List<TestPurpose>?> GetTestPurposeByEmployeeId(string employeeId)
+        {
+            List<TestPurpose> list = await GetAllTestPurposes();
+            if (list == null || list.Count == 0) return null;
+            return list.Where(x => x != null && x.IdTest != null && x.IdEmployee != null && x.IdEmployee.Equals(employeeId)).ToList();
+        }
+
         public async Task<List<TestPurpose>> GetAllTestPurposes()
         {
             return await TestPurposeRepo.GetAllTestPurposes();

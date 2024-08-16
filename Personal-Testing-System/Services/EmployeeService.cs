@@ -121,6 +121,11 @@ namespace Personal_Testing_System.Services
             return await EmployeeRepo.GetAllEmployees();
         }
 
+        public async Task<List<Employee>> GetAllEmployeesBySubdivisionId(int idSubdivision)
+        {
+            return (await EmployeeRepo.GetAllEmployees()).Where(x=> x!=null && x.IdSubdivision != null && x.IdSubdivision.Equals(idSubdivision)).ToList();
+        }
+
         public async Task<Employee> GetEmployeeByLogin(string login)
         {
             Employee? employee = (await EmployeeRepo.GetAllEmployees())

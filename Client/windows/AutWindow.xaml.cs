@@ -4,6 +4,9 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using Client.classDTO;
+using Client.windows;
+using System.Windows.Media.TextFormatting;
+using OpenTK.Graphics.ES10;
 
 
 
@@ -18,15 +21,52 @@ namespace Client
         public AutWindow()
         {
             InitializeComponent();
+
+            TestConnect();
+
+
+
+            VerL.Content = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+
+        }
+
+        private async void TestConnect()
+        {
+            WindowURL windowURL = new WindowURL();
+
             if (Client.Properties.Settings.Default.hostUrl == "")
             {
+                MessageBox.Show("Ошибка соединения с сервером. Требуется настройка!");
+                if (windowURL.ShowDialog() == true)
+                {
+                    Client.Properties.Settings.Default.hostUrl = windowURL.TextUrl;
+                    Client.Properties.Settings.Default.Save();
+                }
 
-                Client.Properties.Settings.Default.hostUrl = "fitpsu.online";
-                Client.Properties.Settings.Default.Save();
             }
-            ConnectHost.urlHost = Client.Properties.Settings.Default.hostUrl;
-            ConnectHost.proсHost = Client.Properties.Settings.Default.protocol;
-            VerL.Content = "Версия: " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+
+            ConnectHost conn = new ConnectHost();
+            string output = "Ошибка соединения!";
+
+            output = await conn.Ping(Client.Properties.Settings.Default.hostUrl);
+           
+            if (output.Contains("Ошибка соединения!"))
+            {
+                MessageBox.Show("Ошибка соединения с сервером. Требуется настройка!");
+                if (windowURL.ShowDialog() == true)
+                {
+                    Client.Properties.Settings.Default.hostUrl = windowURL.TextUrl;
+                    Client.Properties.Settings.Default.Save();
+
+                    ConnectHost.proсHost = Client.Properties.Settings.Default.protocol;
+                    ConnectHost.urlHost = Client.Properties.Settings.Default.hostUrl;
+                }
+            }
+            else
+            {
+                ConnectHost.proсHost = Client.Properties.Settings.Default.protocol;
+                ConnectHost.urlHost = Client.Properties.Settings.Default.hostUrl;
+            }
 
         }
 

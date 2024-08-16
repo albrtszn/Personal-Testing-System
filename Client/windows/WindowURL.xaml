@@ -1,0 +1,28 @@
+﻿<Window x:Class="Client.windows.WindowURL"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:Client.windows"
+        mc:Ignorable="d"
+        Title="Настройка соединения" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock FontFamily="Roboto" FontSize="14"> Введите IP или имя HOST:</TextBlock>
+        <TextBox  FontFamily="Roboto" FontSize="14" Name="urlBox" Grid.Row="1" MinWidth="250" Margin="0,0,0,0" materialDesign:HintAssist.Hint="IP или HOST" TextChanged="urlBox_TextChanged" />
+        <Label  HorizontalContentAlignment="Center" FontFamily="Roboto" FontSize="12" x:Name="StatusBox" Grid.Row="2" MinWidth="250" Margin="0,0,0,0"  Content="статус соединения"/>
+        <WrapPanel Grid.Row="3" HorizontalAlignment="Center" Margin="0,15,0,0">
+            <Button x:Name="ButtonTest" IsEnabled="False" IsDefault="True" Click="Test_Click" MinWidth="60" Margin="0,0,35,0">ТЕСТ</Button>
+            <Button x:Name="ButtonOK" IsEnabled="False" Click="Accept_Click" MinWidth="60" Margin="0,0,10,0">OK</Button>
+           
+        </WrapPanel>
+
+    </Grid>
+</Window>

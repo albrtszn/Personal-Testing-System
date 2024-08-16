@@ -82,7 +82,7 @@ namespace Client
         public async Task RunWebSocketClient()
         {
             ClientWebSocket websocket = new ClientWebSocket();
-            string url = "wss://fitpsu.online/notification-hub";
+            string url = "wss://kaftp.online/notification-hub";
            
             await websocket.ConnectAsync(new Uri(url), CancellationToken.None);
             string message = "{\"protocol\":\"json\",\"version\":1}\u001e";

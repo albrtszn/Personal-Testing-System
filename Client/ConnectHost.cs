@@ -853,6 +853,37 @@ namespace Client
             return strOut;
         }
 
+        public async Task<string> Ping(string urlHost)
+        {
+            Payload data_payload = new Payload();
+            data_payload.uri = proсHost + "://" + urlHost + "/admin-api/Ping";
+            data_payload.payload = "";
+            data_payload.metod = (int)connMetod.GET;
+            data_payload.token = token;
+
+            string strOut = "";
+
+            var jObject = await ProcessRequest(data_payload);
+            if (jObject == null)
+            {
+                strOut = "Ошибка соединения!";
+            }
+            else
+            {
+                strOut = jObject["message"].ToString();
+                string[] words = strOut.Split(' ');
+
+                int i = 0;
+                foreach (var word in words)
+                {
+                    //Console.WriteLine($"<{word}>");
+                    i++;
+                }
+                strOut = words[i - 2] + " " + words[i - 1];
+            }
+            return strOut;
+        }
+
         private async Task<JToken> ProcessRequest(Payload payload)
         {
             string xjson = "";

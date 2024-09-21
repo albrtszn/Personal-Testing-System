@@ -13,5 +13,6 @@ namespace Client.classDTO
         public TestDto Test { get; set; }
         public string DatatimePurpose { get; set; }
         public int Timer { get; set; }
+        public int QuestionsCnt { get; set; }
     }
 }
